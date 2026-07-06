@@ -1,0 +1,212 @@
+.footerParent{
+    position: sticky;
+    width: 100%;
+    height: 100vh;
+    background-color: #F8F8FB;
+    overflow: hidden;
+   
+}
+
+.FooterGradient,.footerContent{
+    position: absolute;
+    width: 100%;
+    height: 70%;
+    background: linear-gradient(357deg, rgba(254, 108, 37, 0.53) -121.71%, #E8E6F4 55.08%);
+ bottom: 0;
+ z-index: 3;
+ 
+
+}
+
+.footerContent{
+    background: transparent;
+    z-index: 999 !important;
+    pointer-events: none;
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.footerCurve{
+    position: absolute;
+    width: 150%;
+    height: 25rem;
+    background-color: #E8E6F4;
+left: 50%;
+transform: translateX(-50%);
+    top: 25%;
+    border-radius: 100%;
+    z-index: 1 !important;
+}
+
+/* .btn2{
+    position: absolute;
+    z-index: 99999;
+    width: 10rem;
+    height: 5rem;
+    background-color: red;
+} */
+
+.footerMainContent ,.footerBottomOption{
+    width: 100%;
+    height: 90%;
+   /*  background-color: red; */
+    z-index: 9;
+}
+.footerBottomOption{
+   position: relative;
+    height: 10%;
+    background-color: transparent;
+    display: flex;
+    align-items: center;
+    padding-inline: 15px;
+    justify-content: space-between;
+   /*  background: transparent; */
+    /* background-color: red; */
+
+    
+    
+}
+
+
+
+.footerBottomOption::before{
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 0;
+    width: 100%;
+    height: 0.2rem;
+    transform: translateX(-50%);
+    background-color: rgba(0, 0, 0, 0.062);
+}
+
+.footerBottomOption > p{
+    font-size: 1.2rem;
+    color: rgba(0, 0, 0, 0.495);
+}
+
+.legalBox{
+    width: auto;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    background: transparent;
+   pointer-events: all;
+
+}
+
+.legalBox p{
+    font-size: 1.2rem;
+     color: rgba(0, 0, 0, 0.495);
+     cursor: pointer;
+     transition: 0.2s ease-in-out;
+}
+
+.legalBox p:hover{
+    color: black;
+    cursor: pointer;
+}
+
+.footerLeftOption{
+    position: absolute;
+    height: auto;
+    width: auto;
+    /* background-color: red; */
+    top: 15%;
+    left: 5%;
+    display: flex;
+    flex-direction: column;
+
+}
+
+.footerLeftOption p:first-child{
+    font-size: 1.2rem;
+}
+
+.footerLeftOption p:last-child{
+    font-size: max(7rem,4.5vw);
+    font-weight: bolder;
+    font-family: "Bagel Fat One", system-ui;
+    line-height: 95%;
+   color: rgb(0, 0, 0);
+}
+
+.emailCollector{
+    position: absolute;
+    top: 48%;
+    width: auto;
+    height: auto;
+    /* background-color: pink; */
+    left: 5%;
+    z-index: 999 !important;
+    pointer-events: all;
+    overflow: hidden;
+    display: flex;
+    gap: 5px;
+}
+
+.emailCollector > input{
+    width: max(20rem,17vw);
+    height: 4rem;
+    outline: none;
+    border: none;
+border-bottom: 2px solid #f7580e2e;
+background-color: transparent;
+padding-inline: 5px;
+}
+
+.sendEmailButton{
+    width: 4rem;
+    height: 4rem;
+    background: linear-gradient(130deg, #FFEEE5 -25.88%, #FF722D 109.54%);
+    border-radius: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#git{
+    position: absolute;
+    right: 15%;
+    top: 18%;
+    font-size: max(1.2rem,1vw);
+    width: 15%;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    color: rgba(0, 0, 0, 0.838);
+    
+}
+
+#git > span{
+    color: rgba(0, 0, 0, 0.483);
+    font-size: max(1rem,0.8vw);
+    
+}
+
+#mailHref{
+    font-size: max(2rem,2vw);
+    font-weight: bolder;
+  font-family: "Baumans", system-ui;    
+  color: #fe6d25dc;
+  pointer-events: all;
+}
+
+@media (max-width:500px) {
+    .footerLeftOption p:last-child{
+        font-size: 6rem;
+    }
+    .footerLeftOption{
+        top: 16%;
+    }
+    .emailCollector{
+        top: 43%;
+        width: 90%;
+        gap: 10px;
+    }
+    #git {
+        width: 79%;
+        top: 63%;
+    }
+}

@@ -1,0 +1,284 @@
+.whySecParent{
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    background-color: transparent;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #F8F8FB;
+    overflow: hidden !important;
+}
+
+.whySecParent img{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+   
+}
+
+.whyTagLine{
+    width: 40%;
+    min-width: 70rem;
+      font-size: 5rem;
+  font-weight: 700;
+  color: #684A4A;
+  position: relative;
+  display: inline-block;
+  text-align: center;
+   -webkit-text-stroke: 28px white;
+     paint-order: stroke fill;
+filter: drop-shadow(0 2px 5px rgba(0,0,0,0.05));
+}
+
+
+.whyCenterCard{
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    border-radius: 40px;
+}
+
+.leftCardWhy,.rightCardWhy{
+  position: absolute;
+  width: 26.5%;
+  height: 78.5%;
+/*  background-color: rgba(224, 214, 236, 0.386);
+ */ left: 10%;
+ border-radius: 15px;
+ display: flex;
+ flex-direction: column;
+ align-items: center;
+ justify-content: space-between;
+ gap: 8px;
+ overflow: hidden;
+ 
+}
+.rightCardWhy{
+    left: unset;
+    right: 10%;
+}
+
+.topLeftCardWhy,.bottomLeftCardWhy,.topRightCardWhy,.bottomRightCardWhy{
+    width: 100%;
+    height: 49%;
+    background-color: #f5e9e3;
+    
+    border-radius: 18px;
+    padding: 20px;
+    transition:height 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+}
+.topLeftCardWhy{
+    height: 100%;
+}
+
+/* .bottomLeftCardWhy  */
+
+
+.bottomLeftCardWhy{
+    height: 100%;
+    position: relative;
+     background: #FFDDD3;
+    overflow: hidden;
+    
+}
+
+#centerImgWallet ,#ethIcon,#dollarW,#devveW{
+   
+    position: absolute;
+    top: 70%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    width: max(14rem,35%);
+    height: auto;
+    object-fit: contain;
+    z-index: 9;
+     transition:all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+}
+#ethIcon{
+     width: max(10rem,28%);
+     z-index: 1;
+     left: 32%;
+     top: 63%;
+}
+#dollarW{
+     width: max(8rem,20%);
+     z-index: 1;
+     left: 35%;
+     top: 85%;
+     transform: translate(-50%,-50%) rotateZ(-15deg);
+}
+#devveW{
+     width: max(10rem,25%);
+     z-index: 1;
+     left: 68%;
+     top: 78%;
+     transform: translate(-50%,-50%) rotateZ(-15deg);
+}
+.bottomLeftCardWhy p:first-child{
+    width: 75%;
+    font-size: max(2.5rem,1.8vw);
+    font-weight: 600;
+    color: #4A3232;
+    line-height: 107%;
+    transition: 0.2s ease-in-out;
+}
+.bottomLeftCardWhy p:last-child{
+position: absolute;
+bottom: 2rem;
+ width: 75%;
+    font-size: max(2.5rem,1.8vw);
+    font-weight: 600;
+    color: #4A3232;
+    line-height: 107%;
+    opacity: 0;
+      transition: 0.2s ease-in-out;
+}
+
+.bottomLeftCardWhy:hover{
+    height: 420%;
+}
+
+
+.bottomLeftCardWhy:hover p:first-child{
+    opacity: 0;
+}
+.bottomLeftCardWhy:hover p:last-child{
+    opacity: 1;
+}
+
+.bottomLeftCardWhy:hover #centerImgWallet{
+    top: 30%;
+    scale: 1.1;
+}
+.bottomLeftCardWhy:hover #ethIcon{
+    top: 15%;
+    left: 20%;
+    transform:translate(-50%,-50%) rotateZ(-20deg);
+     scale: 1.1;
+}
+.bottomLeftCardWhy:hover #devveW{
+    top: 20%;
+    left: 78%;
+    transform:translate(-50%,-50%) rotateZ(20deg);
+     scale: 1.1;
+}
+
+.bottomLeftCardWhy:hover #dollarW{
+    top: 55%;
+    left: 30%;
+    transform:translate(-50%,-50%) rotateZ(20deg);
+     scale: 1.52;
+}
+
+
+
+/* topLeftCardWhy */
+.topLeftCardWhy{
+    position: relative;
+    background-color: #FE6C25;
+    overflow: hidden;
+}
+
+.topLeftCardWhy p:first-child{
+    color: white;
+    font-weight: 600;
+     font-size: max(2.2rem,1.8vw);
+}
+
+.topLeftCardWhy p:last-child{
+    width: 80%;
+    position: absolute;
+    color: rgba(255, 255, 255, 0.948);
+    font-weight: 600;
+     font-size: max(2rem,1.5vw);
+     bottom:1.8rem;
+}
+
+.SecureIcon{
+    width: 70%;
+    position: absolute;
+    /* top: -10%;
+    right: -35%; */
+    top: 50%;
+    right: -35%;
+    transform: translateY(-50%);
+}
+
+.SideLigth{
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+
+.bottomRightCardWhy{
+    position: relative;
+    overflow: hidden;
+    background-color: #FFC8B8;
+}
+
+
+.bottomCardSvg{
+    position: absolute;
+    width: 30%;
+    right: 0%;
+    top: -20%;
+}
+
+.cardEgg{
+    position: absolute !important;
+    width: 40% !important;
+    height:auto !important ; 
+    bottom: -12% !important;
+    top: unset !important;
+    left: -8% !important;
+}
+
+.bottomRightCardWhy p:first-child{
+ font-size: max(2.5rem,1.8vw);
+    font-weight: 600;
+    color: #4A3232;
+}
+
+.bottomRightCardWhy p:last-child{
+    width: 50%;
+    position: absolute;
+    font-size: max(2.2rem,1.6vw);
+    font-weight: 600;
+    color: #4A3232;
+    text-align: right;
+    right: 8%;
+    bottom: 8%;
+    line-height: 107%;
+}
+
+
+@media (max-width:500px) {
+    .leftCardWhy, .rightCardWhy{
+        position: relative;
+        width: 90%;
+        height: 70rem;
+        left: unset;
+        right: unset;
+    }
+    .whySecParent{
+        height: auto;
+        flex-direction: column;
+        gap: 15px;
+    }
+    .whyTagLine {
+    width: 40%;
+    min-width: 31rem;
+    font-size: 2rem;
+    line-height: 155%;
+    }
+}

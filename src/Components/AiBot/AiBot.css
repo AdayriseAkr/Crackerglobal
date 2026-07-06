@@ -1,0 +1,222 @@
+.botActiveButton{
+    width: 5rem;
+    height: 5rem;
+    background-color: rgba(246, 94, 6, 0.349);
+    position: fixed;
+   top: 90%;
+   right: 2.5%;
+   border-radius: 30px;
+       transition:  0.6s cubic-bezier(0.34, 1.26, 0.64, 1);
+       border: 0px solid rgb(145, 120, 255);
+overflow: hidden;
+display: flex;
+justify-content: space-evenly;
+align-items: center;
+z-index: 9999999;
+
+}
+
+.tabTools{
+    width: 4rem;
+    height: 4rem;
+    background-color: rgba(0, 0, 0, 0.241);
+    border-radius: 100px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 100%;
+    z-index: 9999;
+    transition: scale 0.5s cubic-bezier(0, 0.55, 0.45, 1);
+/*     animation: iconView 1.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+ */}
+.tabTools svg{
+    width: 20px;
+}
+#closeTab{
+    background-color: rgba(255, 0, 0, 0.669);
+}
+.tabTools:hover{
+    cursor: pointer;
+    scale: 1.05;
+}
+@keyframes iconView {
+    100%{
+        margin-top:unset;
+    }
+}
+.mainAiChatBox{
+    width: 80%;
+    height: 70%;
+background: -webkit-linear-gradient(
+    0deg,
+    #ffa84568 0%,
+    #fe869e82 30%,
+    #ef7ac852 45%,
+    #9f83ed91 70%,
+    #43aeff54 85%
+  );
+  background-size: 300% 300%;
+
+	
+position: fixed;
+    top: 30%;
+    left: 50%;
+    transform: translateX(-50%) translateY(120%);
+    border-top-left-radius:50px ;
+    border-top-right-radius:50px ;
+    z-index: 9999;
+    overflow: hidden;
+    transition: all 0.6s cubic-bezier(0.5, 1, 0.89, 1), background 2s ease-in-out , width 1s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+
+
+
+.aiContentDiv{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    /* background-color: red; */
+    z-index: 99999 !important;
+    display: flex;
+    flex-direction: column;
+}
+
+.mainChatDataParent{
+    width: 100%;
+    height: 85%;
+   /*  background-color: pink; */
+    padding-inline: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding-block: 12px;
+    overflow-y: auto;
+}
+.mainChatDataParent::-webkit-scrollbar{
+    width: 1px;
+}
+.userQ , .aiResposne{
+    width: fit-content;
+    max-width: 70%;
+    height: auto;
+    padding: 15px;
+    background-color: rgba(245, 245, 245, 0.464);
+    border-radius: 20px;
+    border-top-right-radius: 0px;
+    align-self: flex-end;
+   
+    animation: chatPopUp 0.4s  ease-in-out forwards;
+    transform: rotateY(80deg);
+    filter:  blur(12px);
+    transition: blur 0.8s ease-in-out;
+
+}
+
+
+@keyframes chatPopUp {
+    0%{
+      filter:  blur(12px);
+        transform: rotateY(80deg);
+    }
+    100%{
+       filter:  blur(0px);
+       transform: rotateY(0deg);
+    }
+}
+
+.aiResposne{
+    align-self: flex-start;
+    line-height: 20px;
+    letter-spacing: 0.5px;
+    font-weight: 400;
+    border-top-left-radius: 0px;
+    border-top-right-radius: 20px;
+}
+
+.mainChatDataParent p{
+    font-size: 1.5rem;
+    color: rgba(56, 56, 56, 0.828);
+}
+
+ul{display: flex;
+flex-direction: column;
+gap: 15px;}
+li{
+    text-decoration: dotted;
+    list-style: none;
+}
+
+.mainAiChatBox > a{
+    color: rgb(255, 255, 255);
+    width: auto;
+    height: auto;
+    padding-inline: 10px;
+    padding-block: 5px;
+    background-color: rgba(99, 99, 99, 0.282);
+    border-radius: 20px;
+    text-decoration: none;
+
+    
+}
+
+
+
+
+
+
+
+
+.promptBoxParent{
+    width: 100%;
+    height: 15%;
+   /*  background-color: white; */
+     padding-inline: 20px;
+}
+.promptBox{
+    width: 100%;
+    height: 80%;
+    border-radius: 50px;
+    background-color: rgba(255, 255, 255, 0.934);
+    overflow: hidden;
+    box-shadow: 0px 8px 22px rgba(0, 0, 0, 0.155);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-right: 10px;
+}
+.promptBox input{
+    width: 90%;
+    height: 100%;
+    outline: none;
+    border: none;
+    padding-left: 25px;
+    color: rgba(0, 0, 0, 0.677);
+    font-size: 1.5rem;
+    background: transparent;
+}
+
+.promptBox input::placeholder{
+    font-size: 1.6rem;
+    color: rgba(0, 0, 0, 0.256);
+}
+
+.sendButton{
+    height: 80%;
+    width: 4.2%;
+    min-width: 6.2rem;
+    background-color: rgba(191, 191, 255, 0.51);
+    border-radius: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: 0.2s ease-in-out;
+}
+.sendButton img{
+    width: 50%;
+}
+
+.sendButton:hover{
+    cursor: pointer;
+    scale: 0.95;
+}

@@ -1,0 +1,155 @@
+.briefSectionParent{
+    position: relative;
+    width: 100%;
+    height: 130vh;
+    display: flex;
+   justify-content: space-evenly;
+   overflow: hidden !important;
+    align-items: center;
+    flex-direction: column;
+    padding-top: 120px;
+    background-color: #f8f8fb;
+   /* background-color: pink; */
+}
+
+.centerPara{
+    font-size: max(4rem,2.5vw);
+    width: 55%;
+    text-align: center;
+z-index: 999 !important;
+font-weight:500;
+   color: #684A4A;
+}
+
+.svg1,.svg2{
+    position: absolute;
+    
+}
+
+.svg1{
+    top: -5%;
+    right: 0%;
+}
+
+.svg2{
+    top: -5%;
+    left: 0%;
+}
+
+.productBox{
+    width: 90%;
+    height: 55rem;
+    /* background-color: red; */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+}
+.coin1 , .coin2{
+    position: absolute;
+    opacity: 0.8;
+  width: 15vw;
+}
+.coin1{
+    left: 2%;
+    top: 0%;
+    animation: coinFloat 20s ease-in-out infinite;
+}
+
+.coin2{
+    right: 2%;
+    top: 22%;
+    transform: rotateX(180deg)  rotateZ(180deg);
+}
+
+@keyframes coinFloat {
+    50%{
+        transform: translateY(-20px) rotateX(20deg) rotateZ(-20deg) rotateY(10deg);
+    }
+     80%{
+        transform: translateY(-20px) rotateX(-10deg) rotateZ(10deg) rotateY(-10deg);
+    }
+}
+
+
+.briefProductCard{
+    width: 28%;
+    height: 25vw;
+    background-color: #F6F0F2;
+    border-radius: 25px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    transform: translateY(200%);
+    filter: blur(200px);
+   
+}
+.briefProductCard img:first-child{
+    width: 60%;
+    height: 100%;
+    object-fit: contain;
+}
+
+
+
+
+@keyframes cardEntry {
+    0%{
+        opacity: 0;
+        transform: translateY(200%);
+         filter: blur(200px);
+    }
+    100%{
+        opacity: 1;
+        transform: translateY(0);
+         filter: blur(0px);
+    }
+
+}
+
+.tagHeading{
+    position: absolute;
+    left: 3%;
+    top: 3%;
+    width: auto;
+    padding-inline: 1.5rem;
+    padding-block: 0.8rem;
+    height: auto;
+    background-color: rgba(255, 255, 255, 0.461);
+    color: #fd722d92;
+    border-radius: 20px;
+    font-size: 1.3rem;
+    font-weight: 500;
+}
+
+@media (max-width:500px) {
+    .centerPara{
+        font-size: 2.45rem;
+        width: 85%;
+    }
+    .coin1, .coin2{
+        width: 30vw;
+    }
+    .coin1 {
+    left: -11%;
+    top: 6%;
+    }
+    .coin2 {
+    right: -5%;
+    top: 31%;
+    }
+    .productBox{
+        height: auto;
+        flex-direction: column;
+        padding-top: 100px;
+    }
+    .briefProductCard {
+    width: 100%;
+    height: 38rem;
+    }
+    .briefSectionParent{
+        height: auto;
+        padding-top: 205px;
+    }
+}

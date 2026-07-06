@@ -1,0 +1,510 @@
+.cardRotateParent {
+      position: relative;
+      width: 100%;
+      height: 150vh;
+      overflow: hidden;
+      background-color: transparent; /* pink-300 */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: sans-serif;
+      touch-action: pan-y; 
+     
+  }
+  .cardRotateParent > img{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 105%;
+    left: 0%;
+    z-index: 9;
+    opacity: 1;
+    user-select: none;
+    pointer-events: none;
+   /*  background-color: red; */
+    scale: 3.5;
+  }
+.dragMover {
+  position: fixed;
+  top: 0%;
+  left: 0%;
+  transform: translate(-50%, -50%);
+  width: max(10rem,7vw);
+  height: max(10rem,7vw);
+  /* background-color: red; */
+  z-index: 999;
+  display: flex;
+    justify-content: center;
+    align-items: center;
+  pointer-events: none; /* IMPORTANT */
+transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1) , opacity 0.5s ease-in-out;
+will-change: transform;
+}
+.dragCircle{
+    position: relative;
+    width: 60%;
+    height: 60%;
+    background-color: rgb(53, 52, 52);
+    border-radius: 50px;
+   display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-size: clamp(1rem, 1vw, 1.5rem);
+    
+}
+.dragCircle::before{
+    content: "";
+    position: absolute;
+    
+    left: -30%;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 15%;
+    height: 15%;
+    background-color: rgb(53, 52, 52);
+    border-radius: 50%;
+}
+.dragCircle::after{
+    content: "";
+    position: absolute;
+    
+    right: -30%;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 15%;
+    height: 15%;
+    background-color: rgb(53, 52, 52);
+    border-radius: 50%;
+}
+  .blurryBottom{
+    position: absolute;
+    bottom: -15%;
+    left: 0;
+    width: 100%;
+    height: 35rem;
+    z-index: 99;
+    background: linear-gradient(180deg, #fad3ad 1%, #F8F8FB 0%);
+filter: blur(18.5px);
+  }
+
+  /* Header Text */
+  .WhyWe {
+      position: absolute;
+      top: 7vh;
+      text-align: center;
+      z-index: 50;
+      pointer-events: none;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+  }
+
+  .WhyWe h1 {
+        font-size: max(2.5rem,1.8vw);
+        color: black !important;
+  }
+.WhyWe p{
+  text-align: center;
+    font-size: 1.5rem;
+    width: 36%;
+    color: rgba(0, 0, 0, 0.351);
+    line-height: 110%;
+}
+
+/* .WhyWe span{
+  color: rgb(254, 108, 37);
+} */
+  /* The Card Styling */
+  .rCard {
+      position: absolute;
+      top: 32%;
+      left: 40.3%;
+      
+      
+      /* --- ADJUST CARD SIZE HERE --- */
+      width: max(37rem,32vw);
+      height: max(49rem,41vw);
+      min-width: 20rem;  /* Card Width */
+      min-height: 28rem; /* Card Height */
+      
+      /* Center the element itself before transforms */
+      /* These margins MUST be negative half of the width/height above */
+      margin-left: -10rem; /* -1 * (width / 2) */
+      margin-top: -14rem;  /* -1 * (height / 2) */
+      
+      background-color: #2563eb; /* blue-600 */
+      border-radius: 30px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      
+/*       box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+ */      color: white;
+      user-select: none;
+      cursor: grab;
+      will-change: transform, opacity;
+      border: 1px solid rgba(255,255,255,0.15);
+      overflow: hidden;
+  }
+  
+  .rCard:active {
+      cursor: grabbing;
+  }
+
+  /* Typography */
+  .rCard h2 {
+      font-size: 2.25rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+  }
+
+  .rCard p {
+      font-size: 1.1rem;
+      text-align: center;
+      color: rgba(255, 255, 255, 0.85);
+  }
+
+  /* Navigation Buttons */
+  .controls {
+      position: absolute;
+      bottom: 5vh;
+      display: flex;
+      gap: 1.5rem;
+      z-index: 50;
+  }
+
+  .control-btn {
+      width: 3.5rem;
+      height: 3.5rem;
+      border-radius: 50%;
+      background-color: white;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #333;
+      font-weight: bold;
+      font-size: 1.2rem;
+      transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .control-btn:hover {
+      transform: scale(1.1);
+      box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+  }
+  
+  .control-btn:active {
+      transform: scale(0.95);
+  }
+
+  #rCard1 {
+    background-color: #E1E1E1; /* green-500 */
+  }
+  #rCard1 span{
+    position: absolute;
+    font-size: clamp(8.5rem, 7vw, 7vw);
+    font-weight: 600;
+    color: #D8D8D8;
+    bottom: 25%;
+    line-height: 0.7;
+    letter-spacing: -7px;
+  }
+
+  #rCard2 {
+    background-color: #e7790b; /* purple-600 */
+  }
+  #rCard6 {
+    background-color: #6840FF; /* teal-400 */
+  }
+  #rCard3 {
+    background-color: #090909; /* teal-400 */
+  }
+
+  .commCardCircle{
+    position: absolute;
+    width: max(58rem,40vw);
+    height: max(58rem,40vw);
+    left: 50%;
+    border-radius: 150%;
+    background-color: transparent;
+    bottom: -55%;
+    animation: rotateAnim 60s linear infinite;
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+
+  @keyframes rotateAnim {
+    from {
+      transform:translateX(-50%) rotate(0deg);
+    }
+    to {
+      transform: translateX(-50%) rotate(360deg);
+    }
+  }
+  .commCardCircle img{
+    position: absolute;
+    width: 8rem;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  #ci2{
+    left: 29%;
+    top: 6%;
+    transform:translateX(-50%) rotateZ(-20deg);
+  }
+  #ci3{
+    
+    left: 7%;
+    top: 27%;
+    transform: translateY(-50%) rotateZ(-45deg);
+  }
+  #ci4{
+    
+    left: 0%;
+    top: 50%;
+    transform: translateY(-50%) rotateZ(-90deg);
+  }
+#ci5{
+  left: unset;
+   right: 22%;
+    top: 13%;
+    transform: translateY(-50%) rotateZ(12deg);
+}
+#ci6{
+  left: unset;
+  
+   right: 7%;
+    top: 27%;
+    transform: translateY(-50%) rotateZ(45deg);
+}
+#ci1{
+  left: unset;
+  right: 0%;
+  
+   top: 50%;
+    transform: translateY(-50%) rotateZ(90deg);
+}
+#ci8{
+  left: 29%;
+    bottom: 6%;
+    transform:translateX(-50%) rotateZ(-145deg);
+}
+#ci9{
+  
+    left: 7%;
+    bottom: 27%;
+    transform: translateY(50%) rotateZ(242deg);
+}
+#ci10{
+  top: unset;
+  
+    left: 0%;
+    bottom: 0%;
+    
+}
+#ci7{
+  top: unset;
+  left: 50%;
+  bottom: 0%;
+ 
+ 
+    bottom: 0%;
+    transform: translateX(-50%) rotateZ(180deg);
+}
+#ci11{
+  left: unset;
+   right: 22%;
+    bottom: 13%;
+    transform: translateY(50%) rotateZ(-182deg);
+}
+#ci12{
+  left: unset;
+   right: 7%;
+    bottom: 27%;
+    transform: translateY(50%) rotateZ(-45deg);
+}
+.commJoin{
+  width: 12rem;
+  height: 4.5rem;
+  position: absolute;
+  bottom: 10%;
+  left: 50%;
+  transform: translateX(-50%);
+  border-radius: 5px;
+  border: none;
+  outline: none; 
+  background-color: white; 
+  font-size: 2.5rem;
+  font-weight: 600;
+}
+.commonCardContent{
+  width: 100%;
+  /* background-color: pink; */
+  height: 50%;
+  position: absolute;
+  top: 0;
+  padding-top: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5rem;
+}
+.tagLines{
+  width: 100%;
+  height: auto;
+  display: flex;
+  gap: 5px;
+  justify-content: center;
+  align-items: center;
+  /* background-color: yellow; */
+}
+.tagDiv{
+  font-size: max(1.5rem,0.8vw);
+ 
+  color: white;
+  padding: 8px;
+  padding-inline: 10px;
+  background-color:#7A57FF ;
+  border-radius: 5px;
+}
+
+.mainTagAndDesc{
+  width: 100%;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+
+}
+.mainTagAndDesc h1{
+  font-size: max(4rem,3vw);
+}
+.mainTagAndDesc p{
+  width: 80%;
+  font-size: max(1.5rem,1.3vw);
+}
+.imgSlideShow{
+  position: absolute;
+  width: 95%;
+  height: 40%;
+  background-color: rgb(245, 245, 245);
+  border-radius: 20px;
+  bottom: 2%;
+  overflow: hidden;
+}
+#roboFair1,
+#roboFair2 {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+
+  animation-duration: 8s;
+  animation-iteration-count: infinite;
+  animation-timing-function: ease-in-out;
+}
+
+/* Image 1 */
+#roboFair1 {
+  animation-name: crossFade1;
+}
+
+/* Image 2 */
+#roboFair2 {
+  animation-name: crossFade2;
+}
+
+@keyframes crossFade1 {
+  0%   { opacity: 0; }
+  10%  { opacity: 1; }   /* fade in */
+  40%  { opacity: 1; }   /* stay */
+  50%  { opacity: 0; }   /* fade out */
+  100% { opacity: 0; }
+}
+
+@keyframes crossFade2 {
+  0%   { opacity: 0; }
+  50%  { opacity: 0; }
+  60%  { opacity: 1; }   /* fade in */
+  90%  { opacity: 1; }   /* stay */
+  100% { opacity: 0; }   /* fade out */
+}
+
+
+.blackCardGraphics{
+  position: absolute;
+  width: 100%;
+  height: 35%;
+  /* background-color: red; */
+  bottom: 2% !important;
+  
+}
+.blackCardRect1{
+  position: absolute;
+  width: max(11rem,9vw);
+  height: 70%;
+  background-color: rgb(80, 80, 80);
+  left: 50%;
+  transform: translateX(-50%);
+  box-shadow: 1px 1px 15px rgba(0, 0, 0, 0.316);
+  border-radius: 10px;
+  z-index: 9;
+}
+#bcard2{
+  left: 25%;
+  top: 7%;
+  transform: translateX(-50%) rotateZ(-5deg);
+  z-index: 1;
+}
+#bcard3{
+  left: 75%;
+  top: 7%;
+  transform: translateX(-50%) rotateZ(5deg);
+  z-index: 1;
+}
+#bcard4{
+  left: 10%;
+  top: 25%;
+  transform: translateX(-50%) rotateZ(-10deg);
+  z-index: 0;
+}
+#bcard5{
+  left: 90%;
+  top: 25%;
+  transform: translateX(-50%) rotateZ(10deg);
+  z-index: 0;
+}
+
+#backGrad{
+  position: absolute;
+  object-fit: cover;
+  /* height: 20%;
+  width: 50%; */
+  width: 40%;
+  height: auto;
+  top: 12%;
+  left: 40%;
+  opacity: 0.5;
+/*   transform: translateX(-50%);
+ */  z-index: 9;
+}
+@media (max-width:500px) {
+  .commCardCircle{
+    bottom: -58%;
+  }
+  .rCard{
+    margin-left: -37%;
+    height: 58rem;
+  }
+}
