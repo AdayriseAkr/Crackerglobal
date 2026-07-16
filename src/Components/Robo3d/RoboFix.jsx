@@ -44,6 +44,16 @@ function EntryAnimationController({
 const Robot = memo(function Robot({ isHovering, progressRef }) {
   const { scene } = useGLTF(roboModel);
   const headRef = useRef(null);
+  const rightArmRef = useRef(null);
+  const leftArmRef = useRef(null);
+  const armBaseQuat = useRef({ right: new THREE.Quaternion(), left: new THREE.Quaternion() });
+  const armHelpers = useRef({
+    axisX: new THREE.Vector3(1, 0, 0),
+    axisY: new THREE.Vector3(0, 1, 0),
+    delta: new THREE.Quaternion(),
+    rightTarget: new THREE.Quaternion(),
+    leftTarget: new THREE.Quaternion(),
+  });
  const visualXOffset = -1.4; // 👈 tweak once, done forever
   useLayoutEffect(() => {
   // 🔹 Always reset first (prevents refresh / hot-reload bugs)
@@ -68,6 +78,8 @@ scene.position.x = -center.x + visualXOffset;
 
   scene.traverse((node) => {
     if (node.name === "Head") headRef.current = node;
+    if (node.name === "Right_joint") rightArmRef.current = node;
+    if (node.name === "lefy_joint") leftArmRef.current = node;
 
     if (node.isMesh && node.material) {
       node.material.transparent = true;
@@ -79,6 +91,12 @@ scene.position.x = -center.x + visualXOffset;
       }
     }
   });
+
+  // Remember the rig's resting arm pose (as a quaternion, not Euler angles)
+  // so the look-driven motion below can compose a small offset on top of it
+  // without fighting the rig's own built-in twist at rest.
+  if (rightArmRef.current) armBaseQuat.current.right.copy(rightArmRef.current.quaternion);
+  if (leftArmRef.current) armBaseQuat.current.left.copy(leftArmRef.current.quaternion);
 }, [scene]);
 
 
@@ -109,9 +127,39 @@ scene.position.x = -center.x + visualXOffset;
 
     headRef.current.rotation.x = THREE.MathUtils.lerp(
       headRef.current.rotation.x,
-      -y, 
+      -y,
       0.1
     );
+
+    // ARM FOLLOW — natural body language matching where the head looks:
+    // looking up droops both arms down a little, center is the neutral
+    // resting pose, and looking to a side gently swings both arms that way.
+    //
+    // The rig's rest pose already carries a large built-in twist on these
+    // joints, so nudging rotation.x/rotation.z as raw Euler numbers doesn't
+    // hinge the arm cleanly — the axes entangle and it sweeps in an arc
+    // ("circular") instead. Composing a small delta quaternion around a
+    // fixed axis (in the joint's constant parent frame) on top of the
+    // rest-pose quaternion avoids that entirely.
+    if (rightArmRef.current && leftArmRef.current) {
+      const droop = Math.max(y, 0) * 0.6;
+      const sway = x * 0.5;
+      const { axisX, axisY, delta, rightTarget, leftTarget } = armHelpers.current;
+
+      rightTarget.copy(armBaseQuat.current.right);
+      delta.setFromAxisAngle(axisX, droop);
+      rightTarget.premultiply(delta);
+      delta.setFromAxisAngle(axisY, sway);
+      rightTarget.premultiply(delta);
+      rightArmRef.current.quaternion.slerp(rightTarget, 0.08);
+
+      leftTarget.copy(armBaseQuat.current.left);
+      delta.setFromAxisAngle(axisX, droop);
+      leftTarget.premultiply(delta);
+      delta.setFromAxisAngle(axisY, sway);
+      leftTarget.premultiply(delta);
+      leftArmRef.current.quaternion.slerp(leftTarget, 0.08);
+    }
   });
 
   return <primitive object={scene} />;

@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import gsap from "gsap";
 import Draggable from "gsap/Draggable";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import "./CardRotate.css";
 import { CustomEase } from "gsap/CustomEase";
 import circleR from "../../assets/circularR.svg"
@@ -17,7 +18,7 @@ import backGradient from "../../assets/FeatureGradient.png"
 import useTextSplitAnim from "../CustomHook/useTextSplitAnim.jsx";
 
 
-gsap.registerPlugin(Draggable, CustomEase);
+gsap.registerPlugin(Draggable, CustomEase, ScrollTrigger);
 CustomEase.create(
   "osmoEase",
   "0.25, 1, 0.5, 1"
@@ -109,6 +110,44 @@ const CardRotator = () => {
 
     updateLayout();
 
+    // Entrance: cards fade in and rise into place, staggered, the one time
+    // the section first scrolls into view. Only opacity + y are animated
+    // (both GPU-composited, no layout/paint cost), and it's a single
+    // ScrollTrigger for the whole group rather than one per card.
+    gsap.set(cards, { opacity: 0, y: 140 });
+    const revealTween = gsap.to(cards, {
+      opacity: 1,
+      y: 0,
+      duration: 1.6,
+      ease: "power2.out",
+      stagger: 0.25,
+      scrollTrigger: {
+        trigger: container,
+        start: "top 75%",
+        once: true,
+      },
+    });
+
+    // Bottom fade grows taller (scaled up from the bottom edge) as the user
+    // scrolls the section's tail end toward Community, so the cards
+    // progressively dissolve into white rather than being cut by a fixed
+    // band. scaleY (not height) so it's a GPU transform, not a reflow.
+    const blurryBottomEl = container.querySelector(".blurryBottom");
+    let bottomFadeTween;
+    if (blurryBottomEl) {
+      gsap.set(blurryBottomEl, { scaleY: 0.3 });
+      bottomFadeTween = gsap.to(blurryBottomEl, {
+        scaleY: 1,
+        ease: "none",
+        scrollTrigger: {
+          trigger: container,
+          start: "bottom 100%",
+          end: "bottom 20%",
+          scrub: true,
+        },
+      });
+    }
+
     container.rotateTo = (dir) => {
       const currentX = gsap.getProperty(proxy, "x");
       const targetX =
@@ -125,7 +164,13 @@ const CardRotator = () => {
       });
     };
 
-    return () => draggable.kill();
+    return () => {
+      draggable.kill();
+      revealTween.scrollTrigger?.kill();
+      revealTween.kill();
+      bottomFadeTween?.scrollTrigger?.kill();
+      bottomFadeTween?.kill();
+    };
   }, []);
 
 
@@ -311,6 +356,8 @@ useTextSplitAnim(animRef2, { stagger: 40, startDelay: 300 });
        </div>
        <button className="commJoin" type="button">Join</button>
       </div>
+
+      <div className="blurryBottom"></div>
 
      {/*  <div className="controls">
         <button onClick={() => containerRef.current.rotateTo("prev")}>

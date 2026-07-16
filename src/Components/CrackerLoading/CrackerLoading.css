@@ -62,7 +62,7 @@ background: #ffeec3e4;
 
 
 .CrackerLoadingParent2{
-    position: relative;
+    position: fixed;
     background-color: white;
     display: flex;
     flex-direction: row;

@@ -14,6 +14,8 @@ import { motion } from "framer-motion";
 import logo from "../../assets/MainLogo.png";
 import CardRotate from "../CardRotate/CardRotate.jsx";
 
+const INTRO_PLAYED_KEY = "crackerIntroPlayed";
+
 export default function HeroSection({ loadProp }) {
   const [loaded, setLoaded] = useState(false);
   const [expend, setExpend] = useState(false);
@@ -37,13 +39,23 @@ export default function HeroSection({ loadProp }) {
   useTextSplitAnim(pRef, { stagger: 20, startDelay: 400 });
 
   useEffect(() => {
-    setTimeout(() => {
-      setLoaded(true);
-    }, 3000);
+    window.scrollTo(0, 0);
   }, []);
 
   useEffect(() => {
-    if (!showLoader) loadProp();
+    const introAlreadyPlayed = sessionStorage.getItem(INTRO_PLAYED_KEY) === "true";
+    const timer = setTimeout(() => {
+      setLoaded(true);
+      sessionStorage.setItem(INTRO_PLAYED_KEY, "true");
+    }, introAlreadyPlayed ? 0 : 3000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    if (!showLoader) {
+      loadProp();
+      window.scrollTo(0, 0);
+    }
 
     if (showLoader) {
       document.body.style.overflow = "hidden";

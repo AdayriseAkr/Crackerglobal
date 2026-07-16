@@ -79,13 +79,19 @@ will-change: transform;
 }
   .blurryBottom{
     position: absolute;
-    bottom: -15%;
-    left: 0;
-    width: 100%;
-    height: 35rem;
+    bottom: 0;
+    /* Wider than the container and inset negative so the blur's own
+       soft edges land outside the clipped (overflow:hidden) area —
+       otherwise blur() softens the left/right edges too, and the
+       card peeks through in the gap that creates. */
+    left: -10%;
+    width: 120%;
+    height: 40rem;
     z-index: 99;
-    background: linear-gradient(180deg, #fad3ad 1%, #F8F8FB 0%);
-filter: blur(18.5px);
+    pointer-events: none;
+    background: linear-gradient(180deg, transparent 0%, #F8F8FB 65%);
+    filter: blur(12px);
+    transform-origin: 50% 100%;
   }
 
   /* Header Text */
@@ -123,20 +129,24 @@ filter: blur(18.5px);
   .rCard {
       position: absolute;
       top: 32%;
-      left: 40.3%;
-      
-      
+      left: 50%;
+
+
       /* --- ADJUST CARD SIZE HERE --- */
       width: max(37rem,32vw);
       height: max(49rem,41vw);
       min-width: 20rem;  /* Card Width */
       min-height: 28rem; /* Card Height */
-      
-      /* Center the element itself before transforms */
-      /* These margins MUST be negative half of the width/height above */
-      margin-left: -10rem; /* -1 * (width / 2) */
-      margin-top: -14rem;  /* -1 * (height / 2) */
-      
+
+      /* Horizontal center of the element, derived with calc() from the
+         width above so it can't drift out of sync across breakpoints
+         (was a hardcoded -10rem that only matched one specific viewport
+         width). Vertical offset stays a fixed -14rem on purpose — it's not
+         true vertical centering, it's what keeps the card clear of the
+         "Why Choose Us" headline above. */
+      margin-left: calc(max(37rem, 32vw) / -2);
+      margin-top: -14rem;
+
       background-color: #2563eb; /* blue-600 */
       border-radius: 30px;
       display: flex;
@@ -504,7 +514,6 @@ filter: blur(18.5px);
     bottom: -58%;
   }
   .rCard{
-    margin-left: -37%;
     height: 58rem;
   }
 }
