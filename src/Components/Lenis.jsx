@@ -1,6 +1,10 @@
 import { useEffect } from "react";
 import Lenis from "@studio-freight/lenis";
 
+// Module-level singleton so components outside this provider (e.g. modals
+// rendered via a portal) can stop/start the smooth-scroll while open.
+export const lenisRef = { current: null };
+
 export default function SmoothScrollProvider({ children }) {
   useEffect(() => {
     const lenis = new Lenis({
@@ -9,6 +13,7 @@ export default function SmoothScrollProvider({ children }) {
       smoothWheel: true,
       smoothTouch: false,
     });
+    lenisRef.current = lenis;
 
     function raf(time) {
       lenis.raf(time);
@@ -16,7 +21,10 @@ export default function SmoothScrollProvider({ children }) {
     }
     requestAnimationFrame(raf);
 
-    return () => lenis.destroy();
+    return () => {
+      lenisRef.current = null;
+      lenis.destroy();
+    };
   }, []);
 
   return children;

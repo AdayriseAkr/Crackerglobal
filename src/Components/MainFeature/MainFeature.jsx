@@ -1,6 +1,6 @@
 import "./MainFeature.css";
 import FeatureGradient from "../../assets/FeatureGradient.png";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useRef, useState, useMemo } from "react";
 import useInView from "../CustomHook/useInView.jsx";
 import topLeft from "../../assets/topLeft.png";
@@ -8,6 +8,24 @@ import bottomLeft from "../../assets/bottomLeft.png";
 import topRight from "../../assets/topRight.png";
 import bottomRight from "../../assets/bottomRight.png";
 import useTextSplitAnim from "../CustomHook/useTextSplitAnim.jsx";
+import FeatureDialog from "./FeatureDialog.jsx";
+import featureDialogData from "./featureDialogData.js";
+
+function ExpandButton({ onClick, label }) {
+  return (
+    <button className="cardExpandBtn" onClick={onClick} aria-label={label}>
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+        <path
+          d="M5.5 1H1V5.5M8.5 13H13V8.5M13 1L8 6M1 13L6 8"
+          stroke="currentColor"
+          strokeWidth="1.4"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+    </button>
+  );
+}
 
 export default function MainFeature() {
   const sectionRef = useRef(null);
@@ -15,6 +33,22 @@ export default function MainFeature() {
   const pRef = useRef(null);
   const isVisible = useInView(sectionRef, 0.3);
   const [playedOnce, setPlayedOnce] = useState(false);
+  const [activeCardKey, setActiveCardKey] = useState(null);
+  const [dialogOrigin, setDialogOrigin] = useState(null);
+
+  // Captures the clicked card's on-screen rect so the dialog can grow out of
+  // that exact spot (Dock/genie-style expand) instead of just fading in.
+  const openCard = (key, event) => {
+    const cardEl = event.currentTarget.parentElement;
+    const rect = cardEl.getBoundingClientRect();
+    setDialogOrigin({
+      x: rect.left + rect.width / 2,
+      y: rect.top + rect.height / 2,
+      width: rect.width,
+      height: rect.height,
+    });
+    setActiveCardKey(key);
+  };
 
   useEffect(() => {
     if (isVisible && !playedOnce) {
@@ -113,6 +147,10 @@ char.style.filter="blur(0px)"
               alt=""
               srcset=""
             />
+            <ExpandButton
+              label="Expand Verified Founders"
+              onClick={(e) => openCard("verifiedFounders", e)}
+            />
             <div className="blTag">
               <p>Verified Founders</p>
             </div>
@@ -125,6 +163,10 @@ char.style.filter="blur(0px)"
               alt=""
               srcset=""
             />
+            <ExpandButton
+              label="Expand Permanently Locked Liquidity"
+              onClick={(e) => openCard("lockedLiquidity", e)}
+            />
             <div className="blTag">
               <p>Permanently Locked Liquidity</p>
             </div>
@@ -132,6 +174,10 @@ char.style.filter="blur(0px)"
         </div>
         <div className="rightCards">
           <div className="topRightCard">
+            <ExpandButton
+              label="Expand Auction Based Launch Access"
+              onClick={(e) => openCard("auctionAccess", e)}
+            />
             <div className="blTag">
               <p>Auction Based Launch Access</p>
             </div>
@@ -146,6 +192,10 @@ char.style.filter="blur(0px)"
             style={gridAnimateStyle}
             className="bottomRightCard"
           >
+            <ExpandButton
+              label="Expand Built In Stability Reserve"
+              onClick={(e) => openCard("stabilityReserve", e)}
+            />
             <div className="blTag">
               <p>Built In Stability Reserve</p>
             </div>
@@ -158,6 +208,17 @@ char.style.filter="blur(0px)"
           </div>
         </div>
       </div>
+
+      <AnimatePresence>
+        {activeCardKey && (
+          <FeatureDialog
+            key={activeCardKey}
+            card={featureDialogData[activeCardKey]}
+            origin={dialogOrigin}
+            onClose={() => setActiveCardKey(null)}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 }
