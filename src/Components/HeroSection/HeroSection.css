@@ -55,19 +55,26 @@
 .heroTagLine p:last-child{
     font-size: max(1.5rem,1vw);
     margin-top: -0.8%;
-    color: rgba(0, 0, 0, 0.417);
+    color: rgba(0, 0, 0, 0.466);
     width: 72%;
     font-weight: normal;
 }
 
-.ctaBtn{
+.heroCtaRow{
     position: absolute;
+    bottom: 3%;
+    left: 15px;
+    z-index: 999;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.ctaBtn{
     height: 5rem;
     width: auto;
     background-color: #ef5508;
-    z-index: 999;
-    bottom: 3%;
-    
+
     border-radius: 30px;
     border: none;
     cursor: pointer;
@@ -77,6 +84,26 @@
     font-weight: bold;
     padding-inline: 20px;
     font-size: 1.5rem;
+}
+
+.walletBtn{
+    height: 5rem;
+    width: 5rem;
+    flex-shrink: 0;
+    background-color: #ffffff;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    outline: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+.walletBtn svg{
+    width: 1.8rem;
+    height: 1.8rem;
 }
 
 .heroBreifBox{
@@ -135,11 +162,23 @@ cursor: pointer;
     .heroBreifBox{
         display: none;
     }
-    .ctaBtn{
+    .heroCtaRow{
         bottom: unset;
         top: 27%;
+        left: 15px;
+        gap: 0.6rem;
+    }
+    .ctaBtn{
         font-size: 1rem;
         height: 3.3rem;
         padding-inline: 10px;
+    }
+    .walletBtn{
+        height: 3.3rem;
+        width: 3.3rem;
+    }
+    .walletBtn svg{
+        width: 1.3rem;
+        height: 1.3rem;
     }
 }

@@ -33,10 +33,10 @@ export default function HeroSection({ loadProp }) {
     }
   }, [isVisible, playedOnce]);
 
-  useTextSplitAnim(tagRef, { stagger: 20, startDelay: 10 });
-  useTextSplitAnim(tagRef2, { stagger: 20, startDelay: 220 });
-  useTextSplitAnim(tagRef3, { stagger: 20, startDelay: 320 });
-  useTextSplitAnim(pRef, { stagger: 20, startDelay: 400 });
+  const tagAnim = useTextSplitAnim(tagRef, { stagger: 20, startDelay: 10, autoPlay: false });
+  const tag2Anim = useTextSplitAnim(tagRef2, { stagger: 20, startDelay: 220, autoPlay: false });
+  const tag3Anim = useTextSplitAnim(tagRef3, { stagger: 20, startDelay: 320, autoPlay: false });
+  const pAnim = useTextSplitAnim(pRef, { stagger: 20, startDelay: 400, autoPlay: false });
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -55,6 +55,10 @@ export default function HeroSection({ loadProp }) {
     if (!showLoader) {
       loadProp();
       window.scrollTo(0, 0);
+      tagAnim.play();
+      tag2Anim.play();
+      tag3Anim.play();
+      pAnim.play();
     }
 
     if (showLoader) {
@@ -85,29 +89,48 @@ export default function HeroSection({ loadProp }) {
           className="transitionBlock"
         ></div>
         <div className="heroTagLine">
-          <p ref={tagRef}>FAIR LAUNCHES</p>
-          <p className="tag2nd" ref={tagRef2}>
-            REAL TEAMS
+          <p ref={tagRef}>CRACK THE EGG</p>
+          <p className="tag2nd" ref={tagRef2} style={{ color: "#ef5508d8" }}>
+            A MEME ECOSYSTEM
           </p>
-          <p className="tag2nd" ref={tagRef3} style={{ color: "#ef5508d8" }}>
-            BUILT FOR LAST
+          <p className="tag2nd" ref={tagRef3}>
+            BUILT TO LAST
           </p>
           <p ref={pRef}>
-            Verified identity. Burned liquidity. Devve's only launchpad.
+            Built US-compliant, with the user experience the space forgot.
           </p>
         </div>
-        <motion.button
-          initial={{ opacity: 0, transform: "translateY(120%)" }}
-          animate={{ opacity: 1, transform: "translateY(0%)" }}
-          transition={{
-            duration: 1,
-            ease: [0.34, 1.56, 0.64, 1], // same cubic-bezier
-            delay: 10.15, // 👈 little delay
-          }}
-          className="ctaBtn"
-        >
-          Launch on Cracker
-        </motion.button>
+        <div className="heroCtaRow">
+          <motion.button
+            initial={{ opacity: 0, transform: "translateY(120%)" }}
+            animate={{ opacity: 1, transform: "translateY(0%)" }}
+            transition={{
+              duration: 1,
+              ease: [0.34, 1.56, 0.64, 1], // same cubic-bezier
+              delay: 10.15, //
+            }}
+            className="ctaBtn"
+          >
+            Launch on Cracker
+          </motion.button>
+          <motion.button
+            initial={{ opacity: 0, transform: "translateY(120%)" }}
+            animate={{ opacity: 1, transform: "translateY(0%)" }}
+            transition={{
+              duration: 1,
+              ease: [0.34, 1.56, 0.64, 1],
+              delay: 10.25,
+            }}
+            className="walletBtn"
+            aria-label="Wallet"
+          >
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="3" y="6" width="18" height="13" rx="2.5" stroke="#ef5508" strokeWidth="1.7" />
+              <path d="M3 10h18" stroke="#ef5508" strokeWidth="1.7" />
+              <circle cx="16.5" cy="14" r="1.4" fill="#ef5508" />
+            </svg>
+          </motion.button>
+        </div>
         <motion.div
           initial={{ opacity: 0, transform: "translateX(120%)" }}
           animate={{ opacity: 1, transform: "translateX(0%)" }}
