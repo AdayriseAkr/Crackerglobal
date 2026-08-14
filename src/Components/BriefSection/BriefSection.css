@@ -1,3 +1,11 @@
+/* Wrapper that does NOT clip, so the scroll cue can sit outside the section's
+   own bounds. Positioned, so the cue still anchors to this section rather than
+   to the page. */
+.briefSectionShell{
+    position: relative;
+    width: 100%;
+}
+
 .briefSectionParent{
     position: relative;
     width: 100%;
@@ -13,9 +21,6 @@
 }
 
 .centerPara{
-    /* Also makes the z-index below actually apply — it was inert while this
-       was static, so the copy sat in the same layer as the blurred blobs. */
-    position: relative;
     font-size: max(4rem,2.5vw);
     width: 55%;
     text-align: center;
@@ -24,38 +29,36 @@ font-weight:500;
    color: #684A4A;
 }
 
-/* Scroll cue, to the right of the copy. Anchored to the paragraph rather than
-   to the section, so it tracks the text wherever that lands — it used to live
-   in HeroSection at `top: 258%` against <body>, which pinned it to a fixed
-   multiple of the viewport and left it unrelated to any section. */
+/* Scroll cue, top-right of the section. Measured from the shell's edges, so it
+   stays tied to this section — the old `.sd` sat at `top: 258%` against <body>,
+   a fixed multiple of the viewport unrelated to any section. Both offsets may
+   go negative: the shell doesn't clip, so the cue can overhang deliberately. */
 .briefScrollCue{
     /* The three knobs the dev tuner writes to. Keep them as bare custom
        properties — the tuner reads its starting values straight off these, so
        whatever is set here is the single source of truth. */
     --cue-width: 26vw;
-    --cue-x: 2rem;   /* gap past the paragraph's right edge */
-    --cue-y: -12rem; /* offset from the paragraph's vertical centre, up is negative */
+    --cue-x: 2rem;  /* in from the right edge */
+    --cue-y: 6vh;   /* down from the top of the section */
 
     position: absolute;
-    left: calc(100% + var(--cue-x));
-    top: 50%;
-    /* margin, not transform — transform is already carrying the reveal, and
-       folding the offset into it would make the two fight. */
-    margin-top: var(--cue-y);
+    right: var(--cue-x);
+    top: var(--cue-y);
     width: var(--cue-width);
     min-width: 16rem;
     max-width: 42rem;
     height: auto;
+    z-index: 99;
     pointer-events: none;
     user-select: none;
     opacity: 0;
-    transform: translateY(-50%) translateX(80px);
+    transform: translateX(80px);
     transition: transform 1.6s ease-in-out, opacity 1.8s ease-in-out;
 }
 
 .briefScrollCue.is-in{
     opacity: 1;
-    transform: translateY(-50%) translateX(0);
+    transform: translateX(0);
 }
 
 .svg1,.svg2{

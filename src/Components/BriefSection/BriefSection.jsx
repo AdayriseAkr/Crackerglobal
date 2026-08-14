@@ -13,8 +13,9 @@ import DevTuner from "../DevTuner/DevTuner.jsx";
 // listed here, so this can't drift out of step with BriefSection.css.
 const CUE_CONTROLS = [
   { prop: "--cue-width", label: "Size", min: 8, max: 48, step: 0.5, unit: "vw" },
-  { prop: "--cue-x", label: "Right offset", min: -30, max: 40, step: 0.5, unit: "rem" },
-  { prop: "--cue-y", label: "Up / down", min: -60, max: 30, step: 0.5, unit: "rem" },
+  { prop: "--cue-x", label: "In from right", min: -30, max: 60, step: 0.5, unit: "rem" },
+  // Negative overhangs the top of the section, which the shell allows.
+  { prop: "--cue-y", label: "Down from top", min: -40, max: 120, step: 0.5, unit: "vh" },
 ];
 
 export default function BriefSection() {
@@ -52,6 +53,7 @@ export default function BriefSection() {
 
 
     return(
+        <div className="briefSectionShell">
         <div className="briefSectionParent">
             <svg className="svg1" width="819" height="819" viewBox="0 0 819 819" fill="none" xmlns="http://www.w3.org/2000/svg">
 <g filter="url(#filter0_f_3806_495)">
@@ -89,26 +91,7 @@ export default function BriefSection() {
            <div className="centerPara">
              <p ref={pRef}>A COMPLETE WEB3 ECOSYSTEM WITH
 DEX, WALLET, AND <span style={{color:"#FE6C25"}}>LAUNCHPAD</span>. DESIGNED FOR FAIR MARKETS.</p>
-             <img
-               ref={cueRef}
-               className={`briefScrollCue${cueShown ? " is-in" : ""}`}
-               src={scrollCue}
-               alt=""
-               aria-hidden="true"
-               draggable="false"
-             />
            </div>
-
-           {/* Vite swaps import.meta.env.DEV for `false` in a production
-               build, so this and the DevTuner module drop out entirely. */}
-           {import.meta.env.DEV && (
-             <DevTuner
-               title="Scroll cue"
-               targetRef={cueRef}
-               controls={CUE_CONTROLS}
-               storageKey="cracker:cueTuner"
-             />
-           )}
 
            <div ref={cardRef} className="productBox">
             {
@@ -124,5 +107,32 @@ DEX, WALLET, AND <span style={{color:"#FE6C25"}}>LAUNCHPAD</span>. DESIGNED FOR 
             }
            </div>
             </div>
+
+           {/* Outside .briefSectionParent on purpose: that element carries
+               `overflow: hidden !important` to clip the blurred blobs and the
+               coins, which also sheared the top off this. The shell is still
+               scoped to this section, so the cue keeps moving with it — going
+               body-level instead is what left the old `.sd` pinned to a fixed
+               multiple of the viewport. */}
+           <img
+             ref={cueRef}
+             className={`briefScrollCue${cueShown ? " is-in" : ""}`}
+             src={scrollCue}
+             alt=""
+             aria-hidden="true"
+             draggable="false"
+           />
+
+           {/* Vite swaps import.meta.env.DEV for `false` in a production
+               build, so this and the DevTuner module drop out entirely. */}
+           {import.meta.env.DEV && (
+             <DevTuner
+               title="Scroll cue"
+               targetRef={cueRef}
+               controls={CUE_CONTROLS}
+               storageKey="cracker:cueTuner"
+             />
+           )}
+           </div>
     )
 }
