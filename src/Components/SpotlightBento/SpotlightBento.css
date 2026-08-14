@@ -198,14 +198,16 @@
   clip-path: inset(0 0 100% 0 round 20px);
 }
 
-.bentoGrid.is-in .bentoCard {
+/* Set per card by its own IntersectionObserver — see the entrance effect in
+   SpotlightBento.jsx. Two classes beat the one-class direction rules above. */
+.bentoCard.is-in {
   opacity: 1;
   clip-path: inset(0 0 0 0 round 20px);
 }
 
-/* Drop the clip once every card has landed, so it stops cutting off the
+/* Dropped once that card has landed, so it stops cutting off the card's
    proximity shadow. inset(0) and none look identical, so the swap is invisible. */
-.bentoGrid.is-done .bentoCard {
+.bentoCard.is-done {
   clip-path: none;
 }
 
@@ -466,9 +468,11 @@
     display: none;
   }
 
-  /* Show the entrance's end state immediately rather than animating to it. */
+  /* Show the entrance's end state immediately rather than animating to it.
+     The observer bails out under reduced motion, so is-in/is-done never
+     arrive and this has to stand on its own. */
   .bentoCard,
-  .bentoGrid.is-in .bentoCard {
+  .bentoCard.is-in {
     opacity: 1;
     clip-path: none;
     transition: none;

@@ -33,12 +33,10 @@ const PARTICLE_EXIT_MS = 340;
 // Scroll-in entrance. Each card expands from zero along one axis (see `enter`
 // in bentoData.js); the stagger walks down the array so they don't land at once.
 const ENTER_STAGGER_MS = 80;
-// Must match --enter-duration in SpotlightBento.css.
+// Must match --enter-duration in SpotlightBento.css — it's what decides when a
+// card's clip-path is dropped, and leaving that clip at inset(0) would keep
+// cutting off the card's proximity shadow.
 const ENTER_DURATION_MS = 600;
-// Once the last card has landed, the clip-path is dropped entirely — leaving it
-// at inset(0) would keep clipping each card's proximity shadow.
-const ENTER_SETTLE_MS =
-  ENTER_DURATION_MS + ENTER_STAGGER_MS * bentoCards.length + 100;
 
 const lerp = (a, b, t) => a + (b - a) * t;
 const clamp = (v, min, max) => Math.min(max, Math.max(min, v));
@@ -129,7 +127,6 @@ function BentoParticles({ active, count }) {
 
 export default function SpotlightBento() {
   const sectionRef = useRef(null);
-  const gridRef = useRef(null);
   const headingRef = useRef(null);
   const titleRef = useRef(null);
   const leadRef = useRef(null);
@@ -142,27 +139,69 @@ export default function SpotlightBento() {
   useTextSplitAnim(titleRef, { stagger: 18, threshold: 0.35 });
   useTextSplitAnim(leadRef, { stagger: 6, startDelay: 260, threshold: 0.35 });
 
-  // useInView flips back to false on scroll-out, so latch both — the entrance
-  // is a one-shot, not something to replay every time the section passes by.
-  const gridInView = useInView(gridRef, 0.15);
+  // useInView flips back to false on scroll-out, so latch it — the entrance is
+  // a one-shot, not something to replay every time the section passes by.
   const headingInView = useInView(headingRef, 0.35);
-  const [revealed, setRevealed] = useState(false);
   const [headingRevealed, setHeadingRevealed] = useState(false);
-  const [entranceDone, setEntranceDone] = useState(false);
-
-  useEffect(() => {
-    if (gridInView) setRevealed(true);
-  }, [gridInView]);
 
   useEffect(() => {
     if (headingInView) setHeadingRevealed(true);
   }, [headingInView]);
 
+  // Entrance is observed PER CARD, not once for the whole grid. Watching the
+  // grid meant the trigger fired as soon as ~15% of a 660px block had crossed
+  // the fold — the cards were still below the viewport, and the whole
+  // animation finished during the remaining scroll, so it read as instant.
+  // Each card now waits until it is itself on screen.
+  //
+  // Classes go on via classList rather than React state: this runs per card
+  // mid-scroll, and re-rendering the section each time would restart the
+  // hovered-card bookkeeping for no reason.
   useEffect(() => {
-    if (!revealed) return;
-    const timer = setTimeout(() => setEntranceDone(true), ENTER_SETTLE_MS);
-    return () => clearTimeout(timer);
-  }, [revealed]);
+    const cards = cardRefs.current.filter(Boolean);
+    if (!cards.length) return;
+
+    // Reduced motion is handled entirely in CSS, which paints the end state —
+    // so there is nothing to observe.
+    if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
+
+    const timers = [];
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+
+          const el = entry.target;
+          observer.unobserve(el); // one-shot
+          el.classList.add("is-in");
+
+          // Drop the clip once this card has landed, so it stops cutting off
+          // the card's own proximity shadow.
+          const delay = Number(el.dataset.enterDelay) || 0;
+          timers.push(
+            setTimeout(
+              () => el.classList.add("is-done"),
+              delay + ENTER_DURATION_MS + 80
+            )
+          );
+        });
+      },
+      {
+        // A quarter of the card showing, and shrink the root's bottom edge so
+        // it has to clear the very bottom of the screen before counting.
+        threshold: 0.25,
+        rootMargin: "0px 0px -8% 0px",
+      }
+    );
+
+    cards.forEach((el) => observer.observe(el));
+
+    return () => {
+      observer.disconnect();
+      timers.forEach(clearTimeout);
+    };
+  }, []);
 
   useEffect(() => {
     if (!interactive) return;
@@ -351,12 +390,7 @@ export default function SpotlightBento() {
         </p>
       </div>
 
-      <div
-        className={`bentoGrid${revealed ? " is-in" : ""}${
-          entranceDone ? " is-done" : ""
-        }`}
-        ref={gridRef}
-      >
+      <div className="bentoGrid">
         {bentoCards.map((card, index) => {
           const className = ["bentoCard", `bentoCard--${card.enter}`]
             .concat((card.modifiers || []).map((m) => `bentoCard--${m}`))
@@ -370,6 +404,7 @@ export default function SpotlightBento() {
               }}
               className={className}
               style={{ "--enter-delay": `${index * ENTER_STAGGER_MS}ms` }}
+              data-enter-delay={index * ENTER_STAGGER_MS}
               onMouseEnter={() => setHovered(index)}
               onMouseLeave={() =>
                 setHovered((current) => (current === index ? -1 : current))
