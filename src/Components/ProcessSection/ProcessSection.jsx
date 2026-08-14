@@ -164,6 +164,12 @@ export default function ProcessSection() {
 
   return (
     <section className="processSection" ref={sectionRef}>
+      {/* Dissolve the ring into the page at the bottom and the left edge, so
+          the arc has no hard cut-off. Painted above the ring but below the
+          text and visual, which keeps those crisp. */}
+      <span className="processFade processFade--bottom" aria-hidden="true" />
+      <span className="processFade processFade--left" aria-hidden="true" />
+
       <div className="processInner">
         <header className="processIntro">
           <span className="processEyebrow">The Process</span>

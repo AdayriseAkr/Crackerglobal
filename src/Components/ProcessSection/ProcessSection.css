@@ -31,8 +31,48 @@
   gap: 4rem;
 }
 
+/* ---- ring fades ----
+   Layered between the ring (z 0) and the content (z 2), so the arc softens
+   and washes out while the text and image stay untouched.
+
+   The ramp is a mask rather than a gradient background: the mask fades the
+   backdrop blur too, so the arc goes gradually soft instead of hitting a hard
+   edge where the blur starts. Note the mask and the wash both end on an
+   explicit zero-alpha colour, not `transparent` — `transparent` is
+   rgba(0,0,0,0), and interpolating toward it drags a grey haze through the
+   middle of the ramp. */
+.processFade {
+  position: absolute;
+  z-index: 1;
+  pointer-events: none;
+  background-color: #f8f8fb;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.processFade--bottom {
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: clamp(12rem, 26%, 30rem);
+  -webkit-mask-image: linear-gradient(to top, #000 18%, rgba(0, 0, 0, 0) 100%);
+  mask-image: linear-gradient(to top, #000 18%, rgba(0, 0, 0, 0) 100%);
+}
+
+.processFade--left {
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: clamp(6rem, 12%, 20rem);
+  -webkit-mask-image: linear-gradient(to right, #000 10%, rgba(0, 0, 0, 0) 100%);
+  mask-image: linear-gradient(to right, #000 10%, rgba(0, 0, 0, 0) 100%);
+}
+
 /* ---- intro ---- */
 .processIntro {
+  /* Lifted above the ring, whose arc runs up behind this text. */
+  position: relative;
+  z-index: 2;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -152,7 +192,7 @@
 /* ---- centre: text panels, stacked ---- */
 .processStage {
   position: relative;
-  z-index: 1; /* above the ring, which is absolutely positioned */
+  z-index: 2; /* above the ring (0) and its fades (1) */
   grid-column: 2;
   min-height: 34rem;
 }
@@ -217,7 +257,7 @@
 /* ---- right: visuals, stacked ---- */
 .processVisual {
   position: relative;
-  z-index: 1;
+  z-index: 2;
   grid-column: 3;
   min-height: 34rem;
   border-radius: 28px;
@@ -259,8 +299,10 @@
     gap: 3rem;
   }
 
-  /* The ring only makes sense while the section is pinned and rotating. */
-  .processRing {
+  /* The ring only makes sense while the section is pinned and rotating, and
+     with no ring there is nothing for the fades to dissolve. */
+  .processRing,
+  .processFade {
     display: none;
   }
 
