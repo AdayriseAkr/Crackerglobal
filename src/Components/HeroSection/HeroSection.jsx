@@ -14,6 +14,7 @@ import { motion } from "framer-motion";
 import logo from "../../assets/MainLogo.png";
 import CardRotate from "../CardRotate/CardRotate.jsx";
 import SpotlightBento from "../SpotlightBento/SpotlightBento.jsx";
+import ProcessSection from "../ProcessSection/ProcessSection.jsx";
 
 const INTRO_PLAYED_KEY = "crackerIntroPlayed";
 
@@ -172,6 +173,7 @@ export default function HeroSection({ loadProp }) {
       />
 
       <SpotlightBento />
+      <ProcessSection />
       <MainFeature />
       <BriefSection />
       <CardRotate />

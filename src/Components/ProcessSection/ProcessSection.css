@@ -1,0 +1,316 @@
+/* Pinned process section — Cracker palette.
+   Reminder: html { font-size: 10px } in index.css, so 1rem = 10px here.
+
+   Resting visibility is CSS's job, driven by .is-active. GSAP writes inline
+   opacity/transform on top during a step change and always lands on the same
+   values, so if GSAP never runs the section still shows one readable step
+   rather than a blank stage or four panels printed over each other. */
+
+.processSection {
+  --brand: #fe6c25;
+  --brand-rgb: 254, 108, 37;
+  --surface: #f6f0f2;
+  --text-strong: #4a3232;
+  --text-soft: #684a4a;
+
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  background-color: #f8f8fb;
+  overflow: hidden;
+}
+
+.processInner {
+  width: 100%;
+  height: 100%;
+  max-width: 132rem;
+  margin-inline: auto;
+  padding: 7rem 15px 6rem;
+  display: flex;
+  flex-direction: column;
+  gap: 4rem;
+}
+
+/* ---- intro ---- */
+.processIntro {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1.2rem;
+  flex-shrink: 0;
+}
+
+.processEyebrow {
+  padding-inline: 1.5rem;
+  padding-block: 0.8rem;
+  border-radius: 999px;
+  background-color: rgba(var(--brand-rgb), 0.1);
+  color: #fd722d;
+  font-size: 1.3rem;
+  font-weight: 500;
+}
+
+.processIntro h1 {
+  font-size: max(2.5rem, 1.8vw);
+  color: black;
+}
+
+/* ---- three-column body ---- */
+.processBody {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: 22rem minmax(0, 1fr) minmax(0, 1.05fr);
+  gap: clamp(2rem, 4vw, 6rem);
+  /* Columns stretch to the row, and each centres its own content. Centring the
+     items instead would size them by content, and the percentage heights below
+     would have nothing definite to resolve against. */
+  align-items: stretch;
+}
+
+/* ---- left: progress tracker ---- */
+.processTrack {
+  position: relative;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 3.2rem;
+  padding-left: 0;
+  justify-content: center;
+}
+
+/* Rail behind the numbers. The fill height is the scroll progress, written
+   straight to --track-progress by ScrollTrigger every frame. */
+.processTrackLine {
+  position: absolute;
+  left: 2.6rem;
+  top: 1rem;
+  bottom: 1rem;
+  width: 2px;
+  background-color: rgba(74, 50, 50, 0.12);
+  transform: translateX(-50%);
+}
+
+.processTrackLine::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: calc(var(--track-progress, 0) * 100%);
+  background-color: var(--brand);
+}
+
+.processTrackStep {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 1.6rem;
+}
+
+.processTrackNumber {
+  position: relative;
+  z-index: 1;
+  flex-shrink: 0;
+  width: 5.2rem;
+  height: 5.2rem;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+
+  /* inactive: outlined, sitting on the page colour so the rail doesn't show
+     through the middle of the circle */
+  background-color: #f8f8fb;
+  border: 2px solid rgba(74, 50, 50, 0.16);
+  color: rgba(74, 50, 50, 0.4);
+
+  transition:
+    background-color 0.45s cubic-bezier(0.76, 0, 0.24, 1),
+    border-color 0.45s cubic-bezier(0.76, 0, 0.24, 1),
+    color 0.45s cubic-bezier(0.76, 0, 0.24, 1),
+    transform 0.45s cubic-bezier(0.76, 0, 0.24, 1);
+}
+
+/* already passed: filled brand, quietly */
+.processTrackStep.is-done .processTrackNumber {
+  background-color: rgba(var(--brand-rgb), 0.14);
+  border-color: rgba(var(--brand-rgb), 0.3);
+  color: var(--brand);
+}
+
+/* current: solid, white text */
+.processTrackStep.is-active .processTrackNumber {
+  background-color: var(--text-strong);
+  border-color: var(--text-strong);
+  color: #ffffff;
+  transform: scale(1.06);
+}
+
+.processTrackLabel {
+  font-size: 1.4rem;
+  color: rgba(74, 50, 50, 0.38);
+  transition: color 0.45s cubic-bezier(0.76, 0, 0.24, 1);
+}
+
+.processTrackStep.is-active .processTrackLabel {
+  color: var(--text-strong);
+  font-weight: 600;
+}
+
+/* ---- centre: text panels, stacked ---- */
+.processStage {
+  position: relative;
+  min-height: 34rem;
+}
+
+.processPanel {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1.6rem;
+  opacity: 0;
+  pointer-events: none;
+  will-change: transform, opacity;
+}
+
+.processPanel.is-active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.processPhase {
+  font-size: 1.2rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--brand);
+}
+
+.processTitle {
+  font-size: max(3.4rem, 2.8vw);
+  font-weight: 600;
+  line-height: 108%;
+  color: var(--text-strong);
+}
+
+.processText {
+  font-size: 1.6rem;
+  line-height: 155%;
+  color: var(--text-soft);
+  max-width: 46ch;
+}
+
+.processTags {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  margin-top: 0.6rem;
+}
+
+.processTag {
+  padding-inline: 1.4rem;
+  padding-block: 0.8rem;
+  border-radius: 999px;
+  background-color: rgba(var(--brand-rgb), 0.1);
+  color: #d9541a;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+/* ---- right: visuals, stacked ---- */
+.processVisual {
+  position: relative;
+  min-height: 34rem;
+  border-radius: 28px;
+  background-color: var(--surface);
+  overflow: hidden;
+}
+
+.processImage {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  will-change: transform, opacity;
+}
+
+.processImage.is-active {
+  opacity: 1;
+}
+
+/* ---- mobile: no pin, just a stacked list ----
+   ScrollTrigger is only created above 768px (gsap.matchMedia in the
+   component), so nothing here has to undo a pin — it only has to make the
+   stacked-and-hidden desktop layout flow normally again. */
+@media (max-width: 767px) {
+  .processSection {
+    height: auto;
+  }
+
+  .processInner {
+    height: auto;
+    padding: 8rem 15px;
+    gap: 3rem;
+  }
+
+  .processBody {
+    grid-template-columns: 1fr;
+    gap: 3rem;
+  }
+
+  /* The tracker duplicates the step titles, which are already headings in the
+     panels below — on one column that is just noise. */
+  .processTrack {
+    display: none;
+  }
+
+  .processStage,
+  .processVisual {
+    height: auto;
+    min-height: 0;
+  }
+
+  .processStage {
+    display: flex;
+    flex-direction: column;
+    gap: 5rem;
+  }
+
+  .processPanel {
+    position: relative;
+    inset: auto;
+    opacity: 1;
+    pointer-events: auto;
+    gap: 1.2rem;
+  }
+
+  .processTitle {
+    font-size: 3rem;
+  }
+
+  .processText {
+    font-size: 1.4rem;
+  }
+
+  /* One visual per panel would need a different DOM shape; on mobile the
+     stacked images add weight without adding information, so they go. */
+  .processVisual {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .processTrackNumber,
+  .processTrackLabel {
+    transition: none;
+  }
+}
