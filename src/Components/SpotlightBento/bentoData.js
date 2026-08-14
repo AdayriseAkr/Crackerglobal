@@ -5,6 +5,15 @@
 //   brand   -> #FE6C25 fill, white text, white glow
 //   tint    -> #f5e9e3 warm surface
 //
+// `enter` picks the edge the card grows out of on scroll-in. Each one starts at
+// zero along one axis and expands to full size, anchored to the named edge:
+//   fromLeft   -> zero width,  grows rightward
+//   fromRight  -> zero width,  grows leftward
+//   fromBottom -> zero height, grows upward
+//   fromTop    -> zero height, grows downward
+// They're deliberately mixed so the grid assembles from several directions at
+// once rather than marching in on one axis.
+//
 // Grid placement is driven by :nth-child in the stylesheet, so the ORDER of
 // this array is load-bearing — cards 3 and 4 are the two big ones.
 
@@ -15,6 +24,7 @@ export const bentoCards = [
     description:
       "Tokens go live with liquidity locked and supply distributed from block one. No insider allocation, no stealth mint.",
     modifiers: [],
+    enter: "fromLeft",
   },
   {
     label: "Protection",
@@ -22,6 +32,7 @@ export const bentoCards = [
     description:
       "Orders settle without front-running, sandwich attacks, or hidden reordering in the mempool.",
     modifiers: [],
+    enter: "fromBottom",
   },
   {
     label: "Trading",
@@ -29,6 +40,7 @@ export const bentoCards = [
     description:
       "Route across every supported chain in a single transaction. No bridge to babysit, no slippage to price in, no wrapped asset left stranded on the wrong side.",
     modifiers: ["feature", "brand"],
+    enter: "fromRight",
   },
   {
     label: "Infrastructure",
@@ -36,6 +48,7 @@ export const bentoCards = [
     description:
       "Settlement runs on DevvE's Consensus Transaction System — deterministic ordering, instead of a public auction for block space.",
     modifiers: ["feature", "tint"],
+    enter: "fromTop",
   },
   {
     label: "Compliance",
@@ -43,6 +56,7 @@ export const bentoCards = [
     description:
       "Built inside the regulatory perimeter from day one, not retrofitted around it.",
     modifiers: [],
+    enter: "fromBottom",
   },
   {
     label: "Community",
@@ -50,5 +64,6 @@ export const bentoCards = [
     description:
       "Treasury, listings, and roadmap steered by the people actually holding the token.",
     modifiers: [],
+    enter: "fromRight",
   },
 ];

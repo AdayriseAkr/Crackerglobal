@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import "./SpotlightBento.css";
 import { bentoCards } from "./bentoData";
+import useInView from "../CustomHook/useInView.jsx";
+import useTextSplitAnim from "../CustomHook/useTextSplitAnim.jsx";
 
 // Cursor-reactive bento grid: a spotlight pool follows the pointer across the
 // section, each card lights its own border in proportion to how close the
@@ -27,6 +29,15 @@ const MOTION_EASE = 0.14;
 const FADE_EASE = 0.12;
 
 const PARTICLE_EXIT_MS = 340;
+
+// Scroll-in entrance. Each card expands from zero along one axis (see `enter`
+// in bentoData.js); the stagger walks down the array so they don't land at once.
+const ENTER_STAGGER_MS = 80;
+const ENTER_DURATION_MS = 850;
+// Once the last card has landed, the clip-path is dropped entirely — leaving it
+// at inset(0) would keep clipping each card's proximity shadow.
+const ENTER_SETTLE_MS =
+  ENTER_DURATION_MS + ENTER_STAGGER_MS * bentoCards.length + 100;
 
 const lerp = (a, b, t) => a + (b - a) * t;
 const clamp = (v, min, max) => Math.min(max, Math.max(min, v));
@@ -117,9 +128,40 @@ function BentoParticles({ active, count }) {
 
 export default function SpotlightBento() {
   const sectionRef = useRef(null);
+  const gridRef = useRef(null);
+  const headingRef = useRef(null);
+  const titleRef = useRef(null);
+  const leadRef = useRef(null);
   const cardRefs = useRef([]);
   const [hovered, setHovered] = useState(-1);
   const interactive = useInteractivePointer();
+
+  // Split-text reveal on the heading, same hook the hero and other sections
+  // use. It auto-plays itself once the element scrolls into view.
+  useTextSplitAnim(titleRef, { stagger: 18, threshold: 0.35 });
+  useTextSplitAnim(leadRef, { stagger: 6, startDelay: 260, threshold: 0.35 });
+
+  // useInView flips back to false on scroll-out, so latch both — the entrance
+  // is a one-shot, not something to replay every time the section passes by.
+  const gridInView = useInView(gridRef, 0.15);
+  const headingInView = useInView(headingRef, 0.35);
+  const [revealed, setRevealed] = useState(false);
+  const [headingRevealed, setHeadingRevealed] = useState(false);
+  const [entranceDone, setEntranceDone] = useState(false);
+
+  useEffect(() => {
+    if (gridInView) setRevealed(true);
+  }, [gridInView]);
+
+  useEffect(() => {
+    if (headingInView) setHeadingRevealed(true);
+  }, [headingInView]);
+
+  useEffect(() => {
+    if (!revealed) return;
+    const timer = setTimeout(() => setEntranceDone(true), ENTER_SETTLE_MS);
+    return () => clearTimeout(timer);
+  }, [revealed]);
 
   useEffect(() => {
     if (!interactive) return;
@@ -296,18 +338,26 @@ export default function SpotlightBento() {
     <section className="bentoSectionParent" ref={sectionRef}>
       <div className="bentoSpotlight" aria-hidden="true" />
 
-      <div className="bentoHeading">
+      <div
+        className={`bentoHeading${headingRevealed ? " is-in" : ""}`}
+        ref={headingRef}
+      >
         <span className="bentoEyebrow">The Stack</span>
-        <h1>Everything the ecosystem runs on</h1>
-        <p>
+        <h1 ref={titleRef}>Everything the ecosystem runs on</h1>
+        <p ref={leadRef}>
           Six pieces, one chain of custody — from the launch that mints your token
           to the swap that finally settles it.
         </p>
       </div>
 
-      <div className="bentoGrid">
+      <div
+        className={`bentoGrid${revealed ? " is-in" : ""}${
+          entranceDone ? " is-done" : ""
+        }`}
+        ref={gridRef}
+      >
         {bentoCards.map((card, index) => {
-          const className = ["bentoCard"]
+          const className = ["bentoCard", `bentoCard--${card.enter}`]
             .concat((card.modifiers || []).map((m) => `bentoCard--${m}`))
             .join(" ");
 
@@ -318,6 +368,7 @@ export default function SpotlightBento() {
                 cardRefs.current[index] = el;
               }}
               className={className}
+              style={{ "--enter-delay": `${index * ENTER_STAGGER_MS}ms` }}
               onMouseEnter={() => setHovered(index)}
               onMouseLeave={() =>
                 setHovered((current) => (current === index ? -1 : current))
