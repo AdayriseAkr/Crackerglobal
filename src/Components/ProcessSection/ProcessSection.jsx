@@ -8,12 +8,18 @@ gsap.registerPlugin(ScrollTrigger);
 
 // Pinned, scroll-linked process section.
 //
-// ScrollTrigger pins the section and reports its own 0..1 progress; that
-// progress is sliced into one band per step, and crossing a band boundary
-// swaps the active step. The tracker's fill is written straight to a CSS
-// custom property each frame rather than through React — it changes every
-// frame, and re-rendering the section that often for a single number would be
-// wasteful. Only the step index goes through state, and only when it changes.
+// ScrollTrigger pins the section and reports its own 0..1 progress, which maps
+// onto a step position 0..n-1. The tracker is a large ring whose centre sits
+// off-screen to the left: each number is pegged to a fixed angle on that ring,
+// and the ring itself counter-rotates by the current step position, so whoever
+// is active swings round to 3 o'clock. Because each number is placed with
+// `rotate(angle) translateX(radius)`, it carries the ring's rotation with it —
+// which is what tilts the waiting numbers and leaves the active one upright.
+//
+// The ring angle is written straight to a CSS custom property each frame
+// rather than through React: it changes every frame, and re-rendering the
+// section that often for one number would be wasteful. Only the step index
+// goes through state, and only when it actually changes.
 //
 // Every panel and image stays mounted, stacked, so the outgoing one can
 // animate out while the incoming one animates in. Which one is visible at rest
@@ -21,6 +27,7 @@ gsap.registerPlugin(ScrollTrigger);
 // section still shows a readable step rather than a blank or a stack of four.
 
 const PIN_SCREENS_PER_STEP = 1; // viewport heights of scroll each step gets
+const RING_STEP_DEG = 19; // angular gap between consecutive numbers
 const DESKTOP_QUERY = "(min-width: 768px)";
 
 const prefersReducedMotion = () =>
@@ -30,7 +37,7 @@ const prefersReducedMotion = () =>
 
 export default function ProcessSection() {
   const sectionRef = useRef(null);
-  const trackRef = useRef(null);
+  const ringRef = useRef(null);
   const panelRefs = useRef([]);
   const imageRefs = useRef([]);
 
@@ -65,15 +72,18 @@ export default function ProcessSection() {
         anticipatePin: 1,
         invalidateOnRefresh: true,
         onUpdate: (self) => {
-          trackRef.current?.style.setProperty(
-            "--track-progress",
-            self.progress.toFixed(4)
+          // Continuous step position, 0 .. n-1. The ring follows this rather
+          // than the rounded index, so it turns smoothly with the wheel
+          // instead of snapping between numbers.
+          const position = self.progress * (processSteps.length - 1);
+
+          ringRef.current?.style.setProperty(
+            "--ring-angle",
+            `${(position * RING_STEP_DEG).toFixed(3)}deg`
           );
 
-          const index = Math.min(
-            processSteps.length - 1,
-            Math.floor(self.progress * processSteps.length)
-          );
+          // Rounded, so a number goes solid as it settles at 3 o'clock.
+          const index = Math.round(position);
 
           if (index !== activeRef.current) {
             activeRef.current = index;
@@ -161,23 +171,23 @@ export default function ProcessSection() {
         </header>
 
         <div className="processBody">
-          {/* Left column: progress tracker */}
-          <ol className="processTrack" ref={trackRef}>
-            <span className="processTrackLine" aria-hidden="true" />
+          {/* Left: rotating ring tracker. Decorative — every number is stated
+              again as "Phase 0X" in the active panel, so announcing the ring
+              too would just read the same sequence twice. */}
+          <div className="processRing" ref={ringRef} aria-hidden="true">
+            <span className="processRingPath" />
             {processSteps.map((step, index) => (
-              <li
+              <span
                 key={step.id}
-                className={`processTrackStep${
+                className={`processRingStep${
                   index === active ? " is-active" : ""
                 }${index < active ? " is-done" : ""}`}
+                style={{ "--angle": `${-index * RING_STEP_DEG}deg` }}
               >
-                <span className="processTrackNumber">
-                  {String(index + 1).padStart(2, "0")}
-                </span>
-                <span className="processTrackLabel">{step.title}</span>
-              </li>
+                {String(index + 1).padStart(2, "0")}
+              </span>
             ))}
-          </ol>
+          </div>
 
           {/* Centre column: text */}
           <div className="processStage">

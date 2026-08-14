@@ -57,10 +57,13 @@
 
 /* ---- three-column body ---- */
 .processBody {
+  position: relative; /* containing block for the ring */
   flex: 1;
   min-height: 0;
   display: grid;
-  grid-template-columns: 22rem minmax(0, 1fr) minmax(0, 1.05fr);
+  /* First column is empty — it reserves the strip the ring's arc sweeps
+     through, so the text never collides with a number. */
+  grid-template-columns: 17rem minmax(0, 1fr) minmax(0, 1.05fr);
   gap: clamp(2rem, 4vw, 6rem);
   /* Columns stretch to the row, and each centres its own content. Centring the
      items instead would size them by content, and the percentage heights below
@@ -68,102 +71,89 @@
   align-items: stretch;
 }
 
-/* ---- left: progress tracker ---- */
-.processTrack {
-  position: relative;
-  list-style: none;
-  display: flex;
-  flex-direction: column;
-  gap: 3.2rem;
-  padding-left: 0;
-  justify-content: center;
+/* ---- left: rotating ring tracker ----
+   The ring's centre sits far off-screen to the left, so only its right-hand
+   arc crosses the layout. It is a zero-size origin point: the path and every
+   number are positioned outwards from it, which keeps the geometry to one
+   number (--ring-radius) instead of a pile of hand-tuned offsets. */
+.processRing {
+  --ring-radius: clamp(32rem, 38vw, 50rem);
+  --ring-number: 6.4rem;
+
+  position: absolute;
+  z-index: 0;
+  top: 50%;
+  /* Puts 3 o'clock — the active slot — 12rem into the section. */
+  left: calc(12rem - var(--ring-radius));
+  width: 0;
+  height: 0;
+  pointer-events: none;
+  transform: rotate(var(--ring-angle, 0deg));
+  will-change: transform;
 }
 
-/* Rail behind the numbers. The fill height is the scroll progress, written
-   straight to --track-progress by ScrollTrigger every frame. */
-.processTrackLine {
+.processRingPath {
   position: absolute;
-  left: 2.6rem;
-  top: 1rem;
-  bottom: 1rem;
-  width: 2px;
-  background-color: rgba(74, 50, 50, 0.12);
-  transform: translateX(-50%);
-}
-
-.processTrackLine::after {
-  content: "";
-  position: absolute;
-  left: 0;
   top: 0;
-  width: 100%;
-  height: calc(var(--track-progress, 0) * 100%);
-  background-color: var(--brand);
-}
-
-.processTrackStep {
-  position: relative;
-  display: flex;
-  align-items: center;
-  gap: 1.6rem;
-}
-
-.processTrackNumber {
-  position: relative;
-  z-index: 1;
-  flex-shrink: 0;
-  width: 5.2rem;
-  height: 5.2rem;
+  left: 0;
+  width: calc(var(--ring-radius) * 2);
+  height: calc(var(--ring-radius) * 2);
+  margin: calc(var(--ring-radius) * -1);
   border-radius: 50%;
-  display: inline-flex;
+  border: 1px solid rgba(74, 50, 50, 0.13);
+}
+
+/* rotate() first, then translateX() out along that angle — so the element both
+   sits at its place on the arc AND inherits the tilt. Combined with the ring's
+   own rotation, the active number lands upright and the waiting ones lean. */
+.processRingStep {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: var(--ring-number);
+  height: var(--ring-number);
+  margin: calc(var(--ring-number) / -2);
+  border-radius: 50%;
+  display: flex;
   align-items: center;
   justify-content: center;
   font-size: 1.6rem;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
+  transform: rotate(var(--angle)) translateX(var(--ring-radius));
 
-  /* inactive: outlined, sitting on the page colour so the rail doesn't show
-     through the middle of the circle */
+  /* Opaque fill, so the arc doesn't run through the middle of the number. */
   background-color: #f8f8fb;
-  border: 2px solid rgba(74, 50, 50, 0.16);
-  color: rgba(74, 50, 50, 0.4);
+  border: 1px solid rgba(74, 50, 50, 0.16);
+  color: rgba(74, 50, 50, 0.5);
 
   transition:
     background-color 0.45s cubic-bezier(0.76, 0, 0.24, 1),
     border-color 0.45s cubic-bezier(0.76, 0, 0.24, 1),
     color 0.45s cubic-bezier(0.76, 0, 0.24, 1),
-    transform 0.45s cubic-bezier(0.76, 0, 0.24, 1);
+    box-shadow 0.45s cubic-bezier(0.76, 0, 0.24, 1);
 }
 
-/* already passed: filled brand, quietly */
-.processTrackStep.is-done .processTrackNumber {
-  background-color: rgba(var(--brand-rgb), 0.14);
-  border-color: rgba(var(--brand-rgb), 0.3);
+/* already passed: brand-tinted, quietly */
+.processRingStep.is-done {
+  background-color: rgba(var(--brand-rgb), 0.12);
+  border-color: rgba(var(--brand-rgb), 0.28);
   color: var(--brand);
 }
 
 /* current: solid, white text */
-.processTrackStep.is-active .processTrackNumber {
+.processRingStep.is-active {
   background-color: var(--text-strong);
   border-color: var(--text-strong);
   color: #ffffff;
-  transform: scale(1.06);
-}
-
-.processTrackLabel {
-  font-size: 1.4rem;
-  color: rgba(74, 50, 50, 0.38);
-  transition: color 0.45s cubic-bezier(0.76, 0, 0.24, 1);
-}
-
-.processTrackStep.is-active .processTrackLabel {
-  color: var(--text-strong);
-  font-weight: 600;
+  box-shadow: 0 10px 26px -8px rgba(74, 50, 50, 0.45);
 }
 
 /* ---- centre: text panels, stacked ---- */
 .processStage {
   position: relative;
+  z-index: 1; /* above the ring, which is absolutely positioned */
+  grid-column: 2;
   min-height: 34rem;
 }
 
@@ -227,6 +217,8 @@
 /* ---- right: visuals, stacked ---- */
 .processVisual {
   position: relative;
+  z-index: 1;
+  grid-column: 3;
   min-height: 34rem;
   border-radius: 28px;
   background-color: var(--surface);
@@ -267,14 +259,14 @@
     gap: 3rem;
   }
 
-  /* The tracker duplicates the step titles, which are already headings in the
-     panels below — on one column that is just noise. */
-  .processTrack {
+  /* The ring only makes sense while the section is pinned and rotating. */
+  .processRing {
     display: none;
   }
 
   .processStage,
   .processVisual {
+    grid-column: 1;
     height: auto;
     min-height: 0;
   }
@@ -309,8 +301,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .processTrackNumber,
-  .processTrackLabel {
+  .processRingStep {
     transition: none;
   }
 }
