@@ -27,7 +27,10 @@ gsap.registerPlugin(ScrollTrigger);
 // section still shows a readable step rather than a blank or a stack of four.
 
 const PIN_SCREENS_PER_STEP = 1; // viewport heights of scroll each step gets
-const RING_STEP_DEG = 19; // angular gap between consecutive numbers
+// Angular gap between consecutive numbers. This sets how far the trail climbs:
+// the numbers span radius * sin((n-1) * this) vertically, all of it upward from
+// the active slot, so raising it pushes the last number toward the heading.
+const RING_STEP_DEG = 14;
 const DESKTOP_QUERY = "(min-width: 768px)";
 
 const prefersReducedMotion = () =>
@@ -164,11 +167,12 @@ export default function ProcessSection() {
 
   return (
     <section className="processSection" ref={sectionRef}>
-      {/* Dissolve the ring into the page at the bottom and the left edge, so
-          the arc has no hard cut-off. Painted above the ring but below the
-          text and visual, which keeps those crisp. */}
+      {/* Dissolve the ring into the page at the edges, so the arc has no hard
+          cut-off and never collides with the heading. Painted above the ring
+          but below the text and visual, which keeps those crisp. */}
       <span className="processFade processFade--bottom" aria-hidden="true" />
       <span className="processFade processFade--left" aria-hidden="true" />
+      <span className="processFade processFade--top" aria-hidden="true" />
 
       <div className="processInner">
         <header className="processIntro">

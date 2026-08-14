@@ -68,6 +68,19 @@
   mask-image: linear-gradient(to right, #000 10%, rgba(0, 0, 0, 0) 100%);
 }
 
+/* Covers the intro band. The geometry above keeps the trail clear of the
+   heading on ordinary viewports, but a short window still squeezes it upward —
+   this way the last number dissolves into the page there instead of sitting
+   behind the title. */
+.processFade--top {
+  left: 0;
+  right: 0;
+  top: 0;
+  height: clamp(8rem, 18%, 20rem);
+  -webkit-mask-image: linear-gradient(to bottom, #000 22%, rgba(0, 0, 0, 0) 100%);
+  mask-image: linear-gradient(to bottom, #000 22%, rgba(0, 0, 0, 0) 100%);
+}
+
 /* ---- intro ---- */
 .processIntro {
   /* Lifted above the ring, whose arc runs up behind this text. */
@@ -102,8 +115,9 @@
   min-height: 0;
   display: grid;
   /* First column is empty — it reserves the strip the ring's arc sweeps
-     through, so the text never collides with a number. */
-  grid-template-columns: 17rem minmax(0, 1fr) minmax(0, 1.05fr);
+     through, so the text never collides with a number. Wide enough for the
+     active slot at 14rem plus half a number. */
+  grid-template-columns: 18rem minmax(0, 1fr) minmax(0, 1.05fr);
   gap: clamp(2rem, 4vw, 6rem);
   /* Columns stretch to the row, and each centres its own content. Centring the
      items instead would size them by content, and the percentage heights below
@@ -117,14 +131,19 @@
    number are positioned outwards from it, which keeps the geometry to one
    number (--ring-radius) instead of a pile of hand-tuned offsets. */
 .processRing {
-  --ring-radius: clamp(32rem, 38vw, 50rem);
+  /* Sized off viewport HEIGHT, not width. The numbers only ever trail upward
+     from the active slot, spanning radius * sin((n-1) * step) — so what has to
+     fit is vertical room, and a width-based radius grew this trail into the
+     heading on wide screens while the space above it stayed the same. */
+  --ring-radius: clamp(30rem, 42vh, 46rem);
   --ring-number: 6.4rem;
 
   position: absolute;
   z-index: 0;
-  top: 50%;
-  /* Puts 3 o'clock — the active slot — 12rem into the section. */
-  left: calc(12rem - var(--ring-radius));
+  /* Below centre, to buy the upward trail clearance under the heading. */
+  top: 58%;
+  /* Puts 3 o'clock — the active slot — 14rem into the section. */
+  left: calc(14rem - var(--ring-radius));
   width: 0;
   height: 0;
   pointer-events: none;
