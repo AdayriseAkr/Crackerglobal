@@ -27,10 +27,12 @@ gsap.registerPlugin(ScrollTrigger);
 // section still shows a readable step rather than a blank or a stack of four.
 
 const PIN_SCREENS_PER_STEP = 1; // viewport heights of scroll each step gets
-// Angular gap between consecutive numbers. This sets how far the trail climbs:
-// the numbers span radius * sin((n-1) * this) vertically, all of it upward from
-// the active slot, so raising it pushes the last number toward the heading.
-const RING_STEP_DEG = 14;
+// Angular gap between consecutive numbers. The visible gap between two circles
+// is arc length — radius * this — minus their diameter, so it collapses on a
+// short window where the radius bottoms out at its clamp floor. Raising it also
+// makes the trail climb higher, since the numbers span
+// radius * sin((n-1) * this) vertically, all of it upward from the active slot.
+const RING_STEP_DEG = 18;
 const DESKTOP_QUERY = "(min-width: 768px)";
 
 const prefersReducedMotion = () =>

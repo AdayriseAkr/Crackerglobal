@@ -135,13 +135,16 @@
      from the active slot, spanning radius * sin((n-1) * step) — so what has to
      fit is vertical room, and a width-based radius grew this trail into the
      heading on wide screens while the space above it stayed the same. */
-  --ring-radius: clamp(30rem, 42vh, 46rem);
+  /* The floor matters as much as the cap: the gap between two numbers is
+     radius * step minus their diameter, so too small a radius on a short
+     window pushes the circles into each other. */
+  --ring-radius: clamp(34rem, 44vh, 50rem);
   --ring-number: 6.4rem;
 
   position: absolute;
   z-index: 0;
   /* Below centre, to buy the upward trail clearance under the heading. */
-  top: 58%;
+  top: 60%;
   /* Puts 3 o'clock — the active slot — 14rem into the section. */
   left: calc(14rem - var(--ring-radius));
   width: 0;
@@ -296,6 +299,17 @@
 
 .processImage.is-active {
   opacity: 1;
+}
+
+/* A wider step makes the trail climb higher, and a short window is exactly
+   where there is least room for it. Reclaim some by tightening the intro band,
+   which is otherwise generous relative to the space left over. */
+@media (min-width: 768px) and (max-height: 820px) {
+  .processInner {
+    padding-top: 4rem;
+    padding-bottom: 4rem;
+    gap: 2.5rem;
+  }
 }
 
 /* ---- mobile: no pin, just a stacked list ----
