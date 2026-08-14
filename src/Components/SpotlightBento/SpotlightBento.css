@@ -177,37 +177,46 @@
      squash the text as the card grows, whereas an inset clip keeps type at its
      final size and simply uncovers it. It also costs no layout, and the rAF
      loop already owns `transform` — a scale here would fight it. */
-  opacity: 0;
+  opacity: 1;
   transition:
     clip-path var(--enter-duration) var(--enter-ease) var(--enter-delay, 0ms),
     opacity 0.35s ease-out var(--enter-delay, 0ms);
 }
 
+/* ---- entrance ----
+   Cards are VISIBLE above; the hidden start state only exists once JS has
+   added .is-armed to the grid. Deliberately that way round — defaulting to
+   hidden means any break in the reveal chain leaves the grid permanently
+   blank, whereas this degrades to a card that simply appears un-animated. */
+.bentoGrid.is-armed .bentoCard {
+  opacity: 0;
+}
+
 /* Zero along one axis, anchored to the named edge. `round 20px` keeps the
    corners rounded throughout the growth instead of only at the end. */
-.bentoCard--fromLeft {
+.bentoGrid.is-armed .bentoCard--fromLeft {
   clip-path: inset(0 100% 0 0 round 20px);
 }
-.bentoCard--fromRight {
+.bentoGrid.is-armed .bentoCard--fromRight {
   clip-path: inset(0 0 0 100% round 20px);
 }
-.bentoCard--fromBottom {
+.bentoGrid.is-armed .bentoCard--fromBottom {
   clip-path: inset(100% 0 0 0 round 20px);
 }
-.bentoCard--fromTop {
+.bentoGrid.is-armed .bentoCard--fromTop {
   clip-path: inset(0 0 100% 0 round 20px);
 }
 
-/* Set per card by its own IntersectionObserver — see the entrance effect in
-   SpotlightBento.jsx. Two classes beat the one-class direction rules above. */
-.bentoCard.is-in {
+/* Added per card once it scrolls in. Four classes, so it beats the
+   three-class direction rules above regardless of source order. */
+.bentoGrid.is-armed .bentoCard.is-in {
   opacity: 1;
   clip-path: inset(0 0 0 0 round 20px);
 }
 
 /* Dropped once that card has landed, so it stops cutting off the card's
    proximity shadow. inset(0) and none look identical, so the swap is invisible. */
-.bentoCard.is-done {
+.bentoGrid.is-armed .bentoCard.is-done {
   clip-path: none;
 }
 
@@ -468,11 +477,11 @@
     display: none;
   }
 
-  /* Show the entrance's end state immediately rather than animating to it.
-     The observer bails out under reduced motion, so is-in/is-done never
-     arrive and this has to stand on its own. */
+  /* The grid is never armed under reduced motion, so cards keep their default
+     visible state and there is no entrance to suppress. The .is-armed variant
+     is here only as a belt-and-braces guard. */
   .bentoCard,
-  .bentoCard.is-in {
+  .bentoGrid.is-armed .bentoCard {
     opacity: 1;
     clip-path: none;
     transition: none;
