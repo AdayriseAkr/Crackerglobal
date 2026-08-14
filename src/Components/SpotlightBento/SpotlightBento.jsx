@@ -33,7 +33,8 @@ const PARTICLE_EXIT_MS = 340;
 // Scroll-in entrance. Each card expands from zero along one axis (see `enter`
 // in bentoData.js); the stagger walks down the array so they don't land at once.
 const ENTER_STAGGER_MS = 80;
-const ENTER_DURATION_MS = 850;
+// Must match --enter-duration in SpotlightBento.css.
+const ENTER_DURATION_MS = 600;
 // Once the last card has landed, the clip-path is dropped entirely — leaving it
 // at inset(0) would keep clipping each card's proximity shadow.
 const ENTER_SETTLE_MS =

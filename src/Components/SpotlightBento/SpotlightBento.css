@@ -16,6 +16,13 @@
   --text-strong: #4a3232;
   --text-soft: #684a4a;
 
+  /* Entrance timing lives here so the base rule and the touch-device override
+     below can't drift apart — `transition` is a shorthand, so both have to
+     restate the whole list. ENTER_DURATION_MS in SpotlightBento.jsx must match
+     --enter-duration: it's what decides when the clip-path is dropped. */
+  --enter-duration: 0.6s;
+  --enter-ease: cubic-bezier(0.76, 0, 0.24, 1);
+
   position: relative;
   width: 100%;
   background-color: #f8f8fb;
@@ -82,7 +89,7 @@
   transform: translateY(12px);
   transition:
     opacity 0.6s ease-out,
-    transform 0.7s cubic-bezier(0.65, 0, 0.35, 1);
+    transform var(--enter-duration) var(--enter-ease);
 }
 
 .bentoHeading.is-in .bentoEyebrow {
@@ -172,7 +179,7 @@
      loop already owns `transform` — a scale here would fight it. */
   opacity: 0;
   transition:
-    clip-path 0.85s cubic-bezier(0.65, 0, 0.35, 1) var(--enter-delay, 0ms),
+    clip-path var(--enter-duration) var(--enter-ease) var(--enter-delay, 0ms),
     opacity 0.35s ease-out var(--enter-delay, 0ms);
 }
 
@@ -421,7 +428,7 @@
      only transform/box-shadow here would silently drop the entrance on touch. */
   .bentoCard {
     transition:
-      clip-path 0.85s cubic-bezier(0.65, 0, 0.35, 1) var(--enter-delay, 0ms),
+      clip-path var(--enter-duration) var(--enter-ease) var(--enter-delay, 0ms),
       opacity 0.35s ease-out var(--enter-delay, 0ms),
       transform 0.35s cubic-bezier(0.25, 1, 0.5, 1),
       box-shadow 0.35s cubic-bezier(0.25, 1, 0.5, 1);
