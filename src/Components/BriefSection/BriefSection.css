@@ -38,7 +38,7 @@ font-weight:500;
        picking apart the rules below. */
     --cue-width: 26vw;
     --cue-x: 2rem;   /* in from the right edge */
-    --cue-y: -14vh;  /* down from the top of the section; negative overhangs it */
+    --cue-y: -28vh;  /* down from the top of the section; negative overhangs it */
 
     position: absolute;
     right: var(--cue-x);
