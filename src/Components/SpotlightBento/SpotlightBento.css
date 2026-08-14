@@ -1,0 +1,411 @@
+/* Spotlight bento grid — Cracker palette.
+   Reminder: html { font-size: 10px } in index.css, so 1rem = 10px here.
+
+   All continuous values arrive from SpotlightBento.jsx as custom properties:
+     on the section  --sx / --sy / --s-opacity   (spotlight position + fade)
+     on each card    --glow-x / --glow-y / --glow-intensity
+   Nothing in this file animates those directly — the rAF loop owns them, and a
+   CSS transition on top would fight it. Transitions here are only for discrete
+   state (particle spawn, ripple, static hover fallback). */
+
+.bentoSectionParent {
+  --brand: #fe6c25;
+  --brand-rgb: 254, 108, 37;
+  --surface: #f6f0f2;
+  --surface-tint: #f5e9e3;
+  --text-strong: #4a3232;
+  --text-soft: #684a4a;
+
+  position: relative;
+  width: 100%;
+  background-color: #f8f8fb;
+  padding-block: 12rem 14rem;
+  padding-inline: 15px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6rem;
+  overflow: hidden;
+}
+
+/* ---- cursor spotlight ----
+   Centred by negative margins so the per-frame update is a pure transform —
+   writing to left/top instead would force layout every frame. */
+.bentoSpotlight {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 60rem;
+  height: 60rem;
+  margin-top: -30rem;
+  margin-left: -30rem;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+  opacity: var(--s-opacity, 0);
+  transform: translate3d(var(--sx, 0px), var(--sy, 0px), 0);
+  will-change: transform, opacity;
+  background: radial-gradient(
+    circle,
+    rgba(var(--brand-rgb), 0.18) 0%,
+    rgba(var(--brand-rgb), 0.11) 18%,
+    rgba(var(--brand-rgb), 0.06) 34%,
+    rgba(var(--brand-rgb), 0.025) 54%,
+    transparent 72%
+  );
+}
+
+/* ---- section heading (mirrors .featureHeading in MainFeature.css) ---- */
+.bentoHeading {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.2rem;
+  text-align: center;
+}
+
+.bentoEyebrow {
+  padding-inline: 1.5rem;
+  padding-block: 0.8rem;
+  border-radius: 999px;
+  background-color: rgba(var(--brand-rgb), 0.1);
+  color: #fd722d;
+  font-size: 1.3rem;
+  font-weight: 500;
+}
+
+.bentoHeading h1 {
+  font-size: max(2.5rem, 1.8vw);
+  color: black;
+}
+
+.bentoHeading p {
+  font-size: 1.5rem;
+  line-height: 140%;
+  color: rgba(0, 0, 0, 0.351);
+  max-width: 52rem;
+}
+
+/* ---- grid ----
+   Mobile-first: one column, then two, then the asymmetric four-column bento.
+   Cards 3 and 4 are the 2x2 blocks — see the note in bentoData.js, the order
+   of that array is what lands them here. */
+.bentoGrid {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 122rem;
+  display: grid;
+  gap: 1.6rem;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 600px) {
+  .bentoGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .bentoGrid {
+    grid-template-columns: repeat(4, 1fr);
+    grid-auto-rows: 21rem;
+  }
+  .bentoCard:nth-child(3) {
+    grid-column: span 2;
+    grid-row: span 2;
+  }
+  .bentoCard:nth-child(4) {
+    grid-column: 1 / span 2;
+    grid-row: 2 / span 2;
+  }
+  .bentoCard:nth-child(6) {
+    grid-column: 4;
+    grid-row: 3;
+  }
+}
+
+/* ---- card ---- */
+.bentoCard {
+  --glow-x: 50%;
+  --glow-y: 50%;
+  --glow-intensity: 0;
+  --glow-radius: 220px;
+  --card-surface: var(--surface);
+  --card-glow: var(--brand-rgb);
+
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 2.4rem;
+  min-height: 21rem;
+  padding: 2.2rem;
+  border-radius: 20px;
+  background-color: var(--card-surface);
+  overflow: hidden;
+  will-change: transform;
+
+  /* Rises with proximity rather than on :hover, so a card lights and lifts as
+     the cursor approaches instead of snapping when it crosses the edge. */
+  box-shadow: 0 18px 40px -20px rgba(74, 50, 50, calc(var(--glow-intensity) * 0.5));
+}
+
+/* Interior warm pool, following the cursor. */
+.bentoCard::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: radial-gradient(
+    var(--glow-radius) circle at var(--glow-x) var(--glow-y),
+    rgba(var(--card-glow), calc(var(--glow-intensity) * 0.14)) 0%,
+    transparent 66%
+  );
+}
+
+/* Border glow: a gradient clipped to a 2px ring by masking out the content box
+   and keeping only the padding band. */
+.bentoCard::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  padding: 2px;
+  border-radius: inherit;
+  pointer-events: none;
+  background: radial-gradient(
+    var(--glow-radius) circle at var(--glow-x) var(--glow-y),
+    rgba(var(--card-glow), calc(var(--glow-intensity) * 0.9)) 0%,
+    rgba(var(--card-glow), calc(var(--glow-intensity) * 0.4)) 32%,
+    transparent 62%
+  );
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+}
+
+/* ---- card content ---- */
+.bentoCardHeader,
+.bentoCardBody {
+  position: relative;
+  z-index: 3;
+}
+
+.bentoCardHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.bentoCardLabel {
+  font-size: 1.2rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--brand);
+}
+
+.bentoCardIndex {
+  font-size: 1.2rem;
+  color: rgba(74, 50, 50, 0.32);
+  font-variant-numeric: tabular-nums;
+}
+
+.bentoCardTitle {
+  font-size: max(2rem, 1.5vw);
+  font-weight: 600;
+  line-height: 115%;
+  color: var(--text-strong);
+  margin-bottom: 0.8rem;
+}
+
+.bentoCardText {
+  font-size: 1.4rem;
+  line-height: 145%;
+  color: var(--text-soft);
+  max-width: 46ch;
+}
+
+/* ---- variants ---- */
+.bentoCard--feature .bentoCardTitle {
+  font-size: max(3rem, 2.2vw);
+}
+
+.bentoCard--feature .bentoCardText {
+  font-size: 1.6rem;
+  max-width: 52ch;
+}
+
+.bentoCard--tint {
+  --card-surface: var(--surface-tint);
+}
+
+/* Orange fill: the brand colour can't glow against itself, so the glow,
+   particles and ripple all flip to white on this card. */
+.bentoCard--brand {
+  --card-surface: var(--brand);
+  --card-glow: 255, 255, 255;
+}
+
+.bentoCard--brand .bentoCardLabel {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.bentoCard--brand .bentoCardIndex {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.bentoCard--brand .bentoCardTitle {
+  color: #ffffff;
+}
+
+.bentoCard--brand .bentoCardText {
+  color: rgba(255, 255, 255, 0.88);
+}
+
+/* ---- particles ---- */
+.bentoParticles {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.bentoParticle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  animation: bentoParticleIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) var(--spawn) backwards;
+}
+
+.bentoParticles.is-out .bentoParticle {
+  animation: bentoParticleOut 0.3s ease forwards;
+}
+
+/* Split across two elements on purpose: the wrapper owns the spawn/exit scale,
+   the dot owns the looping drift — one element can't run both on `transform`. */
+.bentoParticleDot {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: rgba(var(--card-glow), 0.9);
+  box-shadow: 0 0 8px rgba(var(--card-glow), 0.55);
+  animation:
+    bentoParticleDrift var(--dur) var(--delay) ease-in-out infinite alternate,
+    bentoParticlePulse 1.6s var(--delay) ease-in-out infinite alternate;
+}
+
+@keyframes bentoParticleIn {
+  from {
+    transform: scale(0);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes bentoParticleOut {
+  to {
+    transform: scale(0);
+    opacity: 0;
+  }
+}
+
+@keyframes bentoParticleDrift {
+  to {
+    transform: translate3d(var(--dx), var(--dy), 0);
+  }
+}
+
+@keyframes bentoParticlePulse {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0.35;
+  }
+}
+
+/* ---- click ripple ---- */
+.bentoRipple {
+  position: absolute;
+  z-index: 2;
+  border-radius: 50%;
+  pointer-events: none;
+  background: radial-gradient(
+    circle,
+    rgba(var(--card-glow), 0.35) 0%,
+    rgba(var(--card-glow), 0.16) 32%,
+    transparent 68%
+  );
+  animation: bentoRipple 0.75s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes bentoRipple {
+  from {
+    transform: scale(0);
+    opacity: 1;
+  }
+  to {
+    transform: scale(1);
+    opacity: 0;
+  }
+}
+
+/* ---- touch / no-hover fallback ----
+   The rAF loop never runs here, so nothing writes an inline transform and the
+   plain CSS hover below is free to take over. */
+@media (hover: none), (pointer: coarse) {
+  .bentoCard {
+    transition:
+      transform 0.35s cubic-bezier(0.25, 1, 0.5, 1),
+      box-shadow 0.35s cubic-bezier(0.25, 1, 0.5, 1);
+  }
+  .bentoCard:active {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px -16px rgba(74, 50, 50, 0.4);
+  }
+}
+
+@media (max-width: 500px) {
+  .bentoSectionParent {
+    padding-block: 8rem 9rem;
+    gap: 4rem;
+  }
+  .bentoHeading p {
+    font-size: 1.2rem;
+    max-width: 90%;
+  }
+  .bentoCard {
+    padding: 1.8rem;
+    min-height: 18rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bentoSpotlight {
+    display: none;
+  }
+  .bentoParticleDot {
+    animation: none;
+  }
+  .bentoRipple {
+    animation: none;
+    display: none;
+  }
+  .bentoCard {
+    transition: none;
+  }
+}
