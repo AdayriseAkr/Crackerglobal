@@ -7,16 +7,6 @@ import walletCard from "../../assets/walletCard.png"
 import dexCard from "../../assets/dexCard.png"
 import useInView  from "../CustomHook/useInView";
 import scrollCue from "../../assets/ScrollDown.png";
-import DevTuner from "../DevTuner/DevTuner.jsx";
-
-// Sliders for the scroll cue. Starting values are read off the stylesheet, not
-// listed here, so this can't drift out of step with BriefSection.css.
-const CUE_CONTROLS = [
-  { prop: "--cue-width", label: "Size", min: 8, max: 48, step: 0.5, unit: "vw" },
-  { prop: "--cue-x", label: "In from right", min: -30, max: 60, step: 0.5, unit: "rem" },
-  // Negative overhangs the top of the section, which the shell allows.
-  { prop: "--cue-y", label: "Down from top", min: -40, max: 120, step: 0.5, unit: "vh" },
-];
 
 export default function BriefSection() {
     const cardRef = useRef(null);
@@ -122,17 +112,6 @@ DEX, WALLET, AND <span style={{color:"#FE6C25"}}>LAUNCHPAD</span>. DESIGNED FOR 
              aria-hidden="true"
              draggable="false"
            />
-
-           {/* Vite swaps import.meta.env.DEV for `false` in a production
-               build, so this and the DevTuner module drop out entirely. */}
-           {import.meta.env.DEV && (
-             <DevTuner
-               title="Scroll cue"
-               targetRef={cueRef}
-               controls={CUE_CONTROLS}
-               storageKey="cracker:cueTuner"
-             />
-           )}
            </div>
     )
 }

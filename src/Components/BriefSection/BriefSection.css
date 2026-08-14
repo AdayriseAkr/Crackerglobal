@@ -34,9 +34,8 @@ font-weight:500;
    a fixed multiple of the viewport unrelated to any section. Both offsets may
    go negative: the shell doesn't clip, so the cue can overhang deliberately. */
 .briefScrollCue{
-    /* The three knobs the dev tuner writes to. Keep them as bare custom
-       properties — the tuner reads its starting values straight off these, so
-       whatever is set here is the single source of truth. */
+    /* Size and placement, kept as named knobs so they can be adjusted without
+       picking apart the rules below. */
     --cue-width: 26vw;
     --cue-x: 2rem;  /* in from the right edge */
     --cue-y: 6vh;   /* down from the top of the section */
