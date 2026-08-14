@@ -16,13 +16,6 @@
   --text-strong: #4a3232;
   --text-soft: #684a4a;
 
-  /* Entrance timing lives here so the base rule and the touch-device override
-     below can't drift apart — `transition` is a shorthand, so both have to
-     restate the whole list. ENTER_DURATION_MS in SpotlightBento.jsx must match
-     --enter-duration: it's what decides when the clip-path is dropped. */
-  --enter-duration: 0.6s;
-  --enter-ease: cubic-bezier(0.76, 0, 0.24, 1);
-
   position: relative;
   width: 100%;
   background-color: #f8f8fb;
@@ -81,20 +74,6 @@
   color: #fd722d;
   font-size: 1.3rem;
   font-weight: 500;
-
-  /* The h1 and lead paragraph are revealed by useTextSplitAnim, which writes
-     its own inline styles; the eyebrow has no text to split, so it fades up
-     on the same trigger to keep the block arriving as one unit. */
-  opacity: 0;
-  transform: translateY(12px);
-  transition:
-    opacity 0.6s ease-out,
-    transform var(--enter-duration) var(--enter-ease);
-}
-
-.bentoHeading.is-in .bentoEyebrow {
-  opacity: 1;
-  transform: translateY(0);
 }
 
 .bentoHeading h1 {
@@ -172,52 +151,6 @@
   /* Rises with proximity rather than on :hover, so a card lights and lifts as
      the cursor approaches instead of snapping when it crosses the edge. */
   box-shadow: 0 18px 40px -20px rgba(74, 50, 50, calc(var(--glow-intensity) * 0.5));
-
-  /* Entrance. clip-path rather than scaleX/scaleY on purpose: scaling would
-     squash the text as the card grows, whereas an inset clip keeps type at its
-     final size and simply uncovers it. It also costs no layout, and the rAF
-     loop already owns `transform` — a scale here would fight it. */
-  opacity: 1;
-  transition:
-    clip-path var(--enter-duration) var(--enter-ease) var(--enter-delay, 0ms),
-    opacity 0.35s ease-out var(--enter-delay, 0ms);
-}
-
-/* ---- entrance ----
-   Cards are VISIBLE above; the hidden start state only exists once JS has
-   added .is-armed to the grid. Deliberately that way round — defaulting to
-   hidden means any break in the reveal chain leaves the grid permanently
-   blank, whereas this degrades to a card that simply appears un-animated. */
-.bentoGrid.is-armed .bentoCard {
-  opacity: 0;
-}
-
-/* Zero along one axis, anchored to the named edge. `round 20px` keeps the
-   corners rounded throughout the growth instead of only at the end. */
-.bentoGrid.is-armed .bentoCard--fromLeft {
-  clip-path: inset(0 100% 0 0 round 20px);
-}
-.bentoGrid.is-armed .bentoCard--fromRight {
-  clip-path: inset(0 0 0 100% round 20px);
-}
-.bentoGrid.is-armed .bentoCard--fromBottom {
-  clip-path: inset(100% 0 0 0 round 20px);
-}
-.bentoGrid.is-armed .bentoCard--fromTop {
-  clip-path: inset(0 0 100% 0 round 20px);
-}
-
-/* Added per card once it scrolls in. Four classes, so it beats the
-   three-class direction rules above regardless of source order. */
-.bentoGrid.is-armed .bentoCard.is-in {
-  opacity: 1;
-  clip-path: inset(0 0 0 0 round 20px);
-}
-
-/* Dropped once that card has landed, so it stops cutting off the card's
-   proximity shadow. inset(0) and none look identical, so the swap is invisible. */
-.bentoGrid.is-armed .bentoCard.is-done {
-  clip-path: none;
 }
 
 /* Interior warm pool, following the cursor. */
@@ -435,12 +368,8 @@
    The rAF loop never runs here, so nothing writes an inline transform and the
    plain CSS hover below is free to take over. */
 @media (hover: none), (pointer: coarse) {
-  /* Repeats the entrance transitions: `transition` is a shorthand, so listing
-     only transform/box-shadow here would silently drop the entrance on touch. */
   .bentoCard {
     transition:
-      clip-path var(--enter-duration) var(--enter-ease) var(--enter-delay, 0ms),
-      opacity 0.35s ease-out var(--enter-delay, 0ms),
       transform 0.35s cubic-bezier(0.25, 1, 0.5, 1),
       box-shadow 0.35s cubic-bezier(0.25, 1, 0.5, 1);
   }
@@ -477,18 +406,7 @@
     display: none;
   }
 
-  /* The grid is never armed under reduced motion, so cards keep their default
-     visible state and there is no entrance to suppress. The .is-armed variant
-     is here only as a belt-and-braces guard. */
-  .bentoCard,
-  .bentoGrid.is-armed .bentoCard {
-    opacity: 1;
-    clip-path: none;
-    transition: none;
-  }
-  .bentoEyebrow {
-    opacity: 1;
-    transform: none;
+  .bentoCard {
     transition: none;
   }
 
