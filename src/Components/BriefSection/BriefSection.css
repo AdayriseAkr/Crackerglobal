@@ -37,8 +37,8 @@ font-weight:500;
     /* Size and placement, kept as named knobs so they can be adjusted without
        picking apart the rules below. */
     --cue-width: 26vw;
-    --cue-x: 2rem;  /* in from the right edge */
-    --cue-y: 6vh;   /* down from the top of the section */
+    --cue-x: 2rem;   /* in from the right edge */
+    --cue-y: -14vh;  /* down from the top of the section; negative overhangs it */
 
     position: absolute;
     right: var(--cue-x);
