@@ -6,9 +6,7 @@ import CrackerLoading2 from "../CrackerLoading/CrackerLoading2";
 import MainFeature from "../MainFeature/MainFeature";
 import useTextSplitAnim from "../CustomHook/useTextSplitAnim.jsx";
 import BriefSection from "../BriefSection/BriefSection.jsx";
-import scrollDown from "../../assets/ScrollDown.png";
 import WhySection from "../WhySection/WhySection.jsx";
-import useInView from "../CustomHook/useInView.jsx";
 import Community from "../Community/Community.jsx";
 import { motion } from "framer-motion";
 import logo from "../../assets/MainLogo.png";
@@ -26,14 +24,6 @@ export default function HeroSection({ loadProp }) {
   const tagRef2 = useRef(null);
   const tagRef3 = useRef(null);
   const pRef = useRef(null);
-  const imgRef = useRef(null);
-  const [playedOnce, setPlayedOnce] = useState(false);
-  const isVisible = useInView(imgRef, 0.1);
-  useEffect(() => {
-    if (isVisible && !playedOnce) {
-      setPlayedOnce(true);
-    }
-  }, [isVisible, playedOnce]);
 
   const tagAnim = useTextSplitAnim(tagRef, { stagger: 20, startDelay: 10, autoPlay: false });
   const tag2Anim = useTextSplitAnim(tagRef2, { stagger: 20, startDelay: 220, autoPlay: false });
@@ -163,14 +153,6 @@ export default function HeroSection({ loadProp }) {
 
       {/*  //component under hero section */}
       <div className="gradientMixer"></div>
-      <img
-        style={playedOnce ? { opacity: 1, transform: " translateX(0px)" } : {}}
-        ref={imgRef}
-        className="sd"
-        src={scrollDown}
-        alt=""
-        srcset=""
-      />
 
       <SpotlightBento />
       <ProcessSection />

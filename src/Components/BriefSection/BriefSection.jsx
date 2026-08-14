@@ -6,20 +6,30 @@ import launchCard from "../../assets/LaunchCard.png"
 import walletCard from "../../assets/walletCard.png"
 import dexCard from "../../assets/dexCard.png"
 import useInView  from "../CustomHook/useInView";
+import scrollCue from "../../assets/ScrollDown.png";
 export default function BriefSection() {
     const cardRef = useRef(null);
     const [playedOnce, setPlayedOnce] = useState(false);
     const isVisible = useInView(cardRef, 0.3);
-      
+
     const pRef = useRef(null);
       useTextSplitAnim(pRef, { stagger: 40, startDelay: 100 });
-    
+
+    // Own trigger rather than the cards' — the cue sits beside the paragraph,
+    // well above the product row, so it needs to arrive with the copy.
+    const cueRef = useRef(null);
+    const cueInView = useInView(cueRef, 0.1);
+    const [cueShown, setCueShown] = useState(false);
 
       useEffect(() => {
         if (isVisible && !playedOnce) {
           setPlayedOnce(true);
         }
       }, [isVisible, playedOnce]);
+
+      useEffect(() => {
+        if (cueInView) setCueShown(true);
+      }, [cueInView]);
 
       const products = ["Launchpad","Wallet", "Dex"];
 
@@ -67,8 +77,16 @@ export default function BriefSection() {
 <img src={crackerCoin} className="coin1" />
 <img src={crackerCoin} className="coin2" />
            <div className="centerPara">
-             <p ref={pRef}>A COMPLETE WEB3 ECOSYSTEM WITH 
+             <p ref={pRef}>A COMPLETE WEB3 ECOSYSTEM WITH
 DEX, WALLET, AND <span style={{color:"#FE6C25"}}>LAUNCHPAD</span>. DESIGNED FOR FAIR MARKETS.</p>
+             <img
+               ref={cueRef}
+               className={`briefScrollCue${cueShown ? " is-in" : ""}`}
+               src={scrollCue}
+               alt=""
+               aria-hidden="true"
+               draggable="false"
+             />
            </div>
 
            <div ref={cardRef} className="productBox">

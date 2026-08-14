@@ -13,12 +13,39 @@
 }
 
 .centerPara{
+    /* Also makes the z-index below actually apply — it was inert while this
+       was static, so the copy sat in the same layer as the blurred blobs. */
+    position: relative;
     font-size: max(4rem,2.5vw);
     width: 55%;
     text-align: center;
 z-index: 999 !important;
 font-weight:500;
    color: #684A4A;
+}
+
+/* Scroll cue, to the right of the copy. Anchored to the paragraph rather than
+   to the section, so it tracks the text wherever that lands — it used to live
+   in HeroSection at `top: 258%` against <body>, which pinned it to a fixed
+   multiple of the viewport and left it unrelated to any section. */
+.briefScrollCue{
+    position: absolute;
+    left: calc(100% + 2rem);
+    top: 50%;
+    width: 18vw;
+    min-width: 14rem;
+    max-width: 26rem;
+    height: auto;
+    pointer-events: none;
+    user-select: none;
+    opacity: 0;
+    transform: translateY(-50%) translateX(80px);
+    transition: transform 1.6s ease-in-out, opacity 1.8s ease-in-out;
+}
+
+.briefScrollCue.is-in{
+    opacity: 1;
+    transform: translateY(-50%) translateX(0);
 }
 
 .svg1,.svg2{
@@ -127,6 +154,11 @@ font-weight:500;
     .centerPara{
         font-size: 2.45rem;
         width: 85%;
+    }
+    /* At 85% width there is no margin left of the copy to sit beside, and the
+       section clips overflow — it would just be a sliver at the edge. */
+    .briefScrollCue{
+        display: none;
     }
     .coin1, .coin2{
         width: 30vw;
