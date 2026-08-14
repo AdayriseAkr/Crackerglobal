@@ -29,12 +29,22 @@ font-weight:500;
    in HeroSection at `top: 258%` against <body>, which pinned it to a fixed
    multiple of the viewport and left it unrelated to any section. */
 .briefScrollCue{
+    /* The three knobs the dev tuner writes to. Keep them as bare custom
+       properties — the tuner reads its starting values straight off these, so
+       whatever is set here is the single source of truth. */
+    --cue-width: 26vw;
+    --cue-x: 2rem;   /* gap past the paragraph's right edge */
+    --cue-y: -12rem; /* offset from the paragraph's vertical centre, up is negative */
+
     position: absolute;
-    left: calc(100% + 2rem);
+    left: calc(100% + var(--cue-x));
     top: 50%;
-    width: 18vw;
-    min-width: 14rem;
-    max-width: 26rem;
+    /* margin, not transform — transform is already carrying the reveal, and
+       folding the offset into it would make the two fight. */
+    margin-top: var(--cue-y);
+    width: var(--cue-width);
+    min-width: 16rem;
+    max-width: 42rem;
     height: auto;
     pointer-events: none;
     user-select: none;
