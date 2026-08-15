@@ -154,10 +154,10 @@ export default function HeroSection({ loadProp }) {
       {/*  //component under hero section */}
       <div className="gradientMixer"></div>
 
-      <SpotlightBento />
-      <ProcessSection />
       <MainFeature />
+      <ProcessSection />
       <BriefSection />
+      <SpotlightBento />
       <CardRotate />
       <Community />
     </>
