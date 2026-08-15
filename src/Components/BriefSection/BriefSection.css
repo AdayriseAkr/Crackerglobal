@@ -13,7 +13,7 @@
        padding: that empty band is where the scroll cue lives. Without it the
        cue had to overhang the section and landed on top of the pinned process
        section above. */
-    height: 158vh;
+    height: 198vh;
     display: flex;
    justify-content: space-evenly;
    overflow: hidden !important;
@@ -41,21 +41,21 @@ font-weight:500;
     /* Size and placement, kept as named knobs so they can be adjusted without
        picking apart the rules below.
 
-       Sized by HEIGHT, not width. The band reserved for it above is vertical,
-       and a width-driven size turns into an unpredictable height once the
-       viewport's aspect ratio is in play — on a short, wide window a 26vw cue
-       stood nearly 50vh tall and ran straight back into the copy. */
-    --cue-height: 34vh;
+       Sized by width, with a hard cap. The source is 510x428, so the cap is
+       what bounds the height too: 42rem wide never renders taller than ~352px
+       however wide the viewport gets. That cap is why width-driven sizing is
+       safe here despite the reserved band above being vertical. */
+    --cue-width: 26vw;
     --cue-x: 2rem;  /* in from the right edge */
     --cue-y: 4vh;   /* down from the top of the section */
 
     position: absolute;
     right: var(--cue-x);
     top: var(--cue-y);
-    height: var(--cue-height);
-    min-height: 18rem;
-    width: auto;
-    max-width: 42vw;
+    width: var(--cue-width);
+    min-width: 16rem;
+    max-width: 42rem;
+    height: auto;
     z-index: 99;
     pointer-events: none;
     user-select: none;
@@ -100,13 +100,13 @@ font-weight:500;
 }
 .coin1{
     left: 2%;
-    top: 0%;
+    top: 15%;
     animation: coinFloat 20s ease-in-out infinite;
 }
 
 .coin2{
     right: 2%;
-    top: 22%;
+    top: 32%;
     transform: rotateX(180deg)  rotateZ(180deg);
 }
 
