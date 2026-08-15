@@ -9,17 +9,23 @@
 .briefSectionParent{
     position: relative;
     width: 100%;
-    /* Taller than the content needs, and most of the extra sits in the top
-       padding: that empty band is where the scroll cue lives. Without it the
-       cue had to overhang the section and landed on top of the pinned process
-       section above. */
-    height: 198vh;
+    /* Taller than the content needs, and the extra sits in the top padding:
+       that empty band is where the scroll cue lives. Without it the cue had to
+       overhang the section and landed on top of the pinned process section
+       above.
+
+       The band has to clear the cue's full height. The cue renders at most
+       42rem wide, and the source is 510x428, so it stands ~352px tall — which
+       on a short window is around 50vh. These two move together: raising the
+       padding without raising the height would just squeeze the content below
+       it. */
+    height: 177vh;
     display: flex;
    justify-content: space-evenly;
    overflow: hidden !important;
     align-items: center;
     flex-direction: column;
-    padding-top: 38vh;
+    padding-top: 58vh;
     background-color: #f8f8fb;
    /* background-color: pink; */
 }
