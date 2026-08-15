@@ -3,6 +3,7 @@ import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import "./ProcessSection.css";
 import { processSteps } from "./processData";
+import useTextSplitAnim from "../CustomHook/useTextSplitAnim.jsx";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -26,7 +27,16 @@ gsap.registerPlugin(ScrollTrigger);
 // is decided by CSS off the .is-active class, so if GSAP never runs the
 // section still shows a readable step rather than a blank or a stack of four.
 
-const PIN_SCREENS_PER_STEP = 1; // viewport heights of scroll each step gets
+// Viewport heights of scroll spent moving from one step to the next.
+const STEP_SCREENS = 1;
+// Extra scroll after the last step, before the pin releases: the section fades
+// out into the page across this band rather than cutting away at full strength.
+const OUTRO_SCREENS = 0.7;
+
+const STEP_TRAVEL = (processSteps.length - 1) * STEP_SCREENS;
+const TOTAL_TRAVEL = STEP_TRAVEL + OUTRO_SCREENS;
+
+const clamp = (v, min, max) => Math.min(max, Math.max(min, v));
 // Angular gap between consecutive numbers. The visible gap between two circles
 // is arc length — radius * this — minus their diameter, so it collapses on a
 // short window where the radius bottoms out at its clamp floor. Raising it also
@@ -42,6 +52,8 @@ const prefersReducedMotion = () =>
 
 export default function ProcessSection() {
   const sectionRef = useRef(null);
+  const innerRef = useRef(null);
+  const titleRef = useRef(null);
   const ringRef = useRef(null);
   const panelRefs = useRef([]);
   const imageRefs = useRef([]);
@@ -49,6 +61,10 @@ export default function ProcessSection() {
   const [active, setActive] = useState(0);
   const activeRef = useRef(0); // read inside the scroll callback without re-subscribing
   const previousRef = useRef(0);
+
+  // Same per-character reveal the hero and the other section headings use; it
+  // plays itself once the heading scrolls into view.
+  useTextSplitAnim(titleRef, { stagger: 18, threshold: 0.4 });
 
   // Only true while the desktop pin is live. Below 768px every panel is on
   // screen at once, so hiding the inactive ones from assistive tech would be a
@@ -70,17 +86,25 @@ export default function ProcessSection() {
       const trigger = ScrollTrigger.create({
         trigger: section,
         start: "top top",
-        end: () =>
-          `+=${window.innerHeight * processSteps.length * PIN_SCREENS_PER_STEP}`,
+        end: () => `+=${window.innerHeight * TOTAL_TRAVEL}`,
         pin: true,
         pinSpacing: true,
         anticipatePin: 1,
         invalidateOnRefresh: true,
         onUpdate: (self) => {
+          // Distance travelled, in viewport heights. Split into the stepping
+          // band and the outro band that follows it.
+          const travelled = self.progress * TOTAL_TRAVEL;
+
           // Continuous step position, 0 .. n-1. The ring follows this rather
           // than the rounded index, so it turns smoothly with the wheel
-          // instead of snapping between numbers.
-          const position = self.progress * (processSteps.length - 1);
+          // instead of snapping between numbers. Clamped so the ring holds
+          // still through the outro instead of over-rotating.
+          const position = clamp(
+            travelled / STEP_SCREENS,
+            0,
+            processSteps.length - 1
+          );
 
           ringRef.current?.style.setProperty(
             "--ring-angle",
@@ -94,11 +118,35 @@ export default function ProcessSection() {
             activeRef.current = index;
             setActive(index);
           }
+
+          // Everything inside fades out across the outro, revealing the page
+          // colour beneath. Written straight to the node: it changes every
+          // frame, and opacity is composited so it costs no layout.
+          const outro = clamp(
+            (travelled - STEP_TRAVEL) / OUTRO_SCREENS,
+            0,
+            1
+          );
+          if (innerRef.current) {
+            innerRef.current.style.opacity = (1 - outro).toFixed(3);
+          }
         },
       });
 
       return () => {
         trigger.kill();
+
+        // Hand the panels and images back to CSS. The mobile layout shows all
+        // of them, but GSAP's inline opacity/filter/transform would outrank
+        // the stylesheet and leave them blurred and invisible after a resize
+        // across the breakpoint. Same for the outro opacity and ring angle,
+        // which are written directly to their nodes.
+        gsap.set([...panelRefs.current, ...imageRefs.current].filter(Boolean), {
+          clearProps: "opacity,transform,filter",
+        });
+        innerRef.current?.style.removeProperty("opacity");
+        ringRef.current?.style.removeProperty("--ring-angle");
+
         setPinned(false);
         activeRef.current = 0;
         setActive(0);
@@ -130,13 +178,16 @@ export default function ProcessSection() {
 
     if (prefersReducedMotion()) {
       gsap.set(outgoing, { opacity: 0 });
-      gsap.set(incoming, { opacity: 1, y: 0, scale: 1 });
+      gsap.set(incoming, { opacity: 1, y: 0, scale: 1, filter: "blur(0px)" });
       return;
     }
 
+    // Blur carries the handoff: the outgoing pair defocuses as it leaves, the
+    // incoming pair resolves from soft to sharp as it lands.
     gsap.to(outPanel, {
       opacity: 0,
       y: -36,
+      filter: "blur(10px)",
       duration: 0.38,
       ease: "power2.in",
     });
@@ -144,22 +195,31 @@ export default function ProcessSection() {
       opacity: 0,
       y: -28,
       scale: 0.97,
+      filter: "blur(14px)",
       duration: 0.4,
       ease: "power2.in",
     });
 
     gsap.fromTo(
       inPanel,
-      { opacity: 0, y: 48 },
-      { opacity: 1, y: 0, duration: 0.62, ease: "power3.out", delay: 0.08 }
+      { opacity: 0, y: 48, filter: "blur(12px)" },
+      {
+        opacity: 1,
+        y: 0,
+        filter: "blur(0px)",
+        duration: 0.62,
+        ease: "power3.out",
+        delay: 0.08,
+      }
     );
     gsap.fromTo(
       inImage,
-      { opacity: 0, y: 64, scale: 0.96 },
+      { opacity: 0, y: 64, scale: 0.96, filter: "blur(16px)" },
       {
         opacity: 1,
         y: 0,
         scale: 1,
+        filter: "blur(0px)",
         duration: 0.7,
         ease: "power3.out",
         delay: 0.08,
@@ -176,10 +236,10 @@ export default function ProcessSection() {
       <span className="processFade processFade--left" aria-hidden="true" />
       <span className="processFade processFade--top" aria-hidden="true" />
 
-      <div className="processInner">
+      <div className="processInner" ref={innerRef}>
         <header className="processIntro">
           <span className="processEyebrow">The Process</span>
-          <h1>Four products, one ecosystem</h1>
+          <h1 ref={titleRef}>Four products, one ecosystem</h1>
         </header>
 
         <div className="processBody">

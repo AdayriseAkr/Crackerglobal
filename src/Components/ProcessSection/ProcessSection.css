@@ -379,4 +379,15 @@
   .processRingStep {
     transition: none;
   }
+
+  /* useTextSplitAnim has no reduced-motion path of its own and writes inline
+     styles, so neutralise them here — without this the heading would stay
+     stuck at its hidden start state. Scoped to this section; the shared hook
+     is untouched. */
+  .processIntro .innerChar {
+    transform: none !important;
+    filter: none !important;
+    opacity: 1 !important;
+    transition: none !important;
+  }
 }
