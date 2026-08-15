@@ -9,13 +9,17 @@
 .briefSectionParent{
     position: relative;
     width: 100%;
-    height: 130vh;
+    /* Taller than the content needs, and most of the extra sits in the top
+       padding: that empty band is where the scroll cue lives. Without it the
+       cue had to overhang the section and landed on top of the pinned process
+       section above. */
+    height: 158vh;
     display: flex;
    justify-content: space-evenly;
    overflow: hidden !important;
     align-items: center;
     flex-direction: column;
-    padding-top: 120px;
+    padding-top: 38vh;
     background-color: #f8f8fb;
    /* background-color: pink; */
 }
@@ -35,18 +39,23 @@ font-weight:500;
    go negative: the shell doesn't clip, so the cue can overhang deliberately. */
 .briefScrollCue{
     /* Size and placement, kept as named knobs so they can be adjusted without
-       picking apart the rules below. */
-    --cue-width: 26vw;
-    --cue-x: 2rem;   /* in from the right edge */
-    --cue-y: -28vh;  /* down from the top of the section; negative overhangs it */
+       picking apart the rules below.
+
+       Sized by HEIGHT, not width. The band reserved for it above is vertical,
+       and a width-driven size turns into an unpredictable height once the
+       viewport's aspect ratio is in play — on a short, wide window a 26vw cue
+       stood nearly 50vh tall and ran straight back into the copy. */
+    --cue-height: 34vh;
+    --cue-x: 2rem;  /* in from the right edge */
+    --cue-y: 4vh;   /* down from the top of the section */
 
     position: absolute;
     right: var(--cue-x);
     top: var(--cue-y);
-    width: var(--cue-width);
-    min-width: 16rem;
-    max-width: 42rem;
-    height: auto;
+    height: var(--cue-height);
+    min-height: 18rem;
+    width: auto;
+    max-width: 42vw;
     z-index: 99;
     pointer-events: none;
     user-select: none;
