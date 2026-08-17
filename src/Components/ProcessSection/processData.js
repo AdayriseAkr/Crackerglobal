@@ -1,13 +1,17 @@
-// Steps for the pinned process section. Placeholder copy over the four real
-// Cracker products — swap the strings, keep the shape.
+// Steps for the pinned process section.
 //
-// Every `cta.href` is a placeholder anchor, not a real destination. They are
+// `modifiers`-free by design: everything here is content. The phase number is
+// derived from array order by the component, so reordering renumbers itself.
+//
+// Every `href` is a placeholder anchor, not a real destination. They are
 // written as fragments so a stray click can't navigate off the page before the
 // real URLs land.
 //
-// The count is not hardcoded anywhere: the tracker, the scroll distance and the
-// step boundaries all derive from this array's length, so adding a fifth step
-// is a matter of adding an entry here.
+// CTA labels carry no arrow glyph — the button renders its own arrow as an SVG
+// beside the label, so a "→" in the string would show up twice.
+//
+// Grid placement and the ring are driven by array order, so the ORDER of this
+// array is load-bearing.
 
 import launchpadImage from "../../assets/launchpad.png";
 import dexImage from "../../assets/dexCard.png";
@@ -22,31 +26,31 @@ export const processSteps = [
       "Tokens go live with liquidity locked and supply distributed from block one. Every launch is bonded, auditable, and free of the insider allocation that quietly decides most of them.",
     tags: ["Fair Launch", "Locked Liquidity", "Anti-Snipe"],
     image: launchpadImage,
-    cta: { label: "Open Launchpad", href: "#launchpad" },
+    cta: { label: "Launch a Token", href: "#launchpad" },
   },
   {
-    id: "dex",
-    title: "Decentralised Exchange",
+    id: "swap",
+    title: "CrackerSwap",
     description:
-      "Route across every supported chain in a single transaction. Orders settle through DevvE CTS rather than a public mempool, so there is no front-running to price in and no bridge to babysit.",
-    tags: ["Zero MEV", "No Slippage", "Multi-Chain"],
+      "Find the cheapest, fastest route across chains before you commit. Bridge in from the major networks, with the total cost shown upfront so there's no surprise at signing.",
+    tags: ["Best Rate", "Cross-Chain Bridge", "No Hidden Fees"],
     image: dexImage,
-    cta: { label: "Start Trading", href: "#dex" },
+    cta: { label: "Start Swapping", href: "#crackerswap" },
   },
   {
     id: "wallet",
-    title: "Wallet",
+    title: "Crackerwallet",
     description:
-      "Self-custody across every chain the ecosystem touches, with launch access and swap routing built in rather than bolted on. Your keys never leave the device.",
-    tags: ["Self-Custody", "Hardware Ready", "One Balance"],
+      "A self-custody wallet with native BTC and SOL, not wrapped versions pretending to be them. Launch, swap, bridge, and chart from one app, with duplicate-ticker protection so scam clones can't pass as the real thing.",
+    tags: ["Self-Custody", "Native Assets", "Anti-Scam"],
     image: walletImage,
     // `downloads` instead of `href`: this CTA opens the platform picker rather
     // than navigating. Each entry's `id` selects its badge styling.
     cta: {
-      label: "Get the Wallet",
-      dialogTitle: "Get the Cracker Wallet",
+      label: "Get Early Access",
+      dialogTitle: "Get Crackerwallet",
       dialogSubtitle:
-        "Self-custody across every chain the ecosystem touches. Choose your platform.",
+        "Native BTC and SOL, self-custody, with duplicate-ticker protection built in. Choose your platform.",
       downloads: [
         { id: "chrome", href: "#chrome-web-store" },
         { id: "play", href: "#google-play" },
@@ -55,12 +59,12 @@ export const processSteps = [
     },
   },
   {
-    id: "bot",
-    title: "Twitter Bot",
+    id: "eggbot",
+    title: "Egg Bot",
     description:
-      "Live launch alerts, price moves and holder milestones posted the moment they happen. Track any Cracker token straight from the timeline, no dashboard required.",
-    tags: ["Live Alerts", "Auto-Post", "Sentiment"],
+      "Deploy a token straight from a tweet or a Telegram thread, no browser tab required at the exact moment your idea is hot. Non-custodial by design, you sign every transaction, we never touch your keys.",
+    tags: ["Deploy from X", "Deploy from Telegram", "Non-Custodial"],
     image: botImage,
-    cta: { label: "Follow the Bot", href: "#bot" },
+    cta: { label: "Try Egg Bot", href: "#egg-bot" },
   },
 ];
