@@ -15,7 +15,9 @@ import { lenisRef } from "../Lenis.jsx";
 // the site's: these are the marks people scan for, and restyling them into the
 // Cracker palette would make them harder to recognise, not more consistent.
 
-const EXIT_MS = 200;
+// Must cover the exit animations in DownloadDialog.css, or the dialog unmounts
+// part-way through its own fade.
+const EXIT_MS = 300;
 
 function ChromeMark() {
   // Three 120-degree wedges under a white ring and a blue centre. The wedge

@@ -400,8 +400,8 @@ export default function ProcessSection() {
           onClose={() => {
             setDialogOpen(false);
             // Clear after the exit animation, so the copy doesn't vanish
-            // mid-fade.
-            setTimeout(() => setDownloadsFor(null), 240);
+            // mid-fade. Has to outlast EXIT_MS in DownloadDialog.jsx.
+            setTimeout(() => setDownloadsFor(null), 340);
           }}
         />
       )}

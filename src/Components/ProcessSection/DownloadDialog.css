@@ -18,11 +18,11 @@
   background: rgba(74, 50, 50, 0.52);
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
-  animation: dlOverlayIn 0.24s ease forwards;
+  animation: dlOverlayIn 0.4s ease forwards;
 }
 
 .dlOverlay.is-closing {
-  animation: dlOverlayOut 0.2s ease forwards;
+  animation: dlOverlayOut 0.28s ease forwards;
 }
 
 .dlPanel {
@@ -44,11 +44,11 @@
      shadow is drawn. Without a fill the element simply returns to its normal
      styles when the animation ends, and inset(0) looks identical to the
      unclipped state, so nothing jumps. */
-  animation: dlPanelIn 0.62s cubic-bezier(0.22, 1, 0.36, 1);
+  animation: dlPanelIn 1.05s cubic-bezier(0.65, 0, 0.35, 1);
 }
 
 .dlOverlay.is-closing .dlPanel {
-  animation: dlPanelOut 0.2s ease forwards;
+  animation: dlPanelOut 0.28s ease forwards;
 }
 
 @keyframes dlOverlayIn {
@@ -66,12 +66,16 @@
   0% {
     opacity: 0;
     clip-path: inset(48% 44% 48% 44% round 24px);
-    animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+    /* Eased at both ends, so the bar grows out of nothing rather than
+       snapping into motion. */
+    animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1);
   }
-  46% {
+  44% {
     opacity: 1;
     clip-path: inset(47% 0 47% 0 round 24px);
-    animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+    /* The unfold picks up straight away and settles long, which stops the
+       handover between the two beats reading as a stall. */
+    animation-timing-function: cubic-bezier(0.33, 1, 0.68, 1);
   }
   100% {
     opacity: 1;
@@ -183,7 +187,7 @@
   line-height: 1.15;
   color: #4a3232;
   padding-right: 4rem;
-  animation: dlRiseIn 0.5s cubic-bezier(0.22, 1, 0.36, 1) 0.3s backwards;
+  animation: dlRiseIn 0.62s cubic-bezier(0.33, 1, 0.68, 1) 0.5s backwards;
 }
 
 .dlSubtitle {
@@ -192,7 +196,7 @@
   line-height: 1.5;
   color: #684a4a;
   max-width: 42ch;
-  animation: dlRiseIn 0.5s cubic-bezier(0.22, 1, 0.36, 1) 0.36s backwards;
+  animation: dlRiseIn 0.62s cubic-bezier(0.33, 1, 0.68, 1) 0.6s backwards;
 }
 
 .dlOptions {
@@ -216,12 +220,12 @@
     box-shadow 0.25s cubic-bezier(0.25, 1, 0.5, 1);
   /* `backwards`, so each stays hidden through its delay rather than flashing
      at full opacity before the panel has finished opening. */
-  animation: dlRiseIn 0.46s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+  animation: dlRiseIn 0.6s cubic-bezier(0.33, 1, 0.68, 1) backwards;
 }
 
-.dlBadge:nth-child(1) { animation-delay: 0.44s; }
-.dlBadge:nth-child(2) { animation-delay: 0.52s; }
-.dlBadge:nth-child(3) { animation-delay: 0.6s; }
+.dlBadge:nth-child(1) { animation-delay: 0.74s; }
+.dlBadge:nth-child(2) { animation-delay: 0.86s; }
+.dlBadge:nth-child(3) { animation-delay: 0.98s; }
 
 .dlBadge:hover {
   transform: translateY(-2px);
