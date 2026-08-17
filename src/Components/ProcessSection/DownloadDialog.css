@@ -18,7 +18,7 @@
   background: rgba(74, 50, 50, 0.52);
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
-  animation: dlOverlayIn 0.22s ease forwards;
+  animation: dlOverlayIn 0.24s ease forwards;
 }
 
 .dlOverlay.is-closing {
@@ -31,11 +31,20 @@
   background: #ffffff;
   border-radius: 24px;
   padding: 4rem 3.6rem 3.6rem;
+  /* Clips the blurred colour blobs to the rounded corners. */
+  overflow: hidden;
   box-shadow:
     0 40px 90px -24px rgba(74, 50, 50, 0.45),
     0 14px 32px -18px rgba(74, 50, 50, 0.3);
-  animation: dlPanelIn 0.28s cubic-bezier(0.25, 1, 0.5, 1) forwards;
   outline: none;
+
+  /* Note the absence of `forwards`. The panel's resting state is unclipped, so
+     letting the animation fill would leave clip-path: inset(0) stuck on it —
+     which keeps clipping the box-shadow, since clip-path is applied after the
+     shadow is drawn. Without a fill the element simply returns to its normal
+     styles when the animation ends, and inset(0) looks identical to the
+     unclipped state, so nothing jumps. */
+  animation: dlPanelIn 0.62s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .dlOverlay.is-closing .dlPanel {
@@ -49,12 +58,94 @@
 @keyframes dlOverlayOut {
   to { opacity: 0; }
 }
+
+/* Opens in two beats: a short bar stretches out to full width, then the height
+   unfolds from it. clip-path rather than scale, so the type inside is never
+   squashed and snapped back — it is uncovered at its final size. */
 @keyframes dlPanelIn {
-  from { opacity: 0; transform: translateY(16px) scale(0.97); }
-  to { opacity: 1; transform: none; }
+  0% {
+    opacity: 0;
+    clip-path: inset(48% 44% 48% 44% round 24px);
+    animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  46% {
+    opacity: 1;
+    clip-path: inset(47% 0 47% 0 round 24px);
+    animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  100% {
+    opacity: 1;
+    clip-path: inset(0 0 0 0 round 24px);
+  }
 }
+
 @keyframes dlPanelOut {
-  to { opacity: 0; transform: translateY(8px) scale(0.98); }
+  from {
+    opacity: 1;
+    clip-path: inset(0 0 0 0 round 24px);
+  }
+  to {
+    opacity: 0;
+    clip-path: inset(44% 0 44% 0 round 24px);
+  }
+}
+
+/* Content rises in behind the panel's own opening, so the buttons read as
+   arriving rather than being there all along. */
+@keyframes dlRiseIn {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ---- brand glow ----
+   Heavily blurred colour, the same device the brief section uses behind its
+   copy. Sits under the content rather than tinting the panel's fill, so the
+   surface stays white and only the corners pick up warmth. */
+.dlGlow {
+  position: absolute;
+  z-index: 0;
+  border-radius: 50%;
+  pointer-events: none;
+  filter: blur(38px);
+}
+
+.dlGlow--top {
+  top: -9rem;
+  right: -6rem;
+  width: 23rem;
+  height: 23rem;
+  background: radial-gradient(
+    circle,
+    rgba(254, 108, 37, 0.4) 0%,
+    rgba(254, 108, 37, 0) 70%
+  );
+}
+
+.dlGlow--bottom {
+  bottom: -10rem;
+  left: -7rem;
+  width: 25rem;
+  height: 25rem;
+  background: radial-gradient(
+    circle,
+    rgba(251, 216, 180, 0.75) 0%,
+    rgba(251, 216, 180, 0) 70%
+  );
+}
+
+/* Everything real sits above the glow. */
+.dlClose,
+.dlTitle,
+.dlSubtitle,
+.dlOptions {
+  position: relative;
+  z-index: 1;
 }
 
 .dlClose {
@@ -92,6 +183,7 @@
   line-height: 1.15;
   color: #4a3232;
   padding-right: 4rem;
+  animation: dlRiseIn 0.5s cubic-bezier(0.22, 1, 0.36, 1) 0.3s backwards;
 }
 
 .dlSubtitle {
@@ -100,6 +192,7 @@
   line-height: 1.5;
   color: #684a4a;
   max-width: 42ch;
+  animation: dlRiseIn 0.5s cubic-bezier(0.22, 1, 0.36, 1) 0.36s backwards;
 }
 
 .dlOptions {
@@ -114,28 +207,36 @@
 .dlBadge {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 10px 18px;
+  gap: 13px;
+  padding: 14px 20px;
   border-radius: 10px;
   text-decoration: none;
   transition:
     transform 0.25s cubic-bezier(0.25, 1, 0.5, 1),
     box-shadow 0.25s cubic-bezier(0.25, 1, 0.5, 1);
+  /* `backwards`, so each stays hidden through its delay rather than flashing
+     at full opacity before the panel has finished opening. */
+  animation: dlRiseIn 0.46s cubic-bezier(0.22, 1, 0.36, 1) backwards;
 }
+
+.dlBadge:nth-child(1) { animation-delay: 0.44s; }
+.dlBadge:nth-child(2) { animation-delay: 0.52s; }
+.dlBadge:nth-child(3) { animation-delay: 0.6s; }
 
 .dlBadge:hover {
   transform: translateY(-2px);
 }
 
 .dlBadge__mark {
-  width: 30px;
-  height: 30px;
+  width: 34px;
+  height: 34px;
   flex-shrink: 0;
 }
 
 .dlBadge__text {
   display: flex;
   flex-direction: column;
+  gap: 2px;
   line-height: 1.1;
   text-align: left;
 }
@@ -146,7 +247,7 @@
 }
 
 .dlBadge__large {
-  font-size: 19px;
+  font-size: 20px;
   font-weight: 600;
   letter-spacing: -0.01em;
 }
@@ -195,8 +296,8 @@
 }
 .dlBadge--appstore .dlBadge__mark {
   /* Apple's mark reads small against the cap height of the wordmark. */
-  width: 26px;
-  height: 26px;
+  width: 29px;
+  height: 29px;
 }
 .dlBadge--appstore:hover {
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.22);
@@ -216,16 +317,17 @@
   .dlOverlay,
   .dlOverlay.is-closing,
   .dlPanel,
-  .dlOverlay.is-closing .dlPanel {
+  .dlOverlay.is-closing .dlPanel,
+  .dlTitle,
+  .dlSubtitle,
+  .dlBadge {
     animation: none;
   }
   .dlBadge,
   .dlClose {
     transition: none;
   }
-  .dlBadge:hover {
-    transform: none;
-  }
+  .dlBadge:hover,
   .dlClose:hover {
     transform: none;
   }

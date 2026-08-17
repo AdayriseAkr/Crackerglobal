@@ -122,6 +122,11 @@ export default function DownloadDialog({ open, title, subtitle, downloads, onClo
         tabIndex={-1}
         ref={panelRef}
       >
+        {/* Blurred brand colour, sitting under the content so the panel's fill
+            stays white and only its corners pick up warmth. */}
+        <span className="dlGlow dlGlow--top" aria-hidden="true" />
+        <span className="dlGlow dlGlow--bottom" aria-hidden="true" />
+
         <button type="button" className="dlClose" onClick={close} aria-label="Close">
           <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false">
             <path
