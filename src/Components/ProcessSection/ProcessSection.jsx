@@ -227,6 +227,34 @@ export default function ProcessSection() {
     );
   }, [active]);
 
+  // The CTA's glare tracks the pointer across the button. Written as custom
+  // properties on the element rather than through state: this fires on every
+  // mousemove, and re-rendering the section for it would be absurd.
+  const trackShine = (event) => {
+    const el = event.currentTarget;
+    const rect = el.getBoundingClientRect();
+    el.style.setProperty(
+      "--shine-x",
+      `${(((event.clientX - rect.left) / rect.width) * 100).toFixed(2)}%`
+    );
+    el.style.setProperty(
+      "--shine-y",
+      `${(((event.clientY - rect.top) / rect.height) * 100).toFixed(2)}%`
+    );
+  };
+
+  const showShine = (event) => {
+    // A light chasing the cursor is exactly the kind of motion this opts out
+    // of; the button keeps its plain CSS hover instead.
+    if (prefersReducedMotion()) return;
+    trackShine(event);
+    event.currentTarget.style.setProperty("--shine", "1");
+  };
+
+  const hideShine = (event) => {
+    event.currentTarget.style.setProperty("--shine", "0");
+  };
+
   return (
     <section className="processSection" ref={sectionRef}>
       {/* Dissolve the ring into the page at the edges, so the arc has no hard
@@ -284,6 +312,29 @@ export default function ProcessSection() {
                     </li>
                   ))}
                 </ul>
+
+                <a
+                  className="processCta"
+                  href={step.cta.href}
+                  // Inactive panels are invisible but still in the document,
+                  // so their links would otherwise be reachable by tab.
+                  tabIndex={pinned && index !== active ? -1 : undefined}
+                  onMouseEnter={showShine}
+                  onMouseMove={trackShine}
+                  onMouseLeave={hideShine}
+                >
+                  <span>{step.cta.label}</span>
+                  <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+                    <path
+                      d="M2.5 8h10M8.5 4l4 4-4 4"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1.8"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </a>
               </article>
             ))}
           </div>

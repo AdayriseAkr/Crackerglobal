@@ -276,6 +276,87 @@
   font-weight: 600;
 }
 
+/* ---- CTA ----
+   Warm gold fill, with a bright highlight that follows the cursor across the
+   button while it's hovered. --shine-x/y are written by the pointer handlers;
+   --shine is the on/off, so the glare fades in and out rather than snapping. */
+.processCta {
+  --shine-x: 50%;
+  --shine-y: 50%;
+  --shine: 0;
+
+  position: relative;
+  /* Contains the screen blend below, so it can't lighten the page behind. */
+  isolation: isolate;
+  overflow: hidden;
+  align-self: flex-start;
+  margin-top: 0.8rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.9rem;
+  padding: 1.3rem 2.4rem;
+  border-radius: 999px;
+  text-decoration: none;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #ffffff;
+  background: linear-gradient(135deg, #ffab48 0%, #fe6c25 52%, #ef5508 100%);
+  box-shadow:
+    inset 0 0 18px rgba(255, 255, 255, 0.42),
+    0 12px 26px -12px rgba(239, 85, 8, 0.7);
+  transition:
+    transform 0.35s cubic-bezier(0.25, 1, 0.5, 1),
+    box-shadow 0.35s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.processCta:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    inset 0 0 20px rgba(255, 255, 255, 0.5),
+    0 16px 32px -12px rgba(239, 85, 8, 0.85);
+}
+
+.processCta:focus-visible {
+  outline: 2px solid var(--text-strong);
+  outline-offset: 3px;
+}
+
+/* The travelling glare. `screen` over the warm fill reads as hot gold rather
+   than a flat white wash — the fill's own colour still shows through it. */
+.processCta::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: var(--shine);
+  mix-blend-mode: screen;
+  transition: opacity 0.28s ease;
+  background: radial-gradient(
+    circle 7rem at var(--shine-x) var(--shine-y),
+    rgba(255, 251, 228, 0.95) 0%,
+    rgba(255, 214, 130, 0.6) 34%,
+    rgba(255, 176, 70, 0) 70%
+  );
+}
+
+/* Label and arrow ride above the glare. */
+.processCta > * {
+  position: relative;
+  z-index: 2;
+}
+
+.processCta svg {
+  width: 1.5rem;
+  height: 1.5rem;
+  flex-shrink: 0;
+  transition: transform 0.35s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.processCta:hover svg {
+  transform: translateX(3px);
+}
+
 /* ---- right: visuals, stacked ---- */
 .processVisual {
   position: relative;
@@ -283,7 +364,7 @@
   grid-column: 3;
   min-height: 34rem;
   border-radius: 28px;
-  background-color: var(--surface);
+  background-color: transparent;
   overflow: hidden;
 }
 
@@ -383,6 +464,20 @@
 @media (prefers-reduced-motion: reduce) {
   .processRingStep {
     transition: none;
+  }
+
+  /* The handler never switches --shine on here, so the button is left with a
+     plain hover instead of a light chasing the cursor. */
+  .processCta,
+  .processCta svg,
+  .processCta::after {
+    transition: none;
+  }
+  .processCta:hover {
+    transform: none;
+  }
+  .processCta:hover svg {
+    transform: none;
   }
 
   /* useTextSplitAnim has no reduced-motion path of its own and writes inline
