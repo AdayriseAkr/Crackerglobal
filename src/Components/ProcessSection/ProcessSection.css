@@ -287,12 +287,17 @@
   overflow: hidden;
 }
 
+/* `contain`, not `cover`: these are transparent-background product
+   illustrations in portrait, and the panel is landscape — cover would scale
+   them to fill and crop away the top and bottom of each subject. The padding
+   keeps them off the panel's edges. */
 .processImage {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
+  padding: 3rem;
   opacity: 0;
   will-change: transform, opacity;
 }

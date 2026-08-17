@@ -5,10 +5,10 @@
 // step boundaries all derive from this array's length, so adding a fifth step
 // is a matter of adding an entry here.
 
-import launchpadImage from "../../assets/LaunchCard.png";
+import launchpadImage from "../../assets/launchpad.png";
 import dexImage from "../../assets/dexCard.png";
-import walletImage from "../../assets/walletCard.png";
-import botImage from "../../assets/robo2nd.png";
+import walletImage from "../../assets/wallet.png";
+import botImage from "../../assets/xbot.png";
 
 export const processSteps = [
   {
