@@ -4,6 +4,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import "./ProcessSection.css";
 import { processSteps } from "./processData";
 import useTextSplitAnim from "../CustomHook/useTextSplitAnim.jsx";
+import DownloadDialog from "./DownloadDialog.jsx";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -70,6 +71,15 @@ export default function ProcessSection() {
   // screen at once, so hiding the inactive ones from assistive tech would be a
   // lie about what's actually rendered.
   const [pinned, setPinned] = useState(false);
+
+  // The step whose download picker is open, or null. Holds the step rather
+  // than a boolean so the dialog keeps its content through the exit animation.
+  const [downloadsFor, setDownloadsFor] = useState(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
+
+  useEffect(() => {
+    if (downloadsFor) setDialogOpen(true);
+  }, [downloadsFor]);
 
   useLayoutEffect(() => {
     const section = sectionRef.current;
@@ -313,28 +323,50 @@ export default function ProcessSection() {
                   ))}
                 </ul>
 
-                <a
-                  className="processCta"
-                  href={step.cta.href}
-                  // Inactive panels are invisible but still in the document,
-                  // so their links would otherwise be reachable by tab.
-                  tabIndex={pinned && index !== active ? -1 : undefined}
-                  onMouseEnter={showShine}
-                  onMouseMove={trackShine}
-                  onMouseLeave={hideShine}
-                >
-                  <span>{step.cta.label}</span>
-                  <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false">
-                    <path
-                      d="M2.5 8h10M8.5 4l4 4-4 4"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="1.8"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                </a>
+                {/* A step with `downloads` opens the platform picker, so it
+                    has to be a real button — an anchor that goes nowhere is a
+                    link to assistive tech and offers a useless context menu. */}
+                {(() => {
+                  const shared = {
+                    className: "processCta",
+                    // Inactive panels are invisible but still in the document,
+                    // so their controls would otherwise be reachable by tab.
+                    tabIndex: pinned && index !== active ? -1 : undefined,
+                    onMouseEnter: showShine,
+                    onMouseMove: trackShine,
+                    onMouseLeave: hideShine,
+                  };
+                  const content = (
+                    <>
+                      <span>{step.cta.label}</span>
+                      <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+                        <path
+                          d="M2.5 8h10M8.5 4l4 4-4 4"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="1.8"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                    </>
+                  );
+
+                  return step.cta.downloads ? (
+                    <button
+                      type="button"
+                      {...shared}
+                      aria-haspopup="dialog"
+                      onClick={() => setDownloadsFor(step)}
+                    >
+                      {content}
+                    </button>
+                  ) : (
+                    <a {...shared} href={step.cta.href}>
+                      {content}
+                    </a>
+                  );
+                })()}
               </article>
             ))}
           </div>
@@ -358,6 +390,21 @@ export default function ProcessSection() {
           </div>
         </div>
       </div>
+
+      {downloadsFor && (
+        <DownloadDialog
+          open={dialogOpen}
+          title={downloadsFor.cta.dialogTitle}
+          subtitle={downloadsFor.cta.dialogSubtitle}
+          downloads={downloadsFor.cta.downloads}
+          onClose={() => {
+            setDialogOpen(false);
+            // Clear after the exit animation, so the copy doesn't vanish
+            // mid-fade.
+            setTimeout(() => setDownloadsFor(null), 240);
+          }}
+        />
+      )}
     </section>
   );
 }

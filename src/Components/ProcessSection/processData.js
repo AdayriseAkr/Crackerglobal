@@ -40,7 +40,19 @@ export const processSteps = [
       "Self-custody across every chain the ecosystem touches, with launch access and swap routing built in rather than bolted on. Your keys never leave the device.",
     tags: ["Self-Custody", "Hardware Ready", "One Balance"],
     image: walletImage,
-    cta: { label: "Get the Wallet", href: "#wallet" },
+    // `downloads` instead of `href`: this CTA opens the platform picker rather
+    // than navigating. Each entry's `id` selects its badge styling.
+    cta: {
+      label: "Get the Wallet",
+      dialogTitle: "Get the Cracker Wallet",
+      dialogSubtitle:
+        "Self-custody across every chain the ecosystem touches. Choose your platform.",
+      downloads: [
+        { id: "chrome", href: "#chrome-web-store" },
+        { id: "play", href: "#google-play" },
+        { id: "appstore", href: "#app-store" },
+      ],
+    },
   },
   {
     id: "bot",

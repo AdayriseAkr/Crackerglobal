@@ -1,0 +1,232 @@
+/* Download dialog.
+   Reminder: html { font-size: 10px } in index.css, so 1rem = 10px.
+
+   The panel follows the Cracker palette. The three badges inside it do NOT —
+   each one wears its own platform's design language, because those marks are
+   what people scan for. Restyling them into our colours would make them less
+   recognisable, not more consistent. Their internals are in px for the same
+   reason: they're reproducing fixed specs, not our type scale. */
+
+.dlOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2147482000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2.4rem;
+  background: rgba(74, 50, 50, 0.52);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  animation: dlOverlayIn 0.22s ease forwards;
+}
+
+.dlOverlay.is-closing {
+  animation: dlOverlayOut 0.2s ease forwards;
+}
+
+.dlPanel {
+  position: relative;
+  width: min(52rem, 100%);
+  background: #ffffff;
+  border-radius: 24px;
+  padding: 4rem 3.6rem 3.6rem;
+  box-shadow:
+    0 40px 90px -24px rgba(74, 50, 50, 0.45),
+    0 14px 32px -18px rgba(74, 50, 50, 0.3);
+  animation: dlPanelIn 0.28s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+  outline: none;
+}
+
+.dlOverlay.is-closing .dlPanel {
+  animation: dlPanelOut 0.2s ease forwards;
+}
+
+@keyframes dlOverlayIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes dlOverlayOut {
+  to { opacity: 0; }
+}
+@keyframes dlPanelIn {
+  from { opacity: 0; transform: translateY(16px) scale(0.97); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes dlPanelOut {
+  to { opacity: 0; transform: translateY(8px) scale(0.98); }
+}
+
+.dlClose {
+  position: absolute;
+  top: 1.6rem;
+  right: 1.6rem;
+  width: 3.6rem;
+  height: 3.6rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  background: #f5e9e3;
+  color: #684a4a;
+  transition:
+    background-color 0.3s cubic-bezier(0.25, 1, 0.5, 1),
+    color 0.3s cubic-bezier(0.25, 1, 0.5, 1),
+    transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+}
+.dlClose svg {
+  width: 1.6rem;
+  height: 1.6rem;
+}
+.dlClose:hover {
+  background: #fe6c25;
+  color: #ffffff;
+  transform: rotate(90deg);
+}
+
+.dlTitle {
+  font-size: max(2.4rem, 1.7vw);
+  font-weight: 700;
+  line-height: 1.15;
+  color: #4a3232;
+  padding-right: 4rem;
+}
+
+.dlSubtitle {
+  margin-top: 1rem;
+  font-size: 1.4rem;
+  line-height: 1.5;
+  color: #684a4a;
+  max-width: 42ch;
+}
+
+.dlOptions {
+  margin-top: 2.8rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+/* ---- badges ----
+   Shared geometry only; every colour, border and font below is per-platform. */
+.dlBadge {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 18px;
+  border-radius: 10px;
+  text-decoration: none;
+  transition:
+    transform 0.25s cubic-bezier(0.25, 1, 0.5, 1),
+    box-shadow 0.25s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.dlBadge:hover {
+  transform: translateY(-2px);
+}
+
+.dlBadge__mark {
+  width: 30px;
+  height: 30px;
+  flex-shrink: 0;
+}
+
+.dlBadge__text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+  text-align: left;
+}
+
+.dlBadge__small {
+  font-size: 11px;
+  letter-spacing: 0.01em;
+}
+
+.dlBadge__large {
+  font-size: 19px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+/* Chrome Web Store — Google's light surface: white card, #dadce0 hairline,
+   #3c4043 text, Roboto (falling back to Arial, which is close enough that no
+   extra font has to be loaded). */
+.dlBadge--chrome {
+  background: #ffffff;
+  border: 1px solid #dadce0;
+  color: #3c4043;
+  font-family: Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+.dlBadge--chrome .dlBadge__small {
+  color: #5f6368;
+}
+.dlBadge--chrome:hover {
+  box-shadow: 0 1px 3px rgba(60, 64, 67, 0.24), 0 4px 12px rgba(60, 64, 67, 0.16);
+}
+
+/* Google Play — the official badge is black with a thin grey keyline, and the
+   upper line is uppercase and letterspaced. */
+.dlBadge--play {
+  background: #000000;
+  border: 1px solid #a6a6a6;
+  color: #ffffff;
+  font-family: Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+.dlBadge--play .dlBadge__small {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+}
+.dlBadge--play:hover {
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+}
+
+/* App Store — white per the brief rather than Apple's usual black badge, so
+   the mark and text invert to black. San Francisco where available. */
+.dlBadge--appstore {
+  background: #ffffff;
+  border: 1px solid #1d1d1f;
+  color: #1d1d1f;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text",
+    "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+.dlBadge--appstore .dlBadge__mark {
+  /* Apple's mark reads small against the cap height of the wordmark. */
+  width: 26px;
+  height: 26px;
+}
+.dlBadge--appstore:hover {
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.22);
+}
+
+@media (max-width: 500px) {
+  .dlPanel {
+    padding: 3.2rem 2.2rem 2.6rem;
+    border-radius: 20px;
+  }
+  .dlTitle {
+    font-size: 2.2rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dlOverlay,
+  .dlOverlay.is-closing,
+  .dlPanel,
+  .dlOverlay.is-closing .dlPanel {
+    animation: none;
+  }
+  .dlBadge,
+  .dlClose {
+    transition: none;
+  }
+  .dlBadge:hover {
+    transform: none;
+  }
+  .dlClose:hover {
+    transform: none;
+  }
+}
