@@ -335,11 +335,11 @@ export default function SpotlightBento() {
       <div className="bentoSpotlight" aria-hidden="true" />
 
       <div className="bentoHeading">
-        <span className="bentoEyebrow">The Stack</span>
-        <h1 ref={titleRef}>Everything the ecosystem runs on</h1>
+        <span className="bentoEyebrow">The Guarantees</span>
+        <h1 ref={titleRef}>Why Cracker</h1>
         <p ref={leadRef}>
-          Six pieces, one chain of custody — from the launch that mints your token
-          to the swap that finally settles it.
+          Six commitments written into the contracts rather than a roadmap — so
+          nobody, us included, can quietly change them later.
         </p>
       </div>
 

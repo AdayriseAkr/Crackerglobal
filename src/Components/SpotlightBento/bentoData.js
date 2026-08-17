@@ -5,50 +5,52 @@
 //   brand   -> #FE6C25 fill, white text, white glow
 //   tint    -> #f5e9e3 warm surface
 //
-// Grid placement is driven by :nth-child in the stylesheet, so the ORDER of
-// this array is load-bearing — cards 3 and 4 are the two big ones.
+// The card number is derived from array order by the component, so reordering
+// renumbers itself. Grid placement is driven by :nth-child in the stylesheet,
+// so the ORDER of this array is load-bearing — cards 3 and 4 are the two big
+// ones, and they hold the two longest pieces of copy for that reason.
 
 export const bentoCards = [
   {
-    label: "Launch",
-    title: "Fair Launchpad",
+    label: "Entity",
+    title: "Real Company",
     description:
-      "Tokens go live with liquidity locked and supply distributed from block one. No insider allocation, no stealth mint.",
+      "Wyoming LLCs, publicly filed and searchable. Not an anon deployer and a Telegram group.",
     modifiers: [],
   },
   {
-    label: "Protection",
-    title: "Zero MEV",
+    label: "Security",
+    title: "Publicly Audited",
     description:
-      "Orders settle without front-running, sandwich attacks, or hidden reordering in the mempool.",
+      "Twenty-plus contracts under independent review, published in full before mainnet.",
     modifiers: [],
   },
   {
-    label: "Trading",
-    title: "Multi-Chain Swap",
+    label: "Liquidity",
+    title: "Liquidity Locked",
     description:
-      "Route across every supported chain in a single transaction. No bridge to babysit, no slippage to price in, no wrapped asset left stranded on the wrong side.",
+      "At graduation, the LP moves straight into custody with no withdraw path anywhere in the contract. Not for the creator. Not for us. Nobody wakes up one day and pulls the rug, because the code simply doesn't allow it.",
     modifiers: ["feature", "brand"],
   },
   {
-    label: "Infrastructure",
-    title: "DevvE CTS",
+    label: "Tokenomics",
+    title: "No Token",
     description:
-      "Settlement runs on DevvE's Consensus Transaction System — deterministic ordering, instead of a public auction for block space.",
+      "No platform token, no airdrop farm, no emissions quietly diluting you in the background. It's not a launch promise, it's a permanent policy that stays true whether the platform has ten users or ten million.",
     modifiers: ["feature", "tint"],
   },
   {
-    label: "Compliance",
-    title: "US-Compliant",
+    label: "Fees",
+    title: "Immutable Fees",
     description:
-      "Built inside the regulatory perimeter from day one, not retrofitted around it.",
+      "Percentages and splits are constants in the contracts, not settings in an admin panel.",
     modifiers: [],
   },
   {
-    label: "Community",
-    title: "Holder Governed",
+    label: "Funding",
+    title: "Self-Funded",
     description:
-      "Treasury, listings, and roadmap steered by the people actually holding the token.",
+      "No VC, no unlock cliff, no investor who needs an exit by Q3.",
     modifiers: [],
   },
 ];
