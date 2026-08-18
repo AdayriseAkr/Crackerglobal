@@ -118,27 +118,18 @@ function BentoParticles({ active, count }) {
   );
 }
 
-function BentoCard({ card, index, cardRefs, active, interactive, onEnter, onLeave, onClick }) {
-  const nodeRef = useRef(null);
-
-  // Each card triggers its own artwork, so the six arrive as they are reached
-  // rather than all firing off one section-level trigger.
-  const inView = useInView(nodeRef, 0.2);
-  const [entered, setEntered] = useState(false);
-
-  // useInView flips back on scroll-out; latch it so the entrance plays once.
-  useEffect(() => {
-    if (inView) setEntered(true);
-  }, [inView]);
-
+function BentoCard({ card, index, cardRefs, active, entered, interactive, onEnter, onLeave, onClick }) {
+  // One class drives all three stages of this card's entrance — the card's own
+  // fade, its text, then its artwork — with the timing held in CSS so the
+  // stages can't drift out of order across six different sets of durations.
   const className = ["bentoCard"]
     .concat((card.modifiers || []).map((m) => `bentoCard--${m}`))
+    .concat(entered ? ["is-in"] : [])
     .join(" ");
 
   return (
     <article
       ref={(el) => {
-        nodeRef.current = el;
         cardRefs.current[index] = el;
       }}
       className={className}
@@ -163,7 +154,7 @@ function BentoCard({ card, index, cardRefs, active, interactive, onEnter, onLeav
         {card.image && (
           <span className={`bentoCardImageWrap bentoCardArt--${card.id}`}>
             <img
-              className={`bentoCardImage${entered ? " is-in" : ""}`}
+              className="bentoCardImage"
               src={card.image}
               alt=""
               aria-hidden="true"
@@ -180,6 +171,7 @@ function BentoCard({ card, index, cardRefs, active, interactive, onEnter, onLeav
 
 export default function SpotlightBento() {
   const sectionRef = useRef(null);
+  const gridRef = useRef(null);
   const titleRef = useRef(null);
   const leadRef = useRef(null);
   const cardRefs = useRef([]);
@@ -190,6 +182,16 @@ export default function SpotlightBento() {
   // use. It auto-plays itself once the element scrolls into view.
   useTextSplitAnim(titleRef, { stagger: 18, threshold: 0.35 });
   useTextSplitAnim(leadRef, { stagger: 6, startDelay: 260, threshold: 0.35 });
+
+  // One trigger for the whole grid, so the six cards fade as a set rather than
+  // row by row. useInView flips back on scroll-out, so latch it — the entrance
+  // is a one-shot, not a replay on every pass.
+  const gridInView = useInView(gridRef, 0.15);
+  const [entered, setEntered] = useState(false);
+
+  useEffect(() => {
+    if (gridInView) setEntered(true);
+  }, [gridInView]);
 
   useEffect(() => {
     if (!interactive) return;
@@ -375,7 +377,7 @@ export default function SpotlightBento() {
         </p>
       </div>
 
-      <div className="bentoGrid">
+      <div className="bentoGrid" ref={gridRef}>
         {bentoCards.map((card, index) => (
           <BentoCard
             key={card.title}
@@ -384,6 +386,7 @@ export default function SpotlightBento() {
             cardRefs={cardRefs}
             interactive={interactive}
             active={hovered === index}
+            entered={entered}
             onEnter={() => setHovered(index)}
             onLeave={() =>
               setHovered((current) => (current === index ? -1 : current))
