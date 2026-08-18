@@ -12,6 +12,10 @@
 // separate objects settling into place. Each is chosen for where its art sits
 // in the card — art anchored to a side comes in from that side.
 //
+// `id` keys the per-card artwork sizing in SpotlightBento.css
+// (.bentoCardArt--<id>), so each illustration can be scaled and nudged on its
+// own without touching the others.
+//
 // `image` is the artwork slot. Null leaves the slot laid out but empty, so a
 // card can ship without art and nothing shifts.
 //
@@ -29,6 +33,7 @@ import fundingImage from "../../assets/funding.png";
 
 export const bentoCards = [
   {
+    id: "entity",
     label: "Entity",
     title: "Real Company",
     description:
@@ -39,6 +44,7 @@ export const bentoCards = [
     enter: "up",
   },
   {
+    id: "security",
     label: "Security",
     title: "Publicly Audited",
     description:
@@ -48,6 +54,7 @@ export const bentoCards = [
     enter: "right",
   },
   {
+    id: "liquidity",
     label: "Liquidity",
     title: "Liquidity Locked",
     description:
@@ -58,6 +65,7 @@ export const bentoCards = [
     enter: "rise",
   },
   {
+    id: "tokenomics",
     label: "Tokenomics",
     title: "No Token",
     description:
@@ -68,6 +76,7 @@ export const bentoCards = [
     enter: "zoom",
   },
   {
+    id: "fees",
     label: "Fees",
     title: "Immutable Fees",
     description:
@@ -77,6 +86,7 @@ export const bentoCards = [
     enter: "left",
   },
   {
+    id: "funding",
     label: "Funding",
     title: "Self-Funded",
     description:

@@ -3,6 +3,7 @@ import "./SpotlightBento.css";
 import { bentoCards } from "./bentoData";
 import useTextSplitAnim from "../CustomHook/useTextSplitAnim.jsx";
 import useInView from "../CustomHook/useInView.jsx";
+import BentoArtTuner from "../DevTuner/BentoArtTuner.jsx";
 
 // Cursor-reactive bento grid: a spotlight pool follows the pointer across the
 // section, each card lights its own border in proportion to how close the
@@ -160,13 +161,15 @@ function BentoCard({ card, index, cardRefs, active, interactive, onEnter, onLeav
           its subject in the heading beside it. */}
       <div className={`bentoCardMedia bentoCardMedia--${card.enter || "up"}`}>
         {card.image && (
-          <img
-            className={`bentoCardImage${entered ? " is-in" : ""}`}
-            src={card.image}
-            alt=""
-            aria-hidden="true"
-            draggable="false"
-          />
+          <span className={`bentoCardImageWrap bentoCardArt--${card.id}`}>
+            <img
+              className={`bentoCardImage${entered ? " is-in" : ""}`}
+              src={card.image}
+              alt=""
+              aria-hidden="true"
+              draggable="false"
+            />
+          </span>
         )}
       </div>
 
@@ -389,6 +392,10 @@ export default function SpotlightBento() {
           />
         ))}
       </div>
+
+      {/* Vite swaps import.meta.env.DEV for `false` in a production build, so
+          this and the tuner module drop out entirely. */}
+      {import.meta.env.DEV && <BentoArtTuner cards={bentoCards} />}
     </section>
   );
 }

@@ -145,7 +145,15 @@
     width: 46%;
     min-height: 0;
     padding: 1.6rem;
-    align-items: center;
+  }
+  /* Centred in its column rather than resting on the card floor. */
+  .bentoCard--feature .bentoCardImageWrap {
+    top: 50%;
+    bottom: auto;
+    transform: translate(
+      calc(-50% + var(--img-x, 0%)),
+      calc(-50% + var(--img-y, 0%))
+    );
   }
 }
 
@@ -272,18 +280,56 @@
    Empty until artwork is supplied. The card reserves the space either way, so
    dropping images in later can't shift the grid's proportions. */
 .bentoCardMedia {
+  position: relative;
   flex: 1;
   min-height: 8rem;
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
+}
+
+/* Carries the artwork's size and position, and is absolutely positioned so
+   none of it can feed back into layout: scaling a card's art up or down leaves
+   the card, its row and the whole grid exactly where they were. The card clips
+   overflow, so art bigger than its slot bleeds to the card edge and stops.
+
+   Kept separate from the <img> on purpose — the entrance animation owns the
+   image's transform, and putting both on one element would let the animation's
+   `to { transform: none }` wipe the positioning out from under it. */
+.bentoCardImageWrap {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  display: block;
+  width: var(--img-size, 100%);
+  transform: translate(calc(-50% + var(--img-x, 0%)), var(--img-y, 0%));
+  pointer-events: none;
 }
 
 .bentoCardImage {
   display: block;
-  max-width: 100%;
-  max-height: 100%;
-  object-fit: contain;
+  width: 100%;
+  height: auto;
+}
+
+/* ---- per-card artwork sizing ----
+   Per card because the six illustrations don't share a subject size or the
+   same amount of transparent margin around it. Percentages are of the media
+   slot's width; the nudges are of the artwork's own size. */
+.bentoCardArt--entity {
+  --img-size: 78%;
+}
+.bentoCardArt--security {
+  --img-size: 82%;
+}
+.bentoCardArt--liquidity {
+  --img-size: 88%;
+}
+.bentoCardArt--tokenomics {
+  --img-size: 92%;
+}
+.bentoCardArt--fees {
+  --img-size: 80%;
+}
+.bentoCardArt--funding {
+  --img-size: 84%;
 }
 
 /* ---- artwork entrance ----
