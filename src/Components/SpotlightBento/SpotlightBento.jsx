@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import "./SpotlightBento.css";
 import { bentoCards } from "./bentoData";
 import useTextSplitAnim from "../CustomHook/useTextSplitAnim.jsx";
@@ -188,10 +188,24 @@ export default function SpotlightBento() {
   // is a one-shot, not a replay on every pass.
   const gridInView = useInView(gridRef, 0.15);
   const [entered, setEntered] = useState(false);
+  const [armed, setArmed] = useState(false);
 
   useEffect(() => {
     if (gridInView) setEntered(true);
   }, [gridInView]);
+
+  // Hide the cards up front so the entrance starts from nothing. Without this
+  // they paint at full strength, then blink out the instant the animation's
+  // first frame lands as the section scrolls in.
+  //
+  // useLayoutEffect, so it applies before the browser paints — and gated on
+  // IntersectionObserver, because that is what useInView needs to ever undo
+  // this. No observer, no arming, and the grid simply shows without animating
+  // rather than staying blank.
+  useLayoutEffect(() => {
+    if (typeof IntersectionObserver === "undefined") return;
+    setArmed(true);
+  }, []);
 
   useEffect(() => {
     if (!interactive) return;
@@ -369,7 +383,10 @@ export default function SpotlightBento() {
         </p>
       </div>
 
-      <div className="bentoGrid" ref={gridRef}>
+      <div
+        className={`bentoGrid${armed ? " is-armed" : ""}`}
+        ref={gridRef}
+      >
         {bentoCards.map((card, index) => (
           <BentoCard
             key={card.title}

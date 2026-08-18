@@ -292,43 +292,43 @@
    same amount of transparent margin around it. Percentages are of the media
    slot's width; the nudges are of the artwork's own size. */
 .bentoCardArt--entity {
-  --img-delay: 2.05s;
-  --img-dur: 1.1s;
+  --img-delay: 3.1s;
+  --img-dur: 1.2s;
   --img-size: 109%;
   --img-x: 0%;
   --img-y: 25%;
 }
 .bentoCardArt--security {
-  --img-delay: 2.3s;
-  --img-dur: 1s;
+  --img-delay: 3.6s;
+  --img-dur: 1.1s;
   --img-size: 65%;
   --img-x: 0%;
   --img-y: 32%;
 }
 .bentoCardArt--liquidity {
-  --img-delay: 2.15s;
-  --img-dur: 1.3s;
+  --img-delay: 2.85s;
+  --img-dur: 1.5s;
   --img-size: 113%;
   --img-x: 18%;
   --img-y: 11%;
 }
 .bentoCardArt--tokenomics {
-  --img-delay: 2.4s;
-  --img-dur: 1.2s;
+  --img-delay: 3.4s;
+  --img-dur: 1.3s;
   --img-size: 117%;
   --img-x: 10%;
   --img-y: 16%;
 }
 .bentoCardArt--fees {
-  --img-delay: 2.25s;
-  --img-dur: 0.95s;
+  --img-delay: 3.75s;
+  --img-dur: 1.05s;
   --img-size: 80%;
   --img-x: 0%;
   --img-y: 23%;
 }
 .bentoCardArt--funding {
-  --img-delay: 2.35s;
-  --img-dur: 1.2s;
+  --img-delay: 3s;
+  --img-dur: 1.4s;
   --img-size: 104%;
   --img-x: 0%;
   --img-y: 20%;
@@ -361,6 +361,17 @@
   to {
     opacity: 1;
   }
+}
+
+/* Held down from first paint, so the entrance begins at nothing instead of
+   blinking out of a fully drawn card. The moment .is-in lands this stops
+   matching and the animation's first frame — a card scaled to zero — takes
+   over in the same frame, so there is no gap between the two.
+
+   Only applied once JS has armed the grid, so if the observer is unavailable
+   the cards simply show without animating rather than staying blank. */
+.bentoGrid.is-armed .bentoCard:not(.is-in) {
+  opacity: 0;
 }
 
 @keyframes bentoUnfoldY {
@@ -407,54 +418,56 @@
     var(--text-delay, 1.7s) both;
 }
 
-/* Per-card timing and unfold edge. Both differ across the six on purpose: one
-   shared duration and one shared edge would read as a single mechanical wipe,
-   whereas mixed edges and lengths read as six panels opening independently.
-   Delays stay within half a second of each other so the set still moves as a
-   group. */
+/* Per-card timing and unfold edge, paced off the reference: each panel takes
+   roughly two seconds to open, and the STAGGER does the work rather than the
+   durations. Durations still vary slightly so no two panels open in lockstep,
+   but the spread of delays is what makes six panels read as six rather than
+   one wipe. Text lands after its own card has finished opening — a card
+   squashes its contents while it scales, so that ordering is required, not
+   just taste. */
 .bentoGrid .bentoCard:nth-child(1) {
   transform-origin: top center;
-  --card-delay: 0.1s;
-  --card-dur: 1.35s;
-  --text-delay: 1.55s;
-  --text-dur: 0.85s;
+  --card-delay: 0.3s;
+  --card-dur: 2s;
+  --text-delay: 2.6s;
+  --text-dur: 1s;
 }
 .bentoGrid .bentoCard:nth-child(2) {
   transform-origin: bottom center;
-  --card-delay: 0.25s;
-  --card-dur: 1.5s;
-  --text-delay: 1.75s;
-  --text-dur: 0.95s;
+  --card-delay: 0.7s;
+  --card-dur: 2.1s;
+  --text-delay: 3s;
+  --text-dur: 1.05s;
 }
 .bentoGrid .bentoCard:nth-child(3) {
   --unfold: bentoUnfoldX;
   transform-origin: center right;
   --card-delay: 0s;
-  --card-dur: 1.6s;
-  --text-delay: 1.65s;
-  --text-dur: 0.9s;
+  --card-dur: 1.95s;
+  --text-delay: 2.35s;
+  --text-dur: 0.95s;
 }
 .bentoGrid .bentoCard:nth-child(4) {
   --unfold: bentoUnfoldX;
   transform-origin: center left;
-  --card-delay: 0.15s;
-  --card-dur: 1.45s;
-  --text-delay: 1.85s;
-  --text-dur: 1s;
+  --card-delay: 0.5s;
+  --card-dur: 2.15s;
+  --text-delay: 2.85s;
+  --text-dur: 1.1s;
 }
 .bentoGrid .bentoCard:nth-child(5) {
   transform-origin: bottom center;
-  --card-delay: 0.35s;
-  --card-dur: 1.3s;
-  --text-delay: 1.9s;
-  --text-dur: 0.8s;
+  --card-delay: 0.9s;
+  --card-dur: 1.9s;
+  --text-delay: 3.15s;
+  --text-dur: 0.95s;
 }
 .bentoGrid .bentoCard:nth-child(6) {
   transform-origin: top center;
   --card-delay: 0.2s;
-  --card-dur: 1.55s;
-  --text-delay: 1.7s;
-  --text-dur: 0.9s;
+  --card-dur: 2.05s;
+  --text-delay: 2.5s;
+  --text-dur: 1s;
 }
 
 /* ---- stage 3: artwork ----
