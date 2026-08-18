@@ -2,8 +2,9 @@
    Reminder: html { font-size: 10px } in index.css, so 1rem = 10px here.
 
    All continuous values arrive from SpotlightBento.jsx as custom properties:
-     on the section  --sx / --sy / --s-opacity   (spotlight position + fade)
      on each card    --glow-x / --glow-y / --glow-intensity
+   Everything the cursor lights is painted inside a card, which clips its own
+   overflow — nothing washes across the section behind them.
    Nothing in this file animates those directly — the rAF loop owns them, and a
    CSS transition on top would fight it. Transitions here are only for discrete
    state (particle spawn, ripple, static hover fallback). */
@@ -26,33 +27,6 @@
   align-items: center;
   gap: 6rem;
   overflow: hidden;
-}
-
-/* ---- cursor spotlight ----
-   Centred by negative margins so the per-frame update is a pure transform —
-   writing to left/top instead would force layout every frame. */
-.bentoSpotlight {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 60rem;
-  height: 60rem;
-  margin-top: -30rem;
-  margin-left: -30rem;
-  border-radius: 50%;
-  pointer-events: none;
-  z-index: 0;
-  opacity: var(--s-opacity, 0);
-  transform: translate3d(var(--sx, 0px), var(--sy, 0px), 0);
-  will-change: transform, opacity;
-  background: radial-gradient(
-    circle,
-    rgba(var(--brand-rgb), 0.18) 0%,
-    rgba(var(--brand-rgb), 0.11) 18%,
-    rgba(var(--brand-rgb), 0.06) 34%,
-    rgba(var(--brand-rgb), 0.025) 54%,
-    transparent 72%
-  );
 }
 
 /* ---- section heading (mirrors .featureHeading in MainFeature.css) ---- */
@@ -122,9 +96,13 @@
 @media (min-width: 1024px) {
   .bentoGrid {
     grid-template-columns: repeat(4, 1fr);
-    /* Top row runs taller than the bottom one. `auto` as the maximum so a row
-       can still grow rather than clip if longer copy is swapped in later. */
-    grid-template-rows: minmax(30rem, auto) minmax(25rem, auto);
+    /* Both rows scale with the viewport between a floor and a ceiling, and
+       take `auto` as the maximum so a row can still grow rather than clip if
+       longer copy is swapped in later. The bottom row is the taller of the two
+       — its three cards carry the most artwork relative to their copy. */
+    grid-template-rows:
+      minmax(clamp(30rem, 22vw, 35rem), auto)
+      minmax(clamp(33rem, 25vw, 39rem), auto);
   }
   .bentoCard--feature {
     grid-column: span 2;
@@ -330,8 +308,8 @@
 .bentoCardArt--liquidity {
   --img-delay: 1.25s;
   --img-dur: 1.25s;
-  --img-size: 81%;
-  --img-x: 8%;
+  --img-size: 113%;
+  --img-x: 18%;
   --img-y: 11%;
 }
 .bentoCardArt--tokenomics {
@@ -351,9 +329,9 @@
 .bentoCardArt--funding {
   --img-delay: 1.3s;
   --img-dur: 1.2s;
-  --img-size: 78%;
-  --img-x: 18%;
-  --img-y: 29%;
+  --img-size: 104%;
+  --img-x: 0%;
+  --img-y: 20%;
 }
 
 /* ---- entrance sequence ----
@@ -628,9 +606,6 @@
     animation: none;
   }
 
-  .bentoSpotlight {
-    display: none;
-  }
   .bentoParticleDot {
     animation: none;
   }

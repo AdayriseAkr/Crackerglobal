@@ -3,15 +3,15 @@ import "./SpotlightBento.css";
 import { bentoCards } from "./bentoData";
 import useTextSplitAnim from "../CustomHook/useTextSplitAnim.jsx";
 import useInView from "../CustomHook/useInView.jsx";
-import BentoArtTuner from "../DevTuner/BentoArtTuner.jsx";
 
-// Cursor-reactive bento grid: a spotlight pool follows the pointer across the
-// section, each card lights its own border in proportion to how close the
-// cursor is, and the card under the cursor tilts, drifts toward it and lifts.
+// Cursor-reactive bento grid: each card lights its own interior and border in
+// proportion to how close the cursor is, and the card under the cursor tilts,
+// drifts toward it and lifts. Every lit surface is inside a card — nothing
+// paints onto the section behind them.
 //
 // Deliberately dependency-free — no GSAP, no Framer Motion. One rAF loop owns
 // every continuous value (pointer smoothing, per-card glow, tilt, magnetism)
-// and writes them out as CSS custom properties / a single transform per card.
+// and writes them out as CSS custom properties on each card.
 // Discrete effects (particle spawn, click ripple) are CSS keyframes.
 //
 // The loop is self-parking: it starts on pointer entry and stops itself once
@@ -209,7 +209,6 @@ export default function SpotlightBento() {
     let raf = null;
 
     const reset = () => {
-      section.style.setProperty("--s-opacity", "0");
       cardRefs.current.forEach((el) => {
         if (!el) return;
         el.style.setProperty("--glow-intensity", "0");
@@ -221,11 +220,6 @@ export default function SpotlightBento() {
       pointer.x = lerp(pointer.x, pointer.tx, POINTER_EASE);
       pointer.y = lerp(pointer.y, pointer.ty, POINTER_EASE);
       pointer.fade = lerp(pointer.fade, pointer.inside ? 1 : 0, FADE_EASE);
-
-      const sectionRect = section.getBoundingClientRect();
-      section.style.setProperty("--sx", `${(pointer.x - sectionRect.left).toFixed(1)}px`);
-      section.style.setProperty("--sy", `${(pointer.y - sectionRect.top).toFixed(1)}px`);
-      section.style.setProperty("--s-opacity", pointer.fade.toFixed(3));
 
       let settled = !pointer.inside && pointer.fade < 0.01;
 
@@ -366,8 +360,6 @@ export default function SpotlightBento() {
 
   return (
     <section className="bentoSectionParent" ref={sectionRef}>
-      <div className="bentoSpotlight" aria-hidden="true" />
-
       <div className="bentoHeading">
         <span className="bentoEyebrow">The Guarantees</span>
         <h1 ref={titleRef}>Why Cracker</h1>
@@ -395,10 +387,6 @@ export default function SpotlightBento() {
           />
         ))}
       </div>
-
-      {/* Vite swaps import.meta.env.DEV for `false` in a production build, so
-          this and the tuner module drop out entirely. */}
-      {import.meta.env.DEV && <BentoArtTuner cards={bentoCards} />}
     </section>
   );
 }
