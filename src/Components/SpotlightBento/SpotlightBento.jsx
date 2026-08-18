@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import "./SpotlightBento.css";
 import { bentoCards } from "./bentoData";
 import useTextSplitAnim from "../CustomHook/useTextSplitAnim.jsx";
+import useInView from "../CustomHook/useInView.jsx";
 
 // Cursor-reactive bento grid: a spotlight pool follows the pointer across the
 // section, each card lights its own border in proportion to how close the
@@ -117,6 +118,18 @@ function BentoParticles({ active, count }) {
 }
 
 function BentoCard({ card, index, cardRefs, active, interactive, onEnter, onLeave, onClick }) {
+  const nodeRef = useRef(null);
+
+  // Each card triggers its own artwork, so the six arrive as they are reached
+  // rather than all firing off one section-level trigger.
+  const inView = useInView(nodeRef, 0.2);
+  const [entered, setEntered] = useState(false);
+
+  // useInView flips back on scroll-out; latch it so the entrance plays once.
+  useEffect(() => {
+    if (inView) setEntered(true);
+  }, [inView]);
+
   const className = ["bentoCard"]
     .concat((card.modifiers || []).map((m) => `bentoCard--${m}`))
     .join(" ");
@@ -124,6 +137,7 @@ function BentoCard({ card, index, cardRefs, active, interactive, onEnter, onLeav
   return (
     <article
       ref={(el) => {
+        nodeRef.current = el;
         cardRefs.current[index] = el;
       }}
       className={className}
@@ -144,10 +158,10 @@ function BentoCard({ card, index, cardRefs, active, interactive, onEnter, onLeav
       {/* Reserved whether or not art exists yet, so adding it later can't
           change the card's proportions. Decorative: every card already states
           its subject in the heading beside it. */}
-      <div className="bentoCardMedia">
+      <div className={`bentoCardMedia bentoCardMedia--${card.enter || "up"}`}>
         {card.image && (
           <img
-            className="bentoCardImage"
+            className={`bentoCardImage${entered ? " is-in" : ""}`}
             src={card.image}
             alt=""
             aria-hidden="true"
