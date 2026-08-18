@@ -141,6 +141,21 @@ function BentoCard({ card, index, cardRefs, active, interactive, onEnter, onLeav
         <p className="bentoCardText">{card.description}</p>
       </div>
 
+      {/* Reserved whether or not art exists yet, so adding it later can't
+          change the card's proportions. Decorative: every card already states
+          its subject in the heading beside it. */}
+      <div className="bentoCardMedia">
+        {card.image && (
+          <img
+            className="bentoCardImage"
+            src={card.image}
+            alt=""
+            aria-hidden="true"
+            draggable="false"
+          />
+        )}
+      </div>
+
       {interactive && <BentoParticles active={active} count={PARTICLE_COUNT} />}
     </article>
   );

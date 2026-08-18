@@ -89,9 +89,15 @@
 }
 
 /* ---- grid ----
-   Mobile-first: one column, then two, then the asymmetric four-column bento.
-   Cards 3 and 4 are the 2x2 blocks — see the note in bentoData.js, the order
-   of that array is what lands them here. */
+   Two rows of four columns. Cards 3 and 4 are the wide ones, each spanning two
+   columns — that is what produces the small / small / wide top row and the
+   wide / small / small bottom row.
+
+   Auto-placement does the rest: card 3 fills the back half of row one, card 4
+   opens row two, and 5 and 6 land beside it. So the spans hang off the
+   .bentoCard--feature modifier rather than :nth-child, which ties the layout to
+   the data instead of to a position in the markup. Array order in bentoData.js
+   still decides which cards are wide. */
 .bentoGrid {
   position: relative;
   z-index: 1;
@@ -106,24 +112,40 @@
   .bentoGrid {
     grid-template-columns: repeat(2, 1fr);
   }
+  /* Two columns is too narrow to sit a wide card next to a small one, so the
+     wide ones take the full width here instead. */
+  .bentoCard--feature {
+    grid-column: span 2;
+  }
 }
 
 @media (min-width: 1024px) {
   .bentoGrid {
     grid-template-columns: repeat(4, 1fr);
-    grid-auto-rows: 21rem;
+    /* Top row runs taller than the bottom one. `auto` as the maximum so a row
+       can still grow rather than clip if longer copy is swapped in later. */
+    grid-template-rows: minmax(30rem, auto) minmax(25rem, auto);
   }
-  .bentoCard:nth-child(3) {
+  .bentoCard--feature {
     grid-column: span 2;
-    grid-row: span 2;
   }
-  .bentoCard:nth-child(4) {
-    grid-column: 1 / span 2;
-    grid-row: 2 / span 2;
+
+  /* On a wide card the artwork sits beside the copy rather than under it. It
+     is placed absolutely so the header and body still get the card's full
+     height, which is what lets the copy sit low against the illustration. */
+  .bentoCard--feature .bentoCardBody {
+    margin-top: auto;
+    max-width: 54%;
   }
-  .bentoCard:nth-child(6) {
-    grid-column: 4;
-    grid-row: 3;
+  .bentoCard--feature .bentoCardMedia {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 46%;
+    min-height: 0;
+    padding: 1.6rem;
+    align-items: center;
   }
 }
 
@@ -139,8 +161,7 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  gap: 2.4rem;
+  gap: 1.4rem;
   min-height: 21rem;
   padding: 2.2rem;
   border-radius: 20px;
@@ -195,7 +216,8 @@
 
 /* ---- card content ---- */
 .bentoCardHeader,
-.bentoCardBody {
+.bentoCardBody,
+.bentoCardMedia {
   position: relative;
   z-index: 3;
 }
@@ -244,6 +266,24 @@
 .bentoCard--feature .bentoCardText {
   font-size: 1.6rem;
   max-width: 52ch;
+}
+
+/* ---- media slot ----
+   Empty until artwork is supplied. The card reserves the space either way, so
+   dropping images in later can't shift the grid's proportions. */
+.bentoCardMedia {
+  flex: 1;
+  min-height: 8rem;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.bentoCardImage {
+  display: block;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
 }
 
 .bentoCard--tint {
