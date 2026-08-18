@@ -314,22 +314,34 @@
    same amount of transparent margin around it. Percentages are of the media
    slot's width; the nudges are of the artwork's own size. */
 .bentoCardArt--entity {
-  --img-size: 78%;
+  --img-size: 109%;
+  --img-x: 0%;
+  --img-y: 25%;
 }
 .bentoCardArt--security {
-  --img-size: 82%;
+  --img-size: 65%;
+  --img-x: 0%;
+  --img-y: 32%;
 }
 .bentoCardArt--liquidity {
-  --img-size: 88%;
+  --img-size: 81%;
+  --img-x: 8%;
+  --img-y: 11%;
 }
 .bentoCardArt--tokenomics {
-  --img-size: 92%;
+  --img-size: 117%;
+  --img-x: 10%;
+  --img-y: 16%;
 }
 .bentoCardArt--fees {
   --img-size: 80%;
+  --img-x: 0%;
+  --img-y: 23%;
 }
 .bentoCardArt--funding {
-  --img-size: 84%;
+  --img-size: 78%;
+  --img-x: 18%;
+  --img-y: 29%;
 }
 
 /* ---- artwork entrance ----
