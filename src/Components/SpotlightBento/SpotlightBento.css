@@ -292,42 +292,42 @@
    same amount of transparent margin around it. Percentages are of the media
    slot's width; the nudges are of the artwork's own size. */
 .bentoCardArt--entity {
-  --img-delay: 1.15s;
+  --img-delay: 2.05s;
   --img-dur: 1.1s;
   --img-size: 109%;
   --img-x: 0%;
   --img-y: 25%;
 }
 .bentoCardArt--security {
-  --img-delay: 1.35s;
+  --img-delay: 2.3s;
   --img-dur: 1s;
   --img-size: 65%;
   --img-x: 0%;
   --img-y: 32%;
 }
 .bentoCardArt--liquidity {
-  --img-delay: 1.25s;
-  --img-dur: 1.25s;
+  --img-delay: 2.15s;
+  --img-dur: 1.3s;
   --img-size: 113%;
   --img-x: 18%;
   --img-y: 11%;
 }
 .bentoCardArt--tokenomics {
-  --img-delay: 1.45s;
-  --img-dur: 1.15s;
+  --img-delay: 2.4s;
+  --img-dur: 1.2s;
   --img-size: 117%;
   --img-x: 10%;
   --img-y: 16%;
 }
 .bentoCardArt--fees {
-  --img-delay: 1.2s;
+  --img-delay: 2.25s;
   --img-dur: 0.95s;
   --img-size: 80%;
   --img-x: 0%;
   --img-y: 23%;
 }
 .bentoCardArt--funding {
-  --img-delay: 1.3s;
+  --img-delay: 2.35s;
   --img-dur: 1.2s;
   --img-size: 104%;
   --img-x: 0%;
@@ -335,9 +335,16 @@
 }
 
 /* ---- entrance sequence ----
-   Three stages per card, in order: the card fades in, then its text, then its
-   artwork travels. Every stage is driven by one .is-in class on the card, with
-   the ordering held in the delays below so the stages can't drift apart.
+   Three stages per card, in order: the card unfolds from one of its edges,
+   then its copy fades in, then its artwork settles. Every stage is driven by
+   one .is-in class on the card, with the ordering held in the delays below so
+   the stages can't drift apart.
+
+   The card opens by scaling on a single axis from a transform-origin pinned to
+   one edge, so it reads as a panel unfolding rather than a box fading up. Its
+   contents are squashed while that runs, which is exactly why every text and
+   artwork delay lands after the card's own duration — the panel opens empty,
+   then fills.
 
    Everything is VISIBLE by default and .is-in only starts an animation whose
    first frame is the hidden state. That direction matters: hiding by default
@@ -356,50 +363,98 @@
   }
 }
 
-/* Stage 1 — the card itself. */
+@keyframes bentoUnfoldY {
+  from {
+    transform: scaleY(0);
+  }
+  to {
+    transform: scaleY(1);
+  }
+}
+
+@keyframes bentoUnfoldX {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+/* Stage 1 — the card unfolds.
+
+   `backwards`, deliberately NOT `both`. The rAF loop drives tilt and
+   magnetism through this element's inline transform, and animations outrank
+   inline styles in the cascade — so a filled animation would keep applying its
+   to-state forever and silently kill the hover. With `backwards` the
+   from-state is held through the delay and the element hands transform back
+   the moment the animation ends.
+
+   Longhands rather than the shorthand, so animation-name can come from a
+   custom property. */
 .bentoCard.is-in {
-  animation: bentoFadeIn var(--card-dur, 0.9s) cubic-bezier(0.33, 1, 0.68, 1) both;
+  animation-name: var(--unfold, bentoUnfoldY);
+  animation-duration: var(--card-dur, 1.4s);
+  animation-timing-function: cubic-bezier(0.87, 0, 0.13, 1);
+  animation-delay: var(--card-delay, 0s);
+  animation-fill-mode: backwards;
 }
 
 /* Stage 2 — its copy, once the card is most of the way in. */
 .bentoCard.is-in .bentoCardHeader,
 .bentoCard.is-in .bentoCardBody {
-  animation: bentoFadeIn var(--text-dur, 0.8s) cubic-bezier(0.33, 1, 0.68, 1)
-    var(--text-delay, 0.45s) both;
+  animation: bentoFadeIn var(--text-dur, 0.9s) cubic-bezier(0.33, 1, 0.68, 1)
+    var(--text-delay, 1.7s) both;
 }
 
-/* Per-card timing. Durations differ on purpose — six identical fades firing
-   together read as one flat wipe, whereas mixed lengths read as six separate
-   things arriving. Delays stay close so the set still moves as a group. */
+/* Per-card timing and unfold edge. Both differ across the six on purpose: one
+   shared duration and one shared edge would read as a single mechanical wipe,
+   whereas mixed edges and lengths read as six panels opening independently.
+   Delays stay within half a second of each other so the set still moves as a
+   group. */
 .bentoGrid .bentoCard:nth-child(1) {
-  --card-dur: 0.7s;
-  --text-delay: 0.4s;
-  --text-dur: 0.7s;
+  transform-origin: top center;
+  --card-delay: 0.1s;
+  --card-dur: 1.35s;
+  --text-delay: 1.55s;
+  --text-dur: 0.85s;
 }
 .bentoGrid .bentoCard:nth-child(2) {
-  --card-dur: 1.05s;
-  --text-delay: 0.5s;
-  --text-dur: 0.9s;
-}
-.bentoGrid .bentoCard:nth-child(3) {
-  --card-dur: 0.85s;
-  --text-delay: 0.45s;
-  --text-dur: 0.8s;
-}
-.bentoGrid .bentoCard:nth-child(4) {
-  --card-dur: 1.2s;
-  --text-delay: 0.55s;
+  transform-origin: bottom center;
+  --card-delay: 0.25s;
+  --card-dur: 1.5s;
+  --text-delay: 1.75s;
   --text-dur: 0.95s;
 }
+.bentoGrid .bentoCard:nth-child(3) {
+  --unfold: bentoUnfoldX;
+  transform-origin: center right;
+  --card-delay: 0s;
+  --card-dur: 1.6s;
+  --text-delay: 1.65s;
+  --text-dur: 0.9s;
+}
+.bentoGrid .bentoCard:nth-child(4) {
+  --unfold: bentoUnfoldX;
+  transform-origin: center left;
+  --card-delay: 0.15s;
+  --card-dur: 1.45s;
+  --text-delay: 1.85s;
+  --text-dur: 1s;
+}
 .bentoGrid .bentoCard:nth-child(5) {
-  --card-dur: 0.75s;
-  --text-delay: 0.42s;
-  --text-dur: 0.75s;
+  transform-origin: bottom center;
+  --card-delay: 0.35s;
+  --card-dur: 1.3s;
+  --text-delay: 1.9s;
+  --text-dur: 0.8s;
 }
 .bentoGrid .bentoCard:nth-child(6) {
-  --card-dur: 0.95s;
-  --text-delay: 0.48s;
-  --text-dur: 0.85s;
+  transform-origin: top center;
+  --card-delay: 0.2s;
+  --card-dur: 1.55s;
+  --text-delay: 1.7s;
+  --text-dur: 0.9s;
 }
 
 /* ---- stage 3: artwork ----
@@ -431,21 +486,25 @@
 /* One per card, deliberately all different: six identical slides firing at once
    read as a single mechanical sweep. Mixed travel, duration and easing make
    them read as six separate objects settling. */
-/* Travels the full height of its slot, from below. */
+/* Every piece of art settles DOWN from slightly oversized as it lands, on top
+   of whatever travel it has. That settle is the one gesture all six share, and
+   it is what stops the artwork reading as a flat slide.
+
+   Travels the full height of its slot, from below. */
 .bentoCardMedia--up,
 .bentoCardMedia--rise {
-  --img-from: translateY(100%);
+  --img-from: translateY(100%) scale(1.08);
 }
 
 /* The one that moves sideways, so the set doesn't read as a single axis. */
 .bentoCardMedia--right {
-  --img-from: translateX(100%);
+  --img-from: translateX(100%) scale(1.08);
 }
 
-/* No travel at all — resolves in place. `none` on both ends of the keyframe
-   leaves opacity as the only thing animating. */
+/* No travel — these resolve in place, so the settle carries the whole gesture
+   and starts from further out. */
 .bentoCardMedia--fade {
-  --img-from: none;
+  --img-from: scale(1.3);
 }
 
 .bentoCard--tint {
