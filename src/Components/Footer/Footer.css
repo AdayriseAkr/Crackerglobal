@@ -27,12 +27,25 @@
 
 .footerCurve{
     position: absolute;
-    width: 150%;
-    height: 25rem;
+    /* How deep the bow reads comes from these three together.
+
+       The band is wider than the viewport, so the screen only ever samples the
+       shallow middle of the ellipse — narrowing it pushes the screen edges
+       further out towards where the curve falls away fastest. Height sets how
+       far they fall: the apex is pinned to `top`, so a taller band drops the
+       edges without moving the peak. And `top` has to rise to match, because
+       only the strip between it and the gradient plate at 30% is ever visible
+       — leave it where it was and a deeper curve just hides its own edges
+       behind the plate.
+
+       Height is viewport-relative so the bow keeps the same proportion on a
+       short window instead of outgrowing that strip. */
+    width: 135%;
+    height: clamp(28rem, 42vh, 46rem);
     background-color: #E8E6F4;
 left: 50%;
 transform: translateX(-50%);
-    top: 25%;
+    top: 20%;
     /* Resting shape. Footer.jsx scrubs this up from 0% as the footer scrolls
        in, bending a straight top edge into an arc — and if that never runs,
        this is what stands. */
