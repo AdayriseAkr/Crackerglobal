@@ -37,8 +37,12 @@ export default function Footer() {
           ease: "none",
           scrollTrigger: {
             trigger: footer,
-            start: "top bottom",
-            end: "top 35%",
+            // Straight until the footer is a fifth of the way up the screen,
+            // then bending the rest of the way in. Tying both ends to the
+            // footer's own top edge is what makes the curve read as a function
+            // of how much footer is showing.
+            start: "top 80%",
+            end: "top 10%",
             // Numeric scrub adds a second of catch-up, so the edge keeps
             // bending for a moment after the wheel stops rather than being
             // welded to the scrollbar.
