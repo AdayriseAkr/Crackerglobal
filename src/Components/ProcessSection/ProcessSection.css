@@ -425,23 +425,52 @@
   pointer-events: none;
 }
 
-.processOutroGlow {
+/* Warm bloom behind the mark, with two soft diagonal streaks over it so the
+   ground reads as light falling across a surface rather than a flat vignette.
+   All three are layers of one background, so it stays a single element. */
+.processOutroWash {
   position: absolute;
-  width: 52rem;
-  height: 52rem;
-  border-radius: 50%;
-  filter: blur(60px);
-  opacity: calc(var(--logo, 0) * 0.5);
-  background: radial-gradient(
-    circle,
-    rgba(var(--brand-rgb), 0.5) 0%,
-    rgba(var(--brand-rgb), 0) 70%
-  );
+  inset: 0;
+  opacity: calc(var(--logo, 0) * 0.95);
+  background:
+    linear-gradient(
+      118deg,
+      rgba(255, 255, 255, 0) 20%,
+      rgba(255, 255, 255, 0.5) 31%,
+      rgba(255, 255, 255, 0) 43%
+    ),
+    linear-gradient(
+      118deg,
+      rgba(255, 255, 255, 0) 54%,
+      rgba(255, 255, 255, 0.34) 63%,
+      rgba(255, 255, 255, 0) 73%
+    ),
+    radial-gradient(
+      62rem 62rem at 50% 46%,
+      rgba(255, 188, 142, 0.55) 0%,
+      rgba(255, 214, 185, 0.3) 40%,
+      rgba(255, 240, 230, 0) 72%
+    );
 }
 
-/* The wrapper owns the scroll-driven fade and the image owns the pulse. One
+/* The hairline circle. It is white, which only reads because the bloom above
+   warms the ground behind it — on the bare section colour it would vanish. */
+.processOutroRing {
+  position: absolute;
+  top: 46%;
+  left: 50%;
+  width: clamp(34rem, 44vh, 52rem);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  opacity: calc(var(--logo, 0) * 0.85);
+  /* Opens slightly as it arrives, so the ring settles rather than switching on. */
+  transform: translate(-50%, -50%) scale(calc(0.94 + var(--logo, 0) * 0.06));
+}
+
+/* The wrapper owns the scroll-driven fade and the mark owns its sheen. One
    element can't do both: an animation outranks a normal declaration, so the
-   blink would win outright and the scroll fade would never show. */
+   sheen would win outright and the scroll fade would never show. */
 .processOutroLogoWrap {
   position: relative;
   opacity: var(--logo, 0);
@@ -449,50 +478,102 @@
   will-change: opacity, transform;
 }
 
-/* The mark is a flat silhouette on transparency, so it is used as a MASK over
-   a coloured box rather than drawn as an image. The box's background is then an
-   ordinary CSS colour, which is what lets the pulse cycle it exactly between
-   amber and the brand orange — a filter over the original pixels could only
-   approximate a target colour, and the source is a pale cream that would need
-   hue, saturation and lightness all pushed at once.
+/* The mark is a flat silhouette on transparency, so it is used as a MASK over a
+   gradient rather than drawn as an image. That turns its fill into ordinary CSS
+   — which is the only way to give it a metallic ramp at all, since a filter
+   over the original pale-cream pixels can shift a colour but cannot invent a
+   gradient across the shape.
 
-   aspect-ratio comes from the source (155x117); with height auto and no image
-   in the box there is nothing else to give it one. */
+   aspect-ratio comes from the source (155x117); with no image in the box there
+   is nothing else to give it one. */
 .processOutroLogo {
   display: block;
   width: clamp(9rem, 11vh, 14rem);
   aspect-ratio: 155 / 117;
-  background-color: var(--brand);
   -webkit-mask: url("../../assets/Logo.png") center / contain no-repeat;
   mask: url("../../assets/Logo.png") center / contain no-repeat;
-  animation: processLogoPulse 2.2s ease-in-out infinite;
+  background-image: linear-gradient(
+    135deg,
+    #f9dcc0 0%,
+    #e8a468 17%,
+    #b5652f 36%,
+    #ffe2c6 52%,
+    #d9803f 68%,
+    #a8542a 86%,
+    #f2c79c 100%
+  );
+  /* Oversized so the ramp can be slid across the shape; that travel is the
+     highlight moving over the metal. */
+  background-size: 260% 260%;
+  animation: processLogoSheen 3.4s ease-in-out infinite;
 }
 
-/* Amber to brand orange and back, with the glow tracking the fill so the mark
-   reads as lit from within rather than merely repainted. */
-@keyframes processLogoPulse {
+@keyframes processLogoSheen {
   0%,
   100% {
-    background-color: #ffc02e;
-    filter: drop-shadow(0 0 14px rgba(255, 192, 46, 0.5));
+    background-position: 12% 20%;
+    filter: drop-shadow(0 0 16px rgba(255, 170, 110, 0.5));
   }
   50% {
-    background-color: #fe6c25;
-    filter: drop-shadow(0 0 26px rgba(254, 108, 37, 0.75));
+    background-position: 88% 80%;
+    filter: drop-shadow(0 0 26px rgba(254, 108, 37, 0.6));
   }
 }
 
 .processOutroWord {
-  font-size: max(2.4rem, 2vw);
-  font-weight: 700;
+  font-size: max(2.2rem, 1.8vw);
+  font-weight: 500;
   text-transform: uppercase;
   color: var(--text-strong);
   opacity: var(--word, 0);
   /* Tracking closes as it arrives, so the word resolves out of the mark rather
-     than simply switching on. */
-  letter-spacing: calc(0.16em + (1 - var(--word, 0)) * 0.42em);
+     than switching on. It stays wide at rest — that spacing is most of what
+     makes it read as a wordmark instead of a heading. */
+  letter-spacing: calc(0.34em + (1 - var(--word, 0)) * 0.3em);
+  /* Uppercase tracking adds space after the last letter too, which throws the
+     word off centre; half the tracking back as an indent re-centres it. */
+  text-indent: calc(0.34em + (1 - var(--word, 0)) * 0.3em);
   transform: translateY(calc((1 - var(--word, 0)) * 1.8rem));
   will-change: opacity, transform;
+}
+
+/* The rule under the word: a hairline that goes to nothing at both ends, with a
+   brighter bloom sitting over its middle so it reads as catching the light
+   rather than as a border. */
+.processOutroLine {
+  position: relative;
+  width: clamp(16rem, 22vw, 30rem);
+  height: 1px;
+  margin-top: -0.8rem;
+  opacity: var(--line, 0);
+  /* Draws outward from the centre as it arrives. */
+  transform: scaleX(calc(0.55 + var(--line, 0) * 0.45));
+  background: linear-gradient(
+    90deg,
+    rgba(254, 108, 37, 0) 0%,
+    rgba(254, 108, 37, 0.45) 22%,
+    #ffd9a8 50%,
+    rgba(254, 108, 37, 0.45) 78%,
+    rgba(254, 108, 37, 0) 100%
+  );
+}
+
+.processOutroLine::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 10rem;
+  height: 3rem;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  filter: blur(3px);
+  background: radial-gradient(
+    closest-side,
+    rgba(255, 232, 200, 0.95) 0%,
+    rgba(255, 190, 130, 0.35) 45%,
+    rgba(255, 190, 130, 0) 100%
+  );
 }
 
 /* ---- mobile: no pin, just a stacked list ----

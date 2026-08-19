@@ -158,7 +158,12 @@ export default function ProcessSection() {
             );
             outroRef.current.style.setProperty(
               "--word",
-              ramp(outro, 0.56, 0.94).toFixed(3)
+              ramp(outro, 0.56, 0.9).toFixed(3)
+            );
+            // The rule under the word draws last, so the group finishes on it.
+            outroRef.current.style.setProperty(
+              "--line",
+              ramp(outro, 0.72, 1).toFixed(3)
             );
           }
         },
@@ -179,6 +184,7 @@ export default function ProcessSection() {
         ringRef.current?.style.removeProperty("--ring-angle");
         outroRef.current?.style.removeProperty("--logo");
         outroRef.current?.style.removeProperty("--word");
+        outroRef.current?.style.removeProperty("--line");
 
         setPinned(false);
         activeRef.current = 0;
@@ -418,7 +424,8 @@ export default function ProcessSection() {
           the mark comes up in its place, and the word resolves under it.
           Decorative — the section heading already says "one ecosystem". */}
       <div className="processOutro" ref={outroRef} aria-hidden="true">
-        <span className="processOutroGlow" />
+        <span className="processOutroWash" />
+        <span className="processOutroRing" />
         <span className="processOutroLogoWrap">
           {/* Not an <img>: the mark is a flat silhouette, so the stylesheet
               masks a coloured box with it instead. That makes its colour a
@@ -427,6 +434,7 @@ export default function ProcessSection() {
           <span className="processOutroLogo" />
         </span>
         <span className="processOutroWord">Ecosystem</span>
+        <span className="processOutroLine" />
       </div>
 
       {downloadsFor && (
