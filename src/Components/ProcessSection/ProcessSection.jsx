@@ -4,6 +4,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import "./ProcessSection.css";
 import { processSteps } from "./processData";
 import useTextSplitAnim from "../CustomHook/useTextSplitAnim.jsx";
+import crackerLogo from "../../assets/Logo.png";
 import DownloadDialog from "./DownloadDialog.jsx";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -30,14 +31,19 @@ gsap.registerPlugin(ScrollTrigger);
 
 // Viewport heights of scroll spent moving from one step to the next.
 const STEP_SCREENS = 1;
-// Extra scroll after the last step, before the pin releases: the section fades
-// out into the page across this band rather than cutting away at full strength.
-const OUTRO_SCREENS = 0.7;
+// Extra scroll after the last step, before the pin releases. The section
+// clears out across this band and hands over to the logo and wordmark, so it
+// needs room for three beats rather than a single fade.
+const OUTRO_SCREENS = 1.8;
 
 const STEP_TRAVEL = (processSteps.length - 1) * STEP_SCREENS;
 const TOTAL_TRAVEL = STEP_TRAVEL + OUTRO_SCREENS;
 
 const clamp = (v, min, max) => Math.min(max, Math.max(min, v));
+
+// 0..1 across a slice of another 0..1 value, for sequencing several beats off
+// one scroll progress.
+const ramp = (v, from, to) => clamp((v - from) / (to - from), 0, 1);
 // Angular gap between consecutive numbers. The visible gap between two circles
 // is arc length — radius * this — minus their diameter, so it collapses on a
 // short window where the radius bottoms out at its clamp floor. Raising it also
@@ -54,6 +60,7 @@ const prefersReducedMotion = () =>
 export default function ProcessSection() {
   const sectionRef = useRef(null);
   const innerRef = useRef(null);
+  const outroRef = useRef(null);
   const titleRef = useRef(null);
   const ringRef = useRef(null);
   const panelRefs = useRef([]);
@@ -129,16 +136,31 @@ export default function ProcessSection() {
             setActive(index);
           }
 
-          // Everything inside fades out across the outro, revealing the page
-          // colour beneath. Written straight to the node: it changes every
-          // frame, and opacity is composited so it costs no layout.
+          // Three beats off one progress value: the section clears out, the
+          // mark fades up in its place, then the word resolves under it. All
+          // written straight to the nodes — this runs every frame, and opacity
+          // and transform are composited so none of it costs layout.
           const outro = clamp(
             (travelled - STEP_TRAVEL) / OUTRO_SCREENS,
             0,
             1
           );
+
           if (innerRef.current) {
-            innerRef.current.style.opacity = (1 - outro).toFixed(3);
+            innerRef.current.style.opacity = (
+              1 - ramp(outro, 0, 0.34)
+            ).toFixed(3);
+          }
+
+          if (outroRef.current) {
+            outroRef.current.style.setProperty(
+              "--logo",
+              ramp(outro, 0.26, 0.62).toFixed(3)
+            );
+            outroRef.current.style.setProperty(
+              "--word",
+              ramp(outro, 0.56, 0.94).toFixed(3)
+            );
           }
         },
       });
@@ -156,6 +178,8 @@ export default function ProcessSection() {
         });
         innerRef.current?.style.removeProperty("opacity");
         ringRef.current?.style.removeProperty("--ring-angle");
+        outroRef.current?.style.removeProperty("--logo");
+        outroRef.current?.style.removeProperty("--word");
 
         setPinned(false);
         activeRef.current = 0;
@@ -389,6 +413,22 @@ export default function ProcessSection() {
             ))}
           </div>
         </div>
+      </div>
+
+      {/* Rides the scroll band after the last product: the section empties,
+          the mark comes up in its place, and the word resolves under it.
+          Decorative — the section heading already says "one ecosystem". */}
+      <div className="processOutro" ref={outroRef} aria-hidden="true">
+        <span className="processOutroGlow" />
+        <span className="processOutroLogoWrap">
+          <img
+            className="processOutroLogo"
+            src={crackerLogo}
+            alt=""
+            draggable="false"
+          />
+        </span>
+        <span className="processOutroWord">Ecosystem</span>
       </div>
 
       {downloadsFor && (

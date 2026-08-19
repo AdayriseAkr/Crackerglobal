@@ -404,6 +404,90 @@
   }
 }
 
+/* ---- outro ----
+   Rides the scroll band after the last product. Sits above the content (2) and
+   its fades (1), so it reads as the section handing over rather than as one
+   more thing inside it.
+
+   --logo and --word are two slices of the same scroll progress, written per
+   frame by ProcessSection.jsx. Both are plain numbers, which is what lets the
+   calc() below turn one value into an opacity, a scale, a letter-spacing and
+   an offset at once. */
+.processOutro {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2.6rem;
+  pointer-events: none;
+}
+
+.processOutroGlow {
+  position: absolute;
+  width: 52rem;
+  height: 52rem;
+  border-radius: 50%;
+  filter: blur(60px);
+  opacity: calc(var(--logo, 0) * 0.5);
+  background: radial-gradient(
+    circle,
+    rgba(var(--brand-rgb), 0.5) 0%,
+    rgba(var(--brand-rgb), 0) 70%
+  );
+}
+
+/* The wrapper owns the scroll-driven fade and the image owns the pulse. One
+   element can't do both: an animation outranks a normal declaration, so the
+   blink would win outright and the scroll fade would never show. */
+.processOutroLogoWrap {
+  position: relative;
+  opacity: var(--logo, 0);
+  transform: scale(calc(0.86 + var(--logo, 0) * 0.14));
+  will-change: opacity, transform;
+}
+
+.processOutroLogo {
+  display: block;
+  width: clamp(9rem, 11vh, 14rem);
+  height: auto;
+  /* Same pulse the loading screen runs on this mark. */
+  animation: processLogoBlink 2s ease-in-out infinite;
+}
+
+@keyframes processLogoBlink {
+  0% {
+    opacity: 1;
+  }
+  30% {
+    opacity: 0.2;
+  }
+  60% {
+    opacity: 1;
+  }
+  80% {
+    opacity: 0.2;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.processOutroWord {
+  font-size: max(2.4rem, 2vw);
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-strong);
+  opacity: var(--word, 0);
+  /* Tracking closes as it arrives, so the word resolves out of the mark rather
+     than simply switching on. */
+  letter-spacing: calc(0.16em + (1 - var(--word, 0)) * 0.42em);
+  transform: translateY(calc((1 - var(--word, 0)) * 1.8rem));
+  will-change: opacity, transform;
+}
+
 /* ---- mobile: no pin, just a stacked list ----
    ScrollTrigger is only created above 768px (gsap.matchMedia in the
    component), so nothing here has to undo a pin — it only has to make the
@@ -425,9 +509,11 @@
   }
 
   /* The ring only makes sense while the section is pinned and rotating, and
-     with no ring there is nothing for the fades to dissolve. */
+     with no ring there is nothing for the fades to dissolve. The outro is the
+     tail of that same pinned scroll, so it goes with them. */
   .processRing,
-  .processFade {
+  .processFade,
+  .processOutro {
     display: none;
   }
 
@@ -470,6 +556,10 @@
 @media (prefers-reduced-motion: reduce) {
   .processRingStep {
     transition: none;
+  }
+
+  .processOutroLogo {
+    animation: none;
   }
 
   /* The handler never switches --shine on here, so the button is left with a
