@@ -486,93 +486,137 @@
 
    aspect-ratio comes from the source (155x117); with no image in the box there
    is nothing else to give it one. */
+/* The mark is a flat silhouette on transparency, so it is used as a MASK over a
+   painted box rather than drawn as an image. That turns its fill into ordinary
+   CSS — which is what lets it be brand orange with a highlight sliding across
+   it, something no filter over the original pale-cream pixels could produce.
+
+   The gradient is orange at both ends with one bright band in the middle, and
+   it is parked off the shape at rest. So the resting mark is simply solid
+   #FE6C25; the sweep only exists while the animation runs.
+
+   aspect-ratio comes from the source (155x117); with no image in the box there
+   is nothing else to give it one. */
 .processOutroLogo {
   display: block;
   width: clamp(9rem, 11vh, 14rem);
   aspect-ratio: 155 / 117;
   -webkit-mask: url("../../assets/Logo.png") center / contain no-repeat;
   mask: url("../../assets/Logo.png") center / contain no-repeat;
+  background-color: var(--brand);
   background-image: linear-gradient(
-    135deg,
-    #f9dcc0 0%,
-    #e8a468 17%,
-    #b5652f 36%,
-    #ffe2c6 52%,
-    #d9803f 68%,
-    #a8542a 86%,
-    #f2c79c 100%
+    112deg,
+    #fe6c25 0%,
+    #fe6c25 40%,
+    #ff9d5e 46%,
+    #ffe0c4 50%,
+    #ff9d5e 54%,
+    #fe6c25 60%,
+    #fe6c25 100%
   );
-  /* Oversized so the ramp can be slid across the shape; that travel is the
-     highlight moving over the metal. */
-  background-size: 260% 260%;
-  animation: processLogoSheen 3.4s ease-in-out infinite;
+  background-size: 300% 100%;
+  background-position: 130% 0;
+  filter: drop-shadow(0 0 18px rgba(254, 108, 37, 0.4));
+}
+
+/* Added once the mark is fully up, and only then — see the threshold in
+   ProcessSection.jsx. Three passes, no fill, so it returns to the parked
+   position and holds as solid orange rather than freezing mid-sweep. */
+.processOutro.is-lit .processOutroLogo {
+  animation: processLogoSheen 1.5s ease-in-out 3;
 }
 
 @keyframes processLogoSheen {
-  0%,
-  100% {
-    background-position: 12% 20%;
-    filter: drop-shadow(0 0 16px rgba(255, 170, 110, 0.5));
+  from {
+    background-position: 130% 0;
   }
-  50% {
-    background-position: 88% 80%;
-    filter: drop-shadow(0 0 26px rgba(254, 108, 37, 0.6));
+  to {
+    background-position: -30% 0;
   }
 }
 
+/* Inter, not a display face. The reference is a neo-grotesque at light weight
+   under very wide tracking, which is exactly what Inter does here — and the
+   spacing, not the typeface, is what makes it read as a wordmark rather than a
+   heading. A fourth family would cost a request and fight the rest of the page
+   for nothing. */
 .processOutroWord {
-  font-size: max(2.2rem, 1.8vw);
-  font-weight: 500;
+  font-size: max(2.1rem, 1.7vw);
+  font-weight: 400;
   text-transform: uppercase;
   color: var(--text-strong);
   opacity: var(--word, 0);
   /* Tracking closes as it arrives, so the word resolves out of the mark rather
-     than switching on. It stays wide at rest — that spacing is most of what
-     makes it read as a wordmark instead of a heading. */
-  letter-spacing: calc(0.34em + (1 - var(--word, 0)) * 0.3em);
-  /* Uppercase tracking adds space after the last letter too, which throws the
-     word off centre; half the tracking back as an indent re-centres it. */
-  text-indent: calc(0.34em + (1 - var(--word, 0)) * 0.3em);
-  transform: translateY(calc((1 - var(--word, 0)) * 1.8rem));
+     than switching on. */
+  letter-spacing: calc(0.38em + (1 - var(--word, 0)) * 0.26em);
+  /* Uppercase tracking adds space after the LAST letter too, which throws a
+     centred word off by half of it; giving that half back re-centres it, and
+     since the tracking animates the indent has to animate with it. */
+  text-indent: calc(0.38em + (1 - var(--word, 0)) * 0.26em);
+  transform: translateY(calc((1 - var(--word, 0)) * 1.6rem));
   will-change: opacity, transform;
 }
 
-/* The rule under the word: a hairline that goes to nothing at both ends, with a
-   brighter bloom sitting over its middle so it reads as catching the light
-   rather than as a border. */
+/* The rule under the word.
+
+   Every layer here shares the line's own left-to-right falloff, so the glow
+   runs the length of the line and dies out with it. The earlier version put a
+   round bloom over the middle, which read as a separate spot sitting on top
+   rather than as light coming off the line. */
 .processOutroLine {
   position: relative;
-  width: clamp(16rem, 22vw, 30rem);
+  width: clamp(18rem, 26vw, 34rem);
   height: 1px;
-  margin-top: -0.8rem;
+  margin-top: -0.6rem;
   opacity: var(--line, 0);
   /* Draws outward from the centre as it arrives. */
-  transform: scaleX(calc(0.55 + var(--line, 0) * 0.45));
+  transform: scaleX(calc(0.5 + var(--line, 0) * 0.5));
   background: linear-gradient(
     90deg,
     rgba(254, 108, 37, 0) 0%,
-    rgba(254, 108, 37, 0.45) 22%,
-    #ffd9a8 50%,
-    rgba(254, 108, 37, 0.45) 78%,
+    rgba(254, 108, 37, 0.32) 18%,
+    rgba(255, 224, 196, 0.95) 50%,
+    rgba(254, 108, 37, 0.32) 82%,
+    rgba(254, 108, 37, 0) 100%
+  );
+}
+
+/* Two blooms rather than one: a tight bright core and a wide soft haze. A
+   single blur can be either sharp or broad, and light is both at once. */
+.processOutroLine::before,
+.processOutroLine::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.processOutroLine::before {
+  height: 22px;
+  filter: blur(9px);
+  background: linear-gradient(
+    90deg,
+    rgba(254, 108, 37, 0) 0%,
+    rgba(254, 130, 55, 0.16) 28%,
+    rgba(255, 170, 105, 0.4) 50%,
+    rgba(254, 130, 55, 0.16) 72%,
     rgba(254, 108, 37, 0) 100%
   );
 }
 
 .processOutroLine::after {
-  content: "";
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 10rem;
-  height: 3rem;
-  transform: translate(-50%, -50%);
-  pointer-events: none;
+  height: 7px;
   filter: blur(3px);
-  background: radial-gradient(
-    closest-side,
-    rgba(255, 232, 200, 0.95) 0%,
-    rgba(255, 190, 130, 0.35) 45%,
-    rgba(255, 190, 130, 0) 100%
+  background: linear-gradient(
+    90deg,
+    rgba(254, 108, 37, 0) 0%,
+    rgba(255, 150, 80, 0.3) 24%,
+    rgba(255, 226, 198, 0.85) 50%,
+    rgba(255, 150, 80, 0.3) 76%,
+    rgba(254, 108, 37, 0) 100%
   );
 }
 
@@ -646,7 +690,10 @@
     transition: none;
   }
 
-  .processOutroLogo {
+  /* Has to match the selector that declares the sheen. A media query adds no
+     specificity, so a bare .processOutroLogo here would lose to the
+     .processOutro.is-lit descendant rule and the shine would run anyway. */
+  .processOutro.is-lit .processOutroLogo {
     animation: none;
   }
 

@@ -68,6 +68,7 @@ export default function ProcessSection() {
   const [active, setActive] = useState(0);
   const activeRef = useRef(0); // read inside the scroll callback without re-subscribing
   const previousRef = useRef(0);
+  const litRef = useRef(false); // has the mark been told to shine yet
 
   // Same per-character reveal the hero and the other section headings use; it
   // plays itself once the heading scrolls into view.
@@ -165,6 +166,19 @@ export default function ProcessSection() {
               "--line",
               ramp(outro, 0.72, 1).toFixed(3)
             );
+
+            // The mark catches the light a few times once it is fully up, then
+            // holds. Driving it by class rather than by scroll means the shine
+            // keeps its own rhythm instead of being scrubbed back and forth.
+            //
+            // The two thresholds differ on purpose: with one, easing to a stop
+            // right on the boundary would flicker the class and restart the
+            // animation on every frame.
+            const lit = litRef.current ? outro > 0.45 : outro > 0.64;
+            if (lit !== litRef.current) {
+              litRef.current = lit;
+              outroRef.current.classList.toggle("is-lit", lit);
+            }
           }
         },
       });
@@ -185,6 +199,8 @@ export default function ProcessSection() {
         outroRef.current?.style.removeProperty("--logo");
         outroRef.current?.style.removeProperty("--word");
         outroRef.current?.style.removeProperty("--line");
+        outroRef.current?.classList.remove("is-lit");
+        litRef.current = false;
 
         setPinned(false);
         activeRef.current = 0;
