@@ -4,7 +4,6 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import "./ProcessSection.css";
 import { processSteps } from "./processData";
 import useTextSplitAnim from "../CustomHook/useTextSplitAnim.jsx";
-import crackerLogo from "../../assets/Logo.png";
 import DownloadDialog from "./DownloadDialog.jsx";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -421,12 +420,11 @@ export default function ProcessSection() {
       <div className="processOutro" ref={outroRef} aria-hidden="true">
         <span className="processOutroGlow" />
         <span className="processOutroLogoWrap">
-          <img
-            className="processOutroLogo"
-            src={crackerLogo}
-            alt=""
-            draggable="false"
-          />
+          {/* Not an <img>: the mark is a flat silhouette, so the stylesheet
+              masks a coloured box with it instead. That makes its colour a
+              real CSS property the pulse can animate, rather than pixels a
+              filter can only approximate. */}
+          <span className="processOutroLogo" />
         </span>
         <span className="processOutroWord">Ecosystem</span>
       </div>

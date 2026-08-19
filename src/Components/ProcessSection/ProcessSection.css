@@ -449,29 +449,36 @@
   will-change: opacity, transform;
 }
 
+/* The mark is a flat silhouette on transparency, so it is used as a MASK over
+   a coloured box rather than drawn as an image. The box's background is then an
+   ordinary CSS colour, which is what lets the pulse cycle it exactly between
+   amber and the brand orange — a filter over the original pixels could only
+   approximate a target colour, and the source is a pale cream that would need
+   hue, saturation and lightness all pushed at once.
+
+   aspect-ratio comes from the source (155x117); with height auto and no image
+   in the box there is nothing else to give it one. */
 .processOutroLogo {
   display: block;
   width: clamp(9rem, 11vh, 14rem);
-  height: auto;
-  /* Same pulse the loading screen runs on this mark. */
-  animation: processLogoBlink 2s ease-in-out infinite;
+  aspect-ratio: 155 / 117;
+  background-color: var(--brand);
+  -webkit-mask: url("../../assets/Logo.png") center / contain no-repeat;
+  mask: url("../../assets/Logo.png") center / contain no-repeat;
+  animation: processLogoPulse 2.2s ease-in-out infinite;
 }
 
-@keyframes processLogoBlink {
-  0% {
-    opacity: 1;
-  }
-  30% {
-    opacity: 0.2;
-  }
-  60% {
-    opacity: 1;
-  }
-  80% {
-    opacity: 0.2;
-  }
+/* Amber to brand orange and back, with the glow tracking the fill so the mark
+   reads as lit from within rather than merely repainted. */
+@keyframes processLogoPulse {
+  0%,
   100% {
-    opacity: 1;
+    background-color: #ffc02e;
+    filter: drop-shadow(0 0 14px rgba(255, 192, 46, 0.5));
+  }
+  50% {
+    background-color: #fe6c25;
+    filter: drop-shadow(0 0 26px rgba(254, 108, 37, 0.75));
   }
 }
 
