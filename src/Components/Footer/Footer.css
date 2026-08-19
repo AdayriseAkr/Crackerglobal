@@ -33,6 +33,9 @@
 left: 50%;
 transform: translateX(-50%);
     top: 25%;
+    /* Resting shape. Footer.jsx scrubs this up from 0% as the footer scrolls
+       in, bending a straight top edge into an arc — and if that never runs,
+       this is what stands. */
     border-radius: 100%;
     z-index: 1 !important;
 }
