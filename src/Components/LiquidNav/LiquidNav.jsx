@@ -22,8 +22,8 @@ const toggleMenu = () => {
 
   return (
     <>
-    <motion.div initial={{ width: "0%", height: "3rem" }}
-      animate={{ width: "30%", height: "5rem" }}
+    <motion.div initial={{ opacity: 0, scale: 0.3 }}
+      animate={{ opacity: 1, scale: 1 }}
       transition={{
         type: "spring",
         stiffness: 80,

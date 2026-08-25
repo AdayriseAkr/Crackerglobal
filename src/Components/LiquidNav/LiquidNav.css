@@ -2,7 +2,7 @@
 .liquidGlass-wrapper {
     position: fixed;
     width: auto;
-    height: 8rem;
+    height: 5rem;
     max-width: none;
     min-width: 0;
 
@@ -60,7 +60,6 @@ z-index: var(--z-tagline);
 
   gap: 8px;
   border-radius: 2rem;
-padding-left: 0.2rem;
 }
 .mainContentDock{
     padding-inline: 0.6rem;
