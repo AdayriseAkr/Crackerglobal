@@ -51,18 +51,13 @@
 .tag2nd{
     margin-top: -3.9%;
 }
-.heroTagLine > .heroTagLine__accent{
-    color: var(--color-brand-cta);
-}
 
-.heroTagLine > .heroSubline{
-    font-family: var(--font-body);
-    font-size: max(1.6rem,1.05vw);
-    font-weight: 500;
-    line-height: 145%;
-    margin-top: 1.6%;
-    color: var(--color-text-strong);
-    width: min(90%, 44rem);
+.heroTagLine p:last-child{
+    font-size: max(1.5rem,1vw);
+    margin-top: -0.8%;
+    color: var(--color-text-muted-hero);
+    width: 72%;
+    font-weight: normal;
 }
 
 .heroCtaRow{
@@ -157,9 +152,8 @@ cursor: pointer;
         font-size: 3.5rem;
         line-height: 105%;
     }
-    .heroTagLine > .heroSubline{
-        font-size: 1.3rem;
-        width: 82%;
+    .heroTagLine p:last-child{
+        font-size: 1.2rem;
     }
     .HeroSectionParent > video{
         height: 120%;
