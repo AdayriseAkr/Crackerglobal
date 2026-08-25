@@ -1,0 +1,724 @@
+/* Pinned process section — Cracker palette.
+   Reminder: html { font-size: 10px } in index.css, so 1rem = 10px here.
+
+   Resting visibility is CSS's job, driven by .is-active. GSAP writes inline
+   opacity/transform on top during a step change and always lands on the same
+   values, so if GSAP never runs the section still shows one readable step
+   rather than a blank stage or four panels printed over each other. */
+
+.processSection {
+  --brand: #fe6c25;
+  --brand-rgb: 254, 108, 37;
+  --surface: #f6f0f2;
+  --text-strong: #4a3232;
+  --text-soft: #684a4a;
+
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  background-color: #f8f8fb;
+  overflow: hidden;
+}
+
+.processInner {
+  width: 100%;
+  height: 100%;
+  max-width: 132rem;
+  margin-inline: auto;
+  padding: 7rem 15px 6rem;
+  display: flex;
+  flex-direction: column;
+  gap: 4rem;
+}
+
+/* ---- ring fades ----
+   Layered between the ring (z 0) and the content (z 2), so the arc softens
+   and washes out while the text and image stay untouched.
+
+   The ramp is a mask rather than a gradient background: the mask fades the
+   backdrop blur too, so the arc goes gradually soft instead of hitting a hard
+   edge where the blur starts. Note the mask and the wash both end on an
+   explicit zero-alpha colour, not `transparent` — `transparent` is
+   rgba(0,0,0,0), and interpolating toward it drags a grey haze through the
+   middle of the ramp. */
+.processFade {
+  position: absolute;
+  z-index: 1;
+  pointer-events: none;
+  background-color: #f8f8fb;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.processFade--bottom {
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: clamp(12rem, 26%, 30rem);
+  -webkit-mask-image: linear-gradient(to top, #000 18%, rgba(0, 0, 0, 0) 100%);
+  mask-image: linear-gradient(to top, #000 18%, rgba(0, 0, 0, 0) 100%);
+}
+
+.processFade--left {
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: clamp(6rem, 12%, 20rem);
+  -webkit-mask-image: linear-gradient(to right, #000 10%, rgba(0, 0, 0, 0) 100%);
+  mask-image: linear-gradient(to right, #000 10%, rgba(0, 0, 0, 0) 100%);
+}
+
+/* Covers the intro band. The geometry above keeps the trail clear of the
+   heading on ordinary viewports, but a short window still squeezes it upward —
+   this way the last number dissolves into the page there instead of sitting
+   behind the title. */
+.processFade--top {
+  left: 0;
+  right: 0;
+  top: 0;
+  height: clamp(8rem, 18%, 20rem);
+  -webkit-mask-image: linear-gradient(to bottom, #000 22%, rgba(0, 0, 0, 0) 100%);
+  mask-image: linear-gradient(to bottom, #000 22%, rgba(0, 0, 0, 0) 100%);
+}
+
+/* ---- intro ---- */
+.processIntro {
+  /* Lifted above the ring, whose arc runs up behind this text. */
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1.2rem;
+  flex-shrink: 0;
+}
+
+.processEyebrow {
+  padding-inline: 1.5rem;
+  padding-block: 0.8rem;
+  border-radius: 999px;
+  background-color: rgba(var(--brand-rgb), 0.1);
+  color: #fd722d;
+  font-size: 1.3rem;
+  font-weight: 500;
+}
+
+.processIntro h1 {
+  font-size: max(2.5rem, 1.8vw);
+  color: black;
+}
+
+/* ---- three-column body ---- */
+.processBody {
+  position: relative; /* containing block for the ring */
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  /* First column is empty — it reserves the strip the ring's arc sweeps
+     through, so the text never collides with a number. Wide enough for the
+     active slot at 14rem plus half a number. */
+  grid-template-columns: 18rem minmax(0, 1fr) minmax(0, 1.05fr);
+  gap: clamp(2rem, 4vw, 6rem);
+  /* Columns stretch to the row, and each centres its own content. Centring the
+     items instead would size them by content, and the percentage heights below
+     would have nothing definite to resolve against. */
+  align-items: stretch;
+}
+
+/* ---- left: rotating ring tracker ----
+   The ring's centre sits far off-screen to the left, so only its right-hand
+   arc crosses the layout. It is a zero-size origin point: the path and every
+   number are positioned outwards from it, which keeps the geometry to one
+   number (--ring-radius) instead of a pile of hand-tuned offsets. */
+.processRing {
+  /* Sized off viewport HEIGHT, not width. The numbers only ever trail upward
+     from the active slot, spanning radius * sin((n-1) * step) — so what has to
+     fit is vertical room, and a width-based radius grew this trail into the
+     heading on wide screens while the space above it stayed the same. */
+  /* The floor matters as much as the cap: the gap between two numbers is
+     radius * step minus their diameter, so too small a radius on a short
+     window pushes the circles into each other. */
+  --ring-radius: clamp(34rem, 44vh, 50rem);
+  --ring-number: 6.4rem;
+
+  position: absolute;
+  z-index: 0;
+  /* Below centre, to buy the upward trail clearance under the heading. */
+  top: 60%;
+  /* Puts 3 o'clock — the active slot — 14rem into the section. */
+  left: calc(14rem - var(--ring-radius));
+  width: 0;
+  height: 0;
+  pointer-events: none;
+  transform: rotate(var(--ring-angle, 0deg));
+  will-change: transform;
+}
+
+.processRingPath {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: calc(var(--ring-radius) * 2);
+  height: calc(var(--ring-radius) * 2);
+  margin: calc(var(--ring-radius) * -1);
+  border-radius: 50%;
+  border: 1px solid rgba(74, 50, 50, 0.13);
+}
+
+/* rotate() first, then translateX() out along that angle — so the element both
+   sits at its place on the arc AND inherits the tilt. Combined with the ring's
+   own rotation, the active number lands upright and the waiting ones lean. */
+.processRingStep {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: var(--ring-number);
+  height: var(--ring-number);
+  margin: calc(var(--ring-number) / -2);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  transform: rotate(var(--angle)) translateX(var(--ring-radius));
+
+  /* Opaque fill, so the arc doesn't run through the middle of the number. */
+  background-color: #f8f8fb;
+  border: 1px solid rgba(74, 50, 50, 0.16);
+  color: rgba(74, 50, 50, 0.5);
+
+  transition:
+    background-color 0.45s cubic-bezier(0.76, 0, 0.24, 1),
+    border-color 0.45s cubic-bezier(0.76, 0, 0.24, 1),
+    color 0.45s cubic-bezier(0.76, 0, 0.24, 1),
+    box-shadow 0.45s cubic-bezier(0.76, 0, 0.24, 1);
+}
+
+/* already passed: brand-tinted, quietly */
+.processRingStep.is-done {
+  background-color: rgba(var(--brand-rgb), 0.12);
+  border-color: rgba(var(--brand-rgb), 0.28);
+  color: var(--brand);
+}
+
+/* current: solid, white text */
+.processRingStep.is-active {
+  background-color: var(--text-strong);
+  border-color: var(--text-strong);
+  color: #ffffff;
+  box-shadow: 0 10px 26px -8px rgba(74, 50, 50, 0.45);
+}
+
+/* ---- centre: text panels, stacked ---- */
+.processStage {
+  position: relative;
+  z-index: 2; /* above the ring (0) and its fades (1) */
+  grid-column: 2;
+  min-height: 34rem;
+}
+
+.processPanel {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1.6rem;
+  opacity: 0;
+  pointer-events: none;
+  will-change: transform, opacity;
+}
+
+.processPanel.is-active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.processPhase {
+  font-size: 1.2rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--brand);
+}
+
+.processTitle {
+  font-size: max(3.4rem, 2.8vw);
+  font-weight: 600;
+  line-height: 108%;
+  color: var(--text-strong);
+}
+
+.processText {
+  font-size: 1.6rem;
+  line-height: 155%;
+  color: var(--text-soft);
+  max-width: 46ch;
+}
+
+.processTags {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  margin-top: 0.6rem;
+}
+
+.processTag {
+  padding-inline: 1.4rem;
+  padding-block: 0.8rem;
+  border-radius: 999px;
+  background-color: rgba(var(--brand-rgb), 0.1);
+  color: #d9541a;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+/* ---- CTA ----
+   Warm gold fill, with a bright highlight that follows the cursor across the
+   button while it's hovered. --shine-x/y are written by the pointer handlers;
+   --shine is the on/off, so the glare fades in and out rather than snapping. */
+.processCta {
+  --shine-x: 50%;
+  --shine-y: 50%;
+  --shine: 0;
+
+  position: relative;
+  /* Contains the screen blend below, so it can't lighten the page behind. */
+  isolation: isolate;
+  overflow: hidden;
+  align-self: flex-start;
+  margin-top: 0.8rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.9rem;
+  padding: 1.3rem 2.4rem;
+  border-radius: 999px;
+  text-decoration: none;
+  /* This renders as a <button> on the step that opens a dialog, so the UA
+     defaults have to be cleared or that one would sit in a different font
+     behind a default border. */
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #ffffff;
+  background: linear-gradient(135deg, #ffab48 0%, #fe6c25 52%, #ef5508 100%);
+  box-shadow:
+    inset 0 0 18px rgba(255, 255, 255, 0.42),
+    0 12px 26px -12px rgba(239, 85, 8, 0.7);
+  transition:
+    transform 0.35s cubic-bezier(0.25, 1, 0.5, 1),
+    box-shadow 0.35s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.processCta:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    inset 0 0 20px rgba(255, 255, 255, 0.5),
+    0 16px 32px -12px rgba(239, 85, 8, 0.85);
+}
+
+.processCta:focus-visible {
+  outline: 2px solid var(--text-strong);
+  outline-offset: 3px;
+}
+
+/* The travelling glare. `screen` over the warm fill reads as hot gold rather
+   than a flat white wash — the fill's own colour still shows through it. */
+.processCta::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: var(--shine);
+  mix-blend-mode: screen;
+  transition: opacity 0.28s ease;
+  background: radial-gradient(
+    circle 7rem at var(--shine-x) var(--shine-y),
+    rgba(255, 251, 228, 0.95) 0%,
+    rgba(255, 214, 130, 0.6) 34%,
+    rgba(255, 176, 70, 0) 70%
+  );
+}
+
+/* Label and arrow ride above the glare. */
+.processCta > * {
+  position: relative;
+  z-index: 2;
+}
+
+.processCta svg {
+  width: 1.5rem;
+  height: 1.5rem;
+  flex-shrink: 0;
+  transition: transform 0.35s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.processCta:hover svg {
+  transform: translateX(3px);
+}
+
+/* ---- right: visuals, stacked ---- */
+.processVisual {
+  position: relative;
+  z-index: 2;
+  grid-column: 3;
+  min-height: 34rem;
+  border-radius: 28px;
+  background-color: transparent;
+  overflow: hidden;
+}
+
+/* `contain`, not `cover`: these are transparent-background product
+   illustrations in portrait, and the panel is landscape — cover would scale
+   them to fill and crop away the top and bottom of each subject. The padding
+   keeps them off the panel's edges. */
+.processImage {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 3rem;
+  opacity: 0;
+  will-change: transform, opacity;
+}
+
+.processImage.is-active {
+  opacity: 1;
+}
+
+/* A wider step makes the trail climb higher, and a short window is exactly
+   where there is least room for it. Reclaim some by tightening the intro band,
+   which is otherwise generous relative to the space left over. */
+@media (min-width: 768px) and (max-height: 820px) {
+  .processInner {
+    padding-top: 4rem;
+    padding-bottom: 4rem;
+    gap: 2.5rem;
+  }
+}
+
+/* ---- outro ----
+   Rides the scroll band after the last product. Sits above the content (2) and
+   its fades (1), so it reads as the section handing over rather than as one
+   more thing inside it.
+
+   --logo and --word are two slices of the same scroll progress, written per
+   frame by ProcessSection.jsx. Both are plain numbers, which is what lets the
+   calc() below turn one value into an opacity, a scale, a letter-spacing and
+   an offset at once. */
+.processOutro {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2.6rem;
+  pointer-events: none;
+}
+
+/* Warm bloom behind the mark, with two soft diagonal streaks over it so the
+   ground reads as light falling across a surface rather than a flat vignette.
+   All three are layers of one background, so it stays a single element. */
+.processOutroWash {
+  position: absolute;
+  inset: 0;
+  opacity: calc(var(--logo, 0) * 0.95);
+  background:
+    linear-gradient(
+      118deg,
+      rgba(255, 255, 255, 0) 20%,
+      rgba(255, 255, 255, 0.5) 31%,
+      rgba(255, 255, 255, 0) 43%
+    ),
+    linear-gradient(
+      118deg,
+      rgba(255, 255, 255, 0) 54%,
+      rgba(255, 255, 255, 0.34) 63%,
+      rgba(255, 255, 255, 0) 73%
+    ),
+    radial-gradient(
+      62rem 62rem at 50% 46%,
+      rgba(255, 188, 142, 0.55) 0%,
+      rgba(255, 214, 185, 0.3) 40%,
+      rgba(255, 240, 230, 0) 72%
+    );
+}
+
+/* The hairline circle. It is white, which only reads because the bloom above
+   warms the ground behind it — on the bare section colour it would vanish. */
+.processOutroRing {
+  position: absolute;
+  top: 46%;
+  left: 50%;
+  width: clamp(34rem, 44vh, 52rem);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  opacity: calc(var(--logo, 0) * 0.85);
+  /* Opens slightly as it arrives, so the ring settles rather than switching on. */
+  transform: translate(-50%, -50%) scale(calc(0.94 + var(--logo, 0) * 0.06));
+}
+
+/* The wrapper owns the scroll-driven fade and the mark owns its sheen. One
+   element can't do both: an animation outranks a normal declaration, so the
+   sheen would win outright and the scroll fade would never show. */
+.processOutroLogoWrap {
+  position: relative;
+  opacity: var(--logo, 0);
+  transform: scale(calc(0.86 + var(--logo, 0) * 0.14));
+  will-change: opacity, transform;
+}
+
+/* The mark is a flat silhouette on transparency, so it is used as a MASK over a
+   gradient rather than drawn as an image. That turns its fill into ordinary CSS
+   — which is the only way to give it a metallic ramp at all, since a filter
+   over the original pale-cream pixels can shift a colour but cannot invent a
+   gradient across the shape.
+
+   aspect-ratio comes from the source (155x117); with no image in the box there
+   is nothing else to give it one. */
+/* The mark is a flat silhouette on transparency, so it is used as a MASK over a
+   painted box rather than drawn as an image. That turns its fill into ordinary
+   CSS — which is what lets it be brand orange with a highlight sliding across
+   it, something no filter over the original pale-cream pixels could produce.
+
+   The gradient is orange at both ends with one bright band in the middle, and
+   it is parked off the shape at rest. So the resting mark is simply solid
+   #FE6C25; the sweep only exists while the animation runs.
+
+   aspect-ratio comes from the source (155x117); with no image in the box there
+   is nothing else to give it one. */
+.processOutroLogo {
+  display: block;
+  width: clamp(9rem, 11vh, 14rem);
+  aspect-ratio: 155 / 117;
+  -webkit-mask: url("../../assets/Logo.png") center / contain no-repeat;
+  mask: url("../../assets/Logo.png") center / contain no-repeat;
+  background-color: var(--brand);
+  background-image: linear-gradient(
+    112deg,
+    #fe6c25 0%,
+    #fe6c25 40%,
+    #ff9d5e 46%,
+    #ffe0c4 50%,
+    #ff9d5e 54%,
+    #fe6c25 60%,
+    #fe6c25 100%
+  );
+  background-size: 300% 100%;
+  background-position: 130% 0;
+  filter: drop-shadow(0 0 18px rgba(254, 108, 37, 0.4));
+}
+
+/* Added once the mark is fully up, and only then — see the threshold in
+   ProcessSection.jsx. Three passes, no fill, so it returns to the parked
+   position and holds as solid orange rather than freezing mid-sweep. */
+.processOutro.is-lit .processOutroLogo {
+  animation: processLogoSheen 1.5s ease-in-out 3;
+}
+
+@keyframes processLogoSheen {
+  from {
+    background-position: 130% 0;
+  }
+  to {
+    background-position: -30% 0;
+  }
+}
+
+/* Inter, not a display face. The reference is a neo-grotesque at light weight
+   under very wide tracking, which is exactly what Inter does here — and the
+   spacing, not the typeface, is what makes it read as a wordmark rather than a
+   heading. A fourth family would cost a request and fight the rest of the page
+   for nothing. */
+.processOutroWord {
+  font-size: max(2.1rem, 1.7vw);
+  font-weight: 400;
+  text-transform: uppercase;
+  color: var(--text-strong);
+  opacity: var(--word, 0);
+  /* Tracking closes as it arrives, so the word resolves out of the mark rather
+     than switching on. */
+  letter-spacing: calc(0.38em + (1 - var(--word, 0)) * 0.26em);
+  /* Uppercase tracking adds space after the LAST letter too, which throws a
+     centred word off by half of it; giving that half back re-centres it, and
+     since the tracking animates the indent has to animate with it. */
+  text-indent: calc(0.38em + (1 - var(--word, 0)) * 0.26em);
+  transform: translateY(calc((1 - var(--word, 0)) * 1.6rem));
+  will-change: opacity, transform;
+}
+
+/* The rule under the word.
+
+   Every layer here shares the line's own left-to-right falloff, so the glow
+   runs the length of the line and dies out with it. The earlier version put a
+   round bloom over the middle, which read as a separate spot sitting on top
+   rather than as light coming off the line. */
+.processOutroLine {
+  position: relative;
+  width: clamp(18rem, 26vw, 34rem);
+  height: 1px;
+  margin-top: -0.6rem;
+  opacity: var(--line, 0);
+  /* Draws outward from the centre as it arrives. */
+  transform: scaleX(calc(0.5 + var(--line, 0) * 0.5));
+  background: linear-gradient(
+    90deg,
+    rgba(254, 108, 37, 0) 0%,
+    rgba(254, 108, 37, 0.32) 18%,
+    rgba(255, 224, 196, 0.95) 50%,
+    rgba(254, 108, 37, 0.32) 82%,
+    rgba(254, 108, 37, 0) 100%
+  );
+}
+
+/* Two blooms rather than one: a tight bright core and a wide soft haze. A
+   single blur can be either sharp or broad, and light is both at once. */
+.processOutroLine::before,
+.processOutroLine::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.processOutroLine::before {
+  height: 22px;
+  filter: blur(9px);
+  background: linear-gradient(
+    90deg,
+    rgba(254, 108, 37, 0) 0%,
+    rgba(254, 130, 55, 0.16) 28%,
+    rgba(255, 170, 105, 0.4) 50%,
+    rgba(254, 130, 55, 0.16) 72%,
+    rgba(254, 108, 37, 0) 100%
+  );
+}
+
+.processOutroLine::after {
+  height: 7px;
+  filter: blur(3px);
+  background: linear-gradient(
+    90deg,
+    rgba(254, 108, 37, 0) 0%,
+    rgba(255, 150, 80, 0.3) 24%,
+    rgba(255, 226, 198, 0.85) 50%,
+    rgba(255, 150, 80, 0.3) 76%,
+    rgba(254, 108, 37, 0) 100%
+  );
+}
+
+/* ---- mobile: no pin, just a stacked list ----
+   ScrollTrigger is only created above 768px (gsap.matchMedia in the
+   component), so nothing here has to undo a pin — it only has to make the
+   stacked-and-hidden desktop layout flow normally again. */
+@media (max-width: 767px) {
+  .processSection {
+    height: auto;
+  }
+
+  .processInner {
+    height: auto;
+    padding: 8rem 15px;
+    gap: 3rem;
+  }
+
+  .processBody {
+    grid-template-columns: 1fr;
+    gap: 3rem;
+  }
+
+  /* The ring only makes sense while the section is pinned and rotating, and
+     with no ring there is nothing for the fades to dissolve. The outro is the
+     tail of that same pinned scroll, so it goes with them. */
+  .processRing,
+  .processFade,
+  .processOutro {
+    display: none;
+  }
+
+  .processStage,
+  .processVisual {
+    grid-column: 1;
+    height: auto;
+    min-height: 0;
+  }
+
+  .processStage {
+    display: flex;
+    flex-direction: column;
+    gap: 5rem;
+  }
+
+  .processPanel {
+    position: relative;
+    inset: auto;
+    opacity: 1;
+    pointer-events: auto;
+    gap: 1.2rem;
+  }
+
+  .processTitle {
+    font-size: 3rem;
+  }
+
+  .processText {
+    font-size: 1.4rem;
+  }
+
+  /* One visual per panel would need a different DOM shape; on mobile the
+     stacked images add weight without adding information, so they go. */
+  .processVisual {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .processRingStep {
+    transition: none;
+  }
+
+  /* Has to match the selector that declares the sheen. A media query adds no
+     specificity, so a bare .processOutroLogo here would lose to the
+     .processOutro.is-lit descendant rule and the shine would run anyway. */
+  .processOutro.is-lit .processOutroLogo {
+    animation: none;
+  }
+
+  /* The handler never switches --shine on here, so the button is left with a
+     plain hover instead of a light chasing the cursor. */
+  .processCta,
+  .processCta svg,
+  .processCta::after {
+    transition: none;
+  }
+  .processCta:hover {
+    transform: none;
+  }
+  .processCta:hover svg {
+    transform: none;
+  }
+
+  /* useTextSplitAnim has no reduced-motion path of its own and writes inline
+     styles, so neutralise them here — without this the heading would stay
+     stuck at its hidden start state. Scoped to this section; the shared hook
+     is untouched. */
+  .processIntro .innerChar {
+    transform: none !important;
+    filter: none !important;
+    opacity: 1 !important;
+    transition: none !important;
+  }
+}

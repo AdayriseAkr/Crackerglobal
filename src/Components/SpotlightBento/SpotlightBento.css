@@ -1,0 +1,703 @@
+/* Spotlight bento grid — Cracker palette.
+   Reminder: html { font-size: 10px } in index.css, so 1rem = 10px here.
+
+   All continuous values arrive from SpotlightBento.jsx as custom properties:
+     on each card    --glow-x / --glow-y / --glow-intensity
+   Everything the cursor lights is painted inside a card, which clips its own
+   overflow — nothing washes across the section behind them.
+   Nothing in this file animates those directly — the rAF loop owns them, and a
+   CSS transition on top would fight it. Transitions here are only for discrete
+   state (particle spawn, ripple, static hover fallback). */
+
+.bentoSectionParent {
+  --brand: #fe6c25;
+  --brand-rgb: 254, 108, 37;
+  --surface: #f6f0f2;
+  --surface-tint: #f5e9e3;
+  --text-strong: #4a3232;
+  --text-soft: #684a4a;
+
+  position: relative;
+  width: 100%;
+  background-color: #f8f8fb;
+  padding-block: 12rem 14rem;
+  padding-inline: 15px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6rem;
+  overflow: hidden;
+}
+
+/* ---- section heading (mirrors .featureHeading in MainFeature.css) ---- */
+.bentoHeading {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.2rem;
+  text-align: center;
+}
+
+.bentoEyebrow {
+  padding-inline: 1.5rem;
+  padding-block: 0.8rem;
+  border-radius: 999px;
+  background-color: rgba(var(--brand-rgb), 0.1);
+  color: #fd722d;
+  font-size: 1.3rem;
+  font-weight: 500;
+}
+
+.bentoHeading h1 {
+  font-size: max(2.5rem, 1.8vw);
+  color: black;
+}
+
+.bentoHeading p {
+  font-size: 1.5rem;
+  line-height: 140%;
+  color: rgba(0, 0, 0, 0.351);
+  max-width: 52rem;
+}
+
+/* ---- grid ----
+   Two rows of four columns. Cards 3 and 4 are the wide ones, each spanning two
+   columns — that is what produces the small / small / wide top row and the
+   wide / small / small bottom row.
+
+   Auto-placement does the rest: card 3 fills the back half of row one, card 4
+   opens row two, and 5 and 6 land beside it. So the spans hang off the
+   .bentoCard--feature modifier rather than :nth-child, which ties the layout to
+   the data instead of to a position in the markup. Array order in bentoData.js
+   still decides which cards are wide. */
+.bentoGrid {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 122rem;
+  display: grid;
+  gap: 1.6rem;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 600px) {
+  .bentoGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  /* Two columns is too narrow to sit a wide card next to a small one, so the
+     wide ones take the full width here instead. */
+  .bentoCard--feature {
+    grid-column: span 2;
+  }
+}
+
+@media (min-width: 1024px) {
+  .bentoGrid {
+    grid-template-columns: repeat(4, 1fr);
+    /* Both rows scale with the viewport between a floor and a ceiling, and
+       take `auto` as the maximum so a row can still grow rather than clip if
+       longer copy is swapped in later. The bottom row is the taller of the two
+       — its three cards carry the most artwork relative to their copy. */
+    grid-template-rows:
+      minmax(clamp(30rem, 22vw, 35rem), auto)
+      minmax(clamp(33rem, 25vw, 39rem), auto);
+  }
+  .bentoCard--feature {
+    grid-column: span 2;
+  }
+
+  /* On a wide card the artwork sits beside the copy rather than under it. It
+     is placed absolutely so the header and body still get the card's full
+     height, which is what lets the copy sit low against the illustration. */
+  .bentoCard--feature .bentoCardBody {
+    margin-top: auto;
+    max-width: 54%;
+  }
+  .bentoCard--feature .bentoCardMedia {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 46%;
+    min-height: 0;
+    padding: 1.6rem;
+  }
+  /* Centred in its column rather than resting on the card floor. */
+  .bentoCard--feature .bentoCardImageWrap {
+    top: 50%;
+    bottom: auto;
+    transform: translate(
+      calc(-50% + var(--img-x, 0%)),
+      calc(-50% + var(--img-y, 0%))
+    );
+  }
+}
+
+/* ---- card ---- */
+.bentoCard {
+  --glow-x: 50%;
+  --glow-y: 50%;
+  --glow-intensity: 0;
+  --glow-radius: 220px;
+  --card-surface: var(--surface);
+  --card-glow: var(--brand-rgb);
+
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 1.4rem;
+  min-height: 21rem;
+  padding: 2.2rem;
+  border-radius: 20px;
+  background-color: var(--card-surface);
+  overflow: hidden;
+  will-change: transform;
+
+  /* Rises with proximity rather than on :hover, so a card lights and lifts as
+     the cursor approaches instead of snapping when it crosses the edge. */
+  box-shadow: 0 18px 40px -20px rgba(74, 50, 50, calc(var(--glow-intensity) * 0.5));
+}
+
+/* Interior warm pool, following the cursor. */
+.bentoCard::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: radial-gradient(
+    var(--glow-radius) circle at var(--glow-x) var(--glow-y),
+    rgba(var(--card-glow), calc(var(--glow-intensity) * 0.14)) 0%,
+    transparent 66%
+  );
+}
+
+/* Border glow: a gradient clipped to a 2px ring by masking out the content box
+   and keeping only the padding band. */
+.bentoCard::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  padding: 2px;
+  border-radius: inherit;
+  pointer-events: none;
+  background: radial-gradient(
+    var(--glow-radius) circle at var(--glow-x) var(--glow-y),
+    rgba(var(--card-glow), calc(var(--glow-intensity) * 0.9)) 0%,
+    rgba(var(--card-glow), calc(var(--glow-intensity) * 0.4)) 32%,
+    transparent 62%
+  );
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+}
+
+/* ---- card content ---- */
+.bentoCardHeader,
+.bentoCardBody,
+.bentoCardMedia {
+  position: relative;
+  z-index: 3;
+}
+
+.bentoCardHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.bentoCardLabel {
+  font-size: 1.2rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--brand);
+}
+
+.bentoCardIndex {
+  font-size: 1.2rem;
+  color: rgba(74, 50, 50, 0.32);
+  font-variant-numeric: tabular-nums;
+}
+
+.bentoCardTitle {
+  font-size: max(2rem, 1.5vw);
+  font-weight: 600;
+  line-height: 115%;
+  color: var(--text-strong);
+  margin-bottom: 0.8rem;
+}
+
+.bentoCardText {
+  font-size: 1.4rem;
+  line-height: 145%;
+  color: var(--text-soft);
+  max-width: 46ch;
+}
+
+/* ---- variants ---- */
+.bentoCard--feature .bentoCardTitle {
+  font-size: max(3rem, 2.2vw);
+}
+
+.bentoCard--feature .bentoCardText {
+  font-size: 1.6rem;
+  max-width: 52ch;
+}
+
+/* ---- media slot ----
+   Empty until artwork is supplied. The card reserves the space either way, so
+   dropping images in later can't shift the grid's proportions. */
+.bentoCardMedia {
+  position: relative;
+  flex: 1;
+  min-height: 8rem;
+}
+
+/* Carries the artwork's size and position, and is absolutely positioned so
+   none of it can feed back into layout: scaling a card's art up or down leaves
+   the card, its row and the whole grid exactly where they were. The card clips
+   overflow, so art bigger than its slot bleeds to the card edge and stops.
+
+   Kept separate from the <img> on purpose — the entrance animation owns the
+   image's transform, and putting both on one element would let the animation's
+   `to { transform: none }` wipe the positioning out from under it. */
+.bentoCardImageWrap {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  display: block;
+  width: var(--img-size, 100%);
+  transform: translate(calc(-50% + var(--img-x, 0%)), var(--img-y, 0%));
+  pointer-events: none;
+}
+
+.bentoCardImage {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* ---- per-card artwork sizing ----
+   Per card because the six illustrations don't share a subject size or the
+   same amount of transparent margin around it. Percentages are of the media
+   slot's width; the nudges are of the artwork's own size. */
+.bentoCardArt--entity {
+  --img-delay: 3.1s;
+  --img-dur: 1.2s;
+  --img-size: 109%;
+  --img-x: 0%;
+  --img-y: 25%;
+}
+.bentoCardArt--security {
+  --img-delay: 3.6s;
+  --img-dur: 1.1s;
+  --img-size: 65%;
+  --img-x: 0%;
+  --img-y: 32%;
+}
+.bentoCardArt--liquidity {
+  --img-delay: 2.85s;
+  --img-dur: 1.5s;
+  --img-size: 113%;
+  --img-x: 18%;
+  --img-y: 11%;
+}
+.bentoCardArt--tokenomics {
+  --img-delay: 3.4s;
+  --img-dur: 1.3s;
+  --img-size: 117%;
+  --img-x: 10%;
+  --img-y: 16%;
+}
+.bentoCardArt--fees {
+  --img-delay: 3.75s;
+  --img-dur: 1.05s;
+  --img-size: 80%;
+  --img-x: 0%;
+  --img-y: 23%;
+}
+.bentoCardArt--funding {
+  --img-delay: 3s;
+  --img-dur: 1.4s;
+  --img-size: 104%;
+  --img-x: 0%;
+  --img-y: 20%;
+}
+
+/* ---- entrance sequence ----
+   Three stages per card, in order: the card unfolds from one of its edges,
+   then its copy fades in, then its artwork settles. Every stage is driven by
+   one .is-in class on the card, with the ordering held in the delays below so
+   the stages can't drift apart.
+
+   The card opens by scaling on a single axis from a transform-origin pinned to
+   one edge, so it reads as a panel unfolding rather than a box fading up. Its
+   contents are squashed while that runs, which is exactly why every text and
+   artwork delay lands after the card's own duration — the panel opens empty,
+   then fills.
+
+   Everything is VISIBLE by default and .is-in only starts an animation whose
+   first frame is the hidden state. That direction matters: hiding by default
+   would mean any break in the trigger leaves the grid permanently blank,
+   whereas this degrades to a section that simply appears without animating.
+
+   `both` fill holds the from-state through each delay and settles on the
+   to-state, which is identical to the resting style — so nothing jumps at the
+   end of a stage. */
+@keyframes bentoFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Held down from first paint, so the entrance begins at nothing instead of
+   blinking out of a fully drawn card. The moment .is-in lands this stops
+   matching and the animation's first frame — a card scaled to zero — takes
+   over in the same frame, so there is no gap between the two.
+
+   Only applied once JS has armed the grid, so if the observer is unavailable
+   the cards simply show without animating rather than staying blank. */
+.bentoGrid.is-armed .bentoCard:not(.is-in) {
+  opacity: 0;
+}
+
+@keyframes bentoUnfoldY {
+  from {
+    transform: scaleY(0);
+  }
+  to {
+    transform: scaleY(1);
+  }
+}
+
+@keyframes bentoUnfoldX {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+/* Stage 1 — the card unfolds.
+
+   `backwards`, deliberately NOT `both`. The rAF loop drives tilt and
+   magnetism through this element's inline transform, and animations outrank
+   inline styles in the cascade — so a filled animation would keep applying its
+   to-state forever and silently kill the hover. With `backwards` the
+   from-state is held through the delay and the element hands transform back
+   the moment the animation ends.
+
+   Longhands rather than the shorthand, so animation-name can come from a
+   custom property. */
+.bentoCard.is-in {
+  animation-name: var(--unfold, bentoUnfoldY);
+  animation-duration: var(--card-dur, 1.4s);
+  animation-timing-function: cubic-bezier(0.87, 0, 0.13, 1);
+  animation-delay: var(--card-delay, 0s);
+  animation-fill-mode: backwards;
+}
+
+/* Stage 2 — its copy, once the card is most of the way in. */
+.bentoCard.is-in .bentoCardHeader,
+.bentoCard.is-in .bentoCardBody {
+  animation: bentoFadeIn var(--text-dur, 0.9s) cubic-bezier(0.33, 1, 0.68, 1)
+    var(--text-delay, 1.7s) both;
+}
+
+/* Per-card timing and unfold edge, paced off the reference: each panel takes
+   roughly two seconds to open, and the STAGGER does the work rather than the
+   durations. Durations still vary slightly so no two panels open in lockstep,
+   but the spread of delays is what makes six panels read as six rather than
+   one wipe. Text lands after its own card has finished opening — a card
+   squashes its contents while it scales, so that ordering is required, not
+   just taste. */
+.bentoGrid .bentoCard:nth-child(1) {
+  transform-origin: top center;
+  --card-delay: 0.3s;
+  --card-dur: 2s;
+  --text-delay: 2.6s;
+  --text-dur: 1s;
+}
+.bentoGrid .bentoCard:nth-child(2) {
+  transform-origin: bottom center;
+  --card-delay: 0.7s;
+  --card-dur: 2.1s;
+  --text-delay: 3s;
+  --text-dur: 1.05s;
+}
+.bentoGrid .bentoCard:nth-child(3) {
+  --unfold: bentoUnfoldX;
+  transform-origin: center right;
+  --card-delay: 0s;
+  --card-dur: 1.95s;
+  --text-delay: 2.35s;
+  --text-dur: 0.95s;
+}
+.bentoGrid .bentoCard:nth-child(4) {
+  --unfold: bentoUnfoldX;
+  transform-origin: center left;
+  --card-delay: 0.5s;
+  --card-dur: 2.15s;
+  --text-delay: 2.85s;
+  --text-dur: 1.1s;
+}
+.bentoGrid .bentoCard:nth-child(5) {
+  transform-origin: bottom center;
+  --card-delay: 0.9s;
+  --card-dur: 1.9s;
+  --text-delay: 3.15s;
+  --text-dur: 0.95s;
+}
+.bentoGrid .bentoCard:nth-child(6) {
+  transform-origin: top center;
+  --card-delay: 0.2s;
+  --card-dur: 2.05s;
+  --text-delay: 2.5s;
+  --text-dur: 1s;
+}
+
+/* ---- stage 3: artwork ----
+   The image is VISIBLE by default and the class only starts an animation whose
+   first frame is the hidden state. That direction matters: hiding by default
+   would mean any break in the trigger leaves a card permanently blank, whereas
+   this degrades to art that simply appears without animating.
+
+   `both` fill keeps the from-state through any delay and settles on the
+   to-state, which is identical to the resting style — so nothing jumps when
+   the animation ends. Cards clip their overflow, so art travelling in from an
+   edge slides out from under it rather than floating over the layout. */
+@keyframes bentoImageIn {
+  from {
+    opacity: 0;
+    transform: var(--img-from, translateY(40%));
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.bentoCard.is-in .bentoCardImage {
+  animation: bentoImageIn var(--img-dur, 1.1s)
+    var(--img-ease, cubic-bezier(0.22, 1, 0.36, 1)) var(--img-delay, 1.2s) both;
+}
+
+/* One per card, deliberately all different: six identical slides firing at once
+   read as a single mechanical sweep. Mixed travel, duration and easing make
+   them read as six separate objects settling. */
+/* Every piece of art settles DOWN from slightly oversized as it lands, on top
+   of whatever travel it has. That settle is the one gesture all six share, and
+   it is what stops the artwork reading as a flat slide.
+
+   Travels the full height of its slot, from below. */
+.bentoCardMedia--up,
+.bentoCardMedia--rise {
+  --img-from: translateY(100%) scale(1.08);
+}
+
+/* The one that moves sideways, so the set doesn't read as a single axis. */
+.bentoCardMedia--right {
+  --img-from: translateX(100%) scale(1.08);
+}
+
+/* No travel — these resolve in place, so the settle carries the whole gesture
+   and starts from further out. */
+.bentoCardMedia--fade {
+  --img-from: scale(1.3);
+}
+
+.bentoCard--tint {
+  --card-surface: var(--surface-tint);
+}
+
+/* Orange fill: the brand colour can't glow against itself, so the glow,
+   particles and ripple all flip to white on this card. */
+.bentoCard--brand {
+  --card-surface: var(--brand);
+  --card-glow: 255, 255, 255;
+}
+
+.bentoCard--brand .bentoCardLabel {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.bentoCard--brand .bentoCardIndex {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.bentoCard--brand .bentoCardTitle {
+  color: #ffffff;
+}
+
+.bentoCard--brand .bentoCardText {
+  color: rgba(255, 255, 255, 0.88);
+}
+
+/* ---- particles ---- */
+.bentoParticles {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.bentoParticle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  animation: bentoParticleIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) var(--spawn) backwards;
+}
+
+.bentoParticles.is-out .bentoParticle {
+  animation: bentoParticleOut 0.3s ease forwards;
+}
+
+/* Split across two elements on purpose: the wrapper owns the spawn/exit scale,
+   the dot owns the looping drift — one element can't run both on `transform`. */
+.bentoParticleDot {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: rgba(var(--card-glow), 0.9);
+  box-shadow: 0 0 8px rgba(var(--card-glow), 0.55);
+  animation:
+    bentoParticleDrift var(--dur) var(--delay) ease-in-out infinite alternate,
+    bentoParticlePulse 1.6s var(--delay) ease-in-out infinite alternate;
+}
+
+@keyframes bentoParticleIn {
+  from {
+    transform: scale(0);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes bentoParticleOut {
+  to {
+    transform: scale(0);
+    opacity: 0;
+  }
+}
+
+@keyframes bentoParticleDrift {
+  to {
+    transform: translate3d(var(--dx), var(--dy), 0);
+  }
+}
+
+@keyframes bentoParticlePulse {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0.35;
+  }
+}
+
+/* ---- click ripple ---- */
+.bentoRipple {
+  position: absolute;
+  z-index: 2;
+  border-radius: 50%;
+  pointer-events: none;
+  background: radial-gradient(
+    circle,
+    rgba(var(--card-glow), 0.35) 0%,
+    rgba(var(--card-glow), 0.16) 32%,
+    transparent 68%
+  );
+  animation: bentoRipple 0.75s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes bentoRipple {
+  from {
+    transform: scale(0);
+    opacity: 1;
+  }
+  to {
+    transform: scale(1);
+    opacity: 0;
+  }
+}
+
+/* ---- touch / no-hover fallback ----
+   The rAF loop never runs here, so nothing writes an inline transform and the
+   plain CSS hover below is free to take over. */
+@media (hover: none), (pointer: coarse) {
+  .bentoCard {
+    transition:
+      transform 0.35s cubic-bezier(0.25, 1, 0.5, 1),
+      box-shadow 0.35s cubic-bezier(0.25, 1, 0.5, 1);
+  }
+  .bentoCard:active {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px -16px rgba(74, 50, 50, 0.4);
+  }
+}
+
+@media (max-width: 500px) {
+  .bentoSectionParent {
+    padding-block: 8rem 9rem;
+    gap: 4rem;
+  }
+  .bentoHeading p {
+    font-size: 1.2rem;
+    max-width: 90%;
+  }
+  .bentoCard {
+    padding: 1.8rem;
+    min-height: 18rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* Resting style is already the finished state, so dropping the animation
+     leaves the art in place rather than hidden. */
+  .bentoCard.is-in,
+  .bentoCard.is-in .bentoCardHeader,
+  .bentoCard.is-in .bentoCardBody,
+  .bentoCard.is-in .bentoCardImage {
+    animation: none;
+  }
+
+  .bentoParticleDot {
+    animation: none;
+  }
+  .bentoRipple {
+    animation: none;
+    display: none;
+  }
+
+  .bentoCard {
+    transition: none;
+  }
+
+  /* useTextSplitAnim has no reduced-motion path of its own and writes inline
+     styles, so neutralise them here — without this the heading would stay
+     stuck at its hidden start state. Scoped to this section; the shared hook
+     is untouched. */
+  .bentoHeading .innerChar {
+    transform: none !important;
+    filter: none !important;
+    opacity: 1 !important;
+    transition: none !important;
+  }
+}

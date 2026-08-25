@@ -131,7 +131,6 @@
 }
 .heroBreifBox > p {
   font-size: 1.3rem;
-
   display: -webkit-box;
   -webkit-line-clamp: 4;   
   -webkit-box-orient: vertical;

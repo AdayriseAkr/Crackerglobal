@@ -1,0 +1,338 @@
+/* Download dialog.
+   Reminder: html { font-size: 10px } in index.css, so 1rem = 10px.
+
+   The panel follows the Cracker palette. The three badges inside it do NOT —
+   each one wears its own platform's design language, because those marks are
+   what people scan for. Restyling them into our colours would make them less
+   recognisable, not more consistent. Their internals are in px for the same
+   reason: they're reproducing fixed specs, not our type scale. */
+
+.dlOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2147482000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2.4rem;
+  background: rgba(74, 50, 50, 0.52);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  animation: dlOverlayIn 0.4s ease forwards;
+}
+
+.dlOverlay.is-closing {
+  animation: dlOverlayOut 0.28s ease forwards;
+}
+
+.dlPanel {
+  position: relative;
+  width: min(52rem, 100%);
+  background: #ffffff;
+  border-radius: 24px;
+  padding: 4rem 3.6rem 3.6rem;
+  /* Clips the blurred colour blobs to the rounded corners. */
+  overflow: hidden;
+  box-shadow:
+    0 40px 90px -24px rgba(74, 50, 50, 0.45),
+    0 14px 32px -18px rgba(74, 50, 50, 0.3);
+  outline: none;
+
+  /* Note the absence of `forwards`. The panel's resting state is unclipped, so
+     letting the animation fill would leave clip-path: inset(0) stuck on it —
+     which keeps clipping the box-shadow, since clip-path is applied after the
+     shadow is drawn. Without a fill the element simply returns to its normal
+     styles when the animation ends, and inset(0) looks identical to the
+     unclipped state, so nothing jumps. */
+  animation: dlPanelIn 1.05s cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+.dlOverlay.is-closing .dlPanel {
+  animation: dlPanelOut 0.28s ease forwards;
+}
+
+@keyframes dlOverlayIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes dlOverlayOut {
+  to { opacity: 0; }
+}
+
+/* Opens in two beats: a short bar stretches out to full width, then the height
+   unfolds from it. clip-path rather than scale, so the type inside is never
+   squashed and snapped back — it is uncovered at its final size. */
+@keyframes dlPanelIn {
+  0% {
+    opacity: 0;
+    clip-path: inset(48% 44% 48% 44% round 24px);
+    /* Eased at both ends, so the bar grows out of nothing rather than
+       snapping into motion. */
+    animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1);
+  }
+  44% {
+    opacity: 1;
+    clip-path: inset(47% 0 47% 0 round 24px);
+    /* The unfold picks up straight away and settles long, which stops the
+       handover between the two beats reading as a stall. */
+    animation-timing-function: cubic-bezier(0.33, 1, 0.68, 1);
+  }
+  100% {
+    opacity: 1;
+    clip-path: inset(0 0 0 0 round 24px);
+  }
+}
+
+@keyframes dlPanelOut {
+  from {
+    opacity: 1;
+    clip-path: inset(0 0 0 0 round 24px);
+  }
+  to {
+    opacity: 0;
+    clip-path: inset(44% 0 44% 0 round 24px);
+  }
+}
+
+/* Content rises in behind the panel's own opening, so the buttons read as
+   arriving rather than being there all along. */
+@keyframes dlRiseIn {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ---- brand glow ----
+   Heavily blurred colour, the same device the brief section uses behind its
+   copy. Sits under the content rather than tinting the panel's fill, so the
+   surface stays white and only the corners pick up warmth. */
+.dlGlow {
+  position: absolute;
+  z-index: 0;
+  border-radius: 50%;
+  pointer-events: none;
+  filter: blur(38px);
+}
+
+.dlGlow--top {
+  top: -9rem;
+  right: -6rem;
+  width: 23rem;
+  height: 23rem;
+  background: radial-gradient(
+    circle,
+    rgba(254, 108, 37, 0.4) 0%,
+    rgba(254, 108, 37, 0) 70%
+  );
+}
+
+.dlGlow--bottom {
+  bottom: -10rem;
+  left: -7rem;
+  width: 25rem;
+  height: 25rem;
+  background: radial-gradient(
+    circle,
+    rgba(251, 216, 180, 0.75) 0%,
+    rgba(251, 216, 180, 0) 70%
+  );
+}
+
+/* Everything real sits above the glow. */
+.dlClose,
+.dlTitle,
+.dlSubtitle,
+.dlOptions {
+  position: relative;
+  z-index: 1;
+}
+
+.dlClose {
+  position: absolute;
+  top: 1.6rem;
+  right: 1.6rem;
+  width: 3.6rem;
+  height: 3.6rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  background: #f5e9e3;
+  color: #684a4a;
+  transition:
+    background-color 0.3s cubic-bezier(0.25, 1, 0.5, 1),
+    color 0.3s cubic-bezier(0.25, 1, 0.5, 1),
+    transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+}
+.dlClose svg {
+  width: 1.6rem;
+  height: 1.6rem;
+}
+.dlClose:hover {
+  background: #fe6c25;
+  color: #ffffff;
+  transform: rotate(90deg);
+}
+
+.dlTitle {
+  font-size: max(2.4rem, 1.7vw);
+  font-weight: 700;
+  line-height: 1.15;
+  color: #4a3232;
+  padding-right: 4rem;
+  animation: dlRiseIn 0.62s cubic-bezier(0.33, 1, 0.68, 1) 0.5s backwards;
+}
+
+.dlSubtitle {
+  margin-top: 1rem;
+  font-size: 1.4rem;
+  line-height: 1.5;
+  color: #684a4a;
+  max-width: 42ch;
+  animation: dlRiseIn 0.62s cubic-bezier(0.33, 1, 0.68, 1) 0.6s backwards;
+}
+
+.dlOptions {
+  margin-top: 2.8rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+/* ---- badges ----
+   Shared geometry only; every colour, border and font below is per-platform. */
+.dlBadge {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  padding: 14px 20px;
+  border-radius: 10px;
+  text-decoration: none;
+  transition:
+    transform 0.25s cubic-bezier(0.25, 1, 0.5, 1),
+    box-shadow 0.25s cubic-bezier(0.25, 1, 0.5, 1);
+  /* `backwards`, so each stays hidden through its delay rather than flashing
+     at full opacity before the panel has finished opening. */
+  animation: dlRiseIn 0.6s cubic-bezier(0.33, 1, 0.68, 1) backwards;
+}
+
+.dlBadge:nth-child(1) { animation-delay: 0.74s; }
+.dlBadge:nth-child(2) { animation-delay: 0.86s; }
+.dlBadge:nth-child(3) { animation-delay: 0.98s; }
+
+.dlBadge:hover {
+  transform: translateY(-2px);
+}
+
+.dlBadge__mark {
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+}
+
+.dlBadge__text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  line-height: 1.1;
+  text-align: left;
+}
+
+.dlBadge__small {
+  font-size: 11px;
+  letter-spacing: 0.01em;
+}
+
+.dlBadge__large {
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+/* Chrome Web Store — Google's light surface: white card, #dadce0 hairline,
+   #3c4043 text, Roboto (falling back to Arial, which is close enough that no
+   extra font has to be loaded). */
+.dlBadge--chrome {
+  background: #ffffff;
+  border: 1px solid #dadce0;
+  color: #3c4043;
+  font-family: Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+.dlBadge--chrome .dlBadge__small {
+  color: #5f6368;
+}
+.dlBadge--chrome:hover {
+  box-shadow: 0 1px 3px rgba(60, 64, 67, 0.24), 0 4px 12px rgba(60, 64, 67, 0.16);
+}
+
+/* Google Play — the official badge is black with a thin grey keyline, and the
+   upper line is uppercase and letterspaced. */
+.dlBadge--play {
+  background: #000000;
+  border: 1px solid #a6a6a6;
+  color: #ffffff;
+  font-family: Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+.dlBadge--play .dlBadge__small {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+}
+.dlBadge--play:hover {
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+}
+
+/* App Store — white per the brief rather than Apple's usual black badge, so
+   the mark and text invert to black. San Francisco where available. */
+.dlBadge--appstore {
+  background: #ffffff;
+  border: 1px solid #1d1d1f;
+  color: #1d1d1f;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text",
+    "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+.dlBadge--appstore .dlBadge__mark {
+  /* Apple's mark reads small against the cap height of the wordmark. */
+  width: 29px;
+  height: 29px;
+}
+.dlBadge--appstore:hover {
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.22);
+}
+
+@media (max-width: 500px) {
+  .dlPanel {
+    padding: 3.2rem 2.2rem 2.6rem;
+    border-radius: 20px;
+  }
+  .dlTitle {
+    font-size: 2.2rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dlOverlay,
+  .dlOverlay.is-closing,
+  .dlPanel,
+  .dlOverlay.is-closing .dlPanel,
+  .dlTitle,
+  .dlSubtitle,
+  .dlBadge {
+    animation: none;
+  }
+  .dlBadge,
+  .dlClose {
+    transition: none;
+  }
+  .dlBadge:hover,
+  .dlClose:hover {
+    transform: none;
+  }
+}

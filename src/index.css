@@ -52,17 +52,6 @@ filter: blur(1px);
 filter: blur(10px);
 z-index: 99;
 }
-.sd{
-  position: absolute; 
-  width: 25%;
-  top: 258%;
-  right: 0;
-  z-index: 99;
-  opacity: 0;
-  transform:  translateX(100px);
-  transition: transform 1.6s ease-in-out, opacity 1.8s ease-in-out;
-}
-
 .word {
   display: inline-block;
   white-space: nowrap;

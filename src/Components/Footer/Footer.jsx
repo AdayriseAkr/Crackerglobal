@@ -1,11 +1,60 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useLayoutEffect, useRef } from "react";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import RoboFix from "../Robo3d/RoboFix";
 import "./Footer.css";
 import useInView from "../CustomHook/useInView"; // adjust path if needed
 
+gsap.registerPlugin(ScrollTrigger);
+
 export default function Footer() {
   const footerRef = useRef(null);
+  const curveRef = useRef(null);
   let xWidth = 1000;
+
+  // The footer's top edge bends from flat to curved as you scroll into it.
+  //
+  // .footerCurve is a 150%-wide band sitting behind the gradient plate, so only
+  // its top edge is ever visible. At border-radius 0 that band is a rectangle
+  // and the edge is a straight line; at 100% it is an ellipse and the edge
+  // becomes an arc. Scrubbing between the two is what bends the surface.
+  //
+  // The resting value in CSS is the curved one, so if this never runs the
+  // footer looks exactly as it does today rather than sitting square.
+  useLayoutEffect(() => {
+    const footer = footerRef.current;
+    const curve = curveRef.current;
+    if (!footer || !curve) return;
+    if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
+
+    const ctx = gsap.context(() => {
+      gsap.fromTo(
+        curve,
+        { borderRadius: "0%" },
+        {
+          borderRadius: "100%",
+          // Linear: scroll position is already doing the easing.
+          ease: "none",
+          scrollTrigger: {
+            trigger: footer,
+            // Straight until the footer is a fifth of the way up the screen,
+            // then bending the rest of the way in. Tying both ends to the
+            // footer's own top edge is what makes the curve read as a function
+            // of how much footer is showing.
+            start: "top 80%",
+            end: "top 10%",
+            // Numeric scrub adds a second of catch-up, so the edge keeps
+            // bending for a moment after the wheel stops rather than being
+            // welded to the scrollbar.
+            scrub: 1,
+            invalidateOnRefresh: true,
+          },
+        }
+      );
+    }, footer);
+
+    return () => ctx.revert();
+  }, []);
 
   useEffect(() => {
     xWidth = window.innerWidth;
@@ -19,7 +68,7 @@ export default function Footer() {
     <div ref={footerRef} className="footerParent">
         {/* ✅ Robo loads ONLY when footer is in viewport */}
       {inView && <RoboFix/>}
-        <div className="footerCurve"></div>
+        <div ref={curveRef} className="footerCurve"></div>
       <div className="FooterGradient"></div>
       <div className="footerContent">
         <div className="footerMainContent"></div>
