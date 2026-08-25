@@ -22,13 +22,11 @@ export default function HeroSection({ loadProp }) {
   const [showLoader, setShowLoader] = useState(true);
   const tagRef = useRef(null);
   const tagRef2 = useRef(null);
-  const tagRef3 = useRef(null);
   const pRef = useRef(null);
 
   const tagAnim = useTextSplitAnim(tagRef, { stagger: 20, startDelay: 10, autoPlay: false });
   const tag2Anim = useTextSplitAnim(tagRef2, { stagger: 20, startDelay: 220, autoPlay: false });
-  const tag3Anim = useTextSplitAnim(tagRef3, { stagger: 20, startDelay: 320, autoPlay: false });
-  const pAnim = useTextSplitAnim(pRef, { stagger: 20, startDelay: 400, autoPlay: false });
+  const pAnim = useTextSplitAnim(pRef, { stagger: 20, startDelay: 340, autoPlay: false });
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -49,7 +47,6 @@ export default function HeroSection({ loadProp }) {
       window.scrollTo(0, 0);
       tagAnim.play();
       tag2Anim.play();
-      tag3Anim.play();
       pAnim.play();
     }
 
@@ -81,15 +78,12 @@ export default function HeroSection({ loadProp }) {
           className="transitionBlock"
         ></div>
         <div className="heroTagLine">
-          <p ref={tagRef}>CRACK THE EGG</p>
-          <p className="tag2nd" ref={tagRef2} style={{ color: "#ef5508d8" }}>
-            A MEME ECOSYSTEM
+          <p ref={tagRef}>Crack it</p>
+          <p className="tag2nd heroTagLine__accent" ref={tagRef2}>
+            before it runs.
           </p>
-          <p className="tag2nd" ref={tagRef3}>
-            BUILT TO LAST
-          </p>
-          <p ref={pRef}>
-            Built US-compliant, with the user experience the space forgot.
+          <p className="heroSubline" ref={pRef}>
+            Fair curve. No presale. No insiders. The curve is the only way in.
           </p>
         </div>
         <div className="heroCtaRow">
@@ -103,7 +97,7 @@ export default function HeroSection({ loadProp }) {
             }}
             className="ctaBtn"
           >
-            Launch on Cracker
+            Crack the Egg 🥚
           </motion.button>
           <motion.button
             initial={{ opacity: 0, transform: "translateY(120%)" }}
