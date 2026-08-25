@@ -2,9 +2,9 @@
     position: relative;
     width: 100%;
     height: 100vh;
-    background-color: #f8f8fb;
+    background-color: var(--color-canvas);
     overflow: hidden !important;
-    padding-inline: 15px;
+    padding-inline: var(--gutter-page);
 
 }
 .HeroSectionParent > video {
@@ -35,17 +35,17 @@
 
 .heroTagLine{
     position: absolute;
-     z-index: 9999;
-   
+     z-index: var(--z-tagline);
+
      top: 13%;
-   
+
 }
 
 .heroTagLine > p{
-    font-size: max(3.5rem,2.5vw);
+    font-size: var(--fs-hero);
     font-weight: bolder;
     font-family: Arial, Helvetica, sans-serif;
-    color: rgb(0, 0, 0);
+    color: var(--color-text-primary);
     font-weight: bold;
 }
 .tag2nd{
@@ -55,7 +55,7 @@
 .heroTagLine p:last-child{
     font-size: max(1.5rem,1vw);
     margin-top: -0.8%;
-    color: rgba(0, 0, 0, 0.466);
+    color: var(--color-text-muted-hero);
     width: 72%;
     font-weight: normal;
 }
@@ -63,8 +63,8 @@
 .heroCtaRow{
     position: absolute;
     bottom: 3%;
-    left: 15px;
-    z-index: 999;
+    left: var(--gutter-page);
+    z-index: var(--z-sticky);
     display: flex;
     align-items: center;
     gap: 1rem;
@@ -73,13 +73,13 @@
 .ctaBtn{
     height: 5rem;
     width: auto;
-    background-color: #ef5508;
+    background-color: var(--color-brand-cta);
 
-    border-radius: 30px;
+    border-radius: var(--radius-pill);
     border: none;
     cursor: pointer;
     outline: none;
-    box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.768);
+    box-shadow: var(--shadow-inset-glow-strong);
     color: rgba(255, 255, 255, 0.847);
     font-weight: bold;
     padding-inline: 20px;
@@ -90,7 +90,7 @@
     height: 5rem;
     width: 5rem;
     flex-shrink: 0;
-    background-color: #ffffff;
+    background-color: var(--color-surface-white);
     border-radius: 50%;
     border: none;
     cursor: pointer;
@@ -98,7 +98,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    box-shadow: var(--shadow-drop-sm);
 }
 
 .walletBtn svg{
@@ -111,18 +111,18 @@
     width: 15rem;
     height: 17rem;
     background-color: rgba(247, 233, 223, 0.376);
-    z-index: 99;
-    right: 15px;
+    z-index: var(--z-overlay-mixer);
+    right: var(--gutter-page);
     bottom: 3%;
-    border-radius: 20px;
-    box-shadow: inset 0px 0px 29px white;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-inset-glow-white);
     backdrop-filter: blur(3px);
     padding:15px;
     padding-block: 10px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    transition:  0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    transition: var(--duration-medium) var(--ease-spring);
 }
 .heroBreifBox > img{
     width: 40%;
@@ -140,7 +140,7 @@ opacity: 0.8;
 }
 
 .heroBreifBox p:last-child{
-color:#F06F31 ;
+color: var(--color-brand-link);
 cursor: pointer;
 }
 
@@ -164,7 +164,7 @@ cursor: pointer;
     .heroCtaRow{
         bottom: unset;
         top: 27%;
-        left: 15px;
+        left: var(--gutter-page);
         gap: 0.6rem;
     }
     .ctaBtn{

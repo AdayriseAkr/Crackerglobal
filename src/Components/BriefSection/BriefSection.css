@@ -26,17 +26,17 @@
     align-items: center;
     flex-direction: column;
     padding-top: 58vh;
-    background-color: #f8f8fb;
+    background-color: var(--color-canvas);
    /* background-color: pink; */
 }
 
 .centerPara{
-    font-size: max(4rem,2.5vw);
+    font-size: var(--fs-statement);
     width: 55%;
     text-align: center;
-z-index: 999 !important;
+z-index: var(--z-sticky) !important;
 font-weight:500;
-   color: #684A4A;
+   color: var(--color-text-soft);
 }
 
 /* Scroll cue, top-right of the section. Measured from the shell's edges, so it
@@ -62,7 +62,7 @@ font-weight:500;
     min-width: 16rem;
     max-width: 42rem;
     height: auto;
-    z-index: 99;
+    z-index: var(--z-overlay-mixer);
     pointer-events: none;
     user-select: none;
     opacity: 0;
@@ -129,8 +129,8 @@ font-weight:500;
 .briefProductCard{
     width: 28%;
     height: 25vw;
-    background-color: #F6F0F2;
-    border-radius: 25px;
+    background-color: var(--color-surface);
+    border-radius: var(--radius-xl);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -171,8 +171,8 @@ font-weight:500;
     padding-block: 0.8rem;
     height: auto;
     background-color: rgba(255, 255, 255, 0.461);
-    color: #fd722d92;
-    border-radius: 20px;
+    color: var(--color-brand-tag);
+    border-radius: var(--radius-lg);
     font-size: 1.3rem;
     font-weight: 500;
 }

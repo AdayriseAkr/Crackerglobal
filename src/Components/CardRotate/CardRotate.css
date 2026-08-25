@@ -17,7 +17,7 @@
     height: 100%;
     top: 105%;
     left: 0%;
-    z-index: 9;
+    z-index: var(--z-footer-content);
     opacity: 1;
     user-select: none;
     pointer-events: none;
@@ -32,12 +32,12 @@
   width: max(10rem,7vw);
   height: max(10rem,7vw);
   /* background-color: red; */
-  z-index: 999;
+  z-index: var(--z-sticky);
   display: flex;
     justify-content: center;
     align-items: center;
   pointer-events: none; /* IMPORTANT */
-transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1) , opacity 0.5s ease-in-out;
+transition: transform 0.4s var(--ease-expo-out) , opacity var(--duration-medium) ease-in-out;
 will-change: transform;
 }
 .dragCircle{
@@ -45,7 +45,7 @@ will-change: transform;
     width: 60%;
     height: 60%;
     background-color: rgb(53, 52, 52);
-    border-radius: 50px;
+    border-radius: var(--radius-pill);
    display: flex;
     justify-content: center;
     align-items: center;
@@ -87,9 +87,9 @@ will-change: transform;
     left: -10%;
     width: 120%;
     height: 40rem;
-    z-index: 99;
+    z-index: var(--z-overlay-mixer);
     pointer-events: none;
-    background: linear-gradient(180deg, transparent 0%, #F8F8FB 65%);
+    background: var(--gradient-section-fade);
     filter: blur(12px);
     transform-origin: 50% 100%;
   }
@@ -99,7 +99,7 @@ will-change: transform;
       position: absolute;
       top: 7vh;
       text-align: center;
-      z-index: 50;
+      z-index: var(--z-cardrotate-controls);
       pointer-events: none;
       width: 100%;
       display: flex;
@@ -111,14 +111,14 @@ will-change: transform;
   }
 
   .WhyWe h1 {
-        font-size: max(2.5rem,1.8vw);
+        font-size: var(--fs-section-h1);
         color: black !important;
   }
 .WhyWe p{
   text-align: center;
     font-size: 1.5rem;
     width: 36%;
-    color: rgba(0, 0, 0, 0.351);
+    color: var(--color-text-muted-section);
     line-height: 110%;
 }
 
@@ -147,8 +147,8 @@ will-change: transform;
       margin-left: calc(max(37rem, 32vw) / -2);
       margin-top: -14rem;
 
-      background-color: #2563eb; /* blue-600 */
-      border-radius: 30px;
+      background-color: #2563eb; /* blue-600 — dead: always overridden by a #rCardN rule */
+      border-radius: var(--radius-xl-alt);
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -187,7 +187,7 @@ will-change: transform;
       bottom: 5vh;
       display: flex;
       gap: 1.5rem;
-      z-index: 50;
+      z-index: var(--z-cardrotate-controls);
   }
 
   .control-btn {
@@ -197,14 +197,14 @@ will-change: transform;
       background-color: white;
       border: none;
       cursor: pointer;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+      box-shadow: var(--shadow-drop-md);
       display: flex;
       align-items: center;
       justify-content: center;
       color: #333;
       font-weight: bold;
       font-size: 1.2rem;
-      transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+      transition: all var(--duration-micro) var(--ease-spring);
   }
 
   .control-btn:hover {
@@ -217,26 +217,26 @@ will-change: transform;
   }
 
   #rCard1 {
-    background-color: #E1E1E1; /* green-500 */
+    background-color: var(--color-surface-grey);
   }
   #rCard1 span{
     position: absolute;
     font-size: clamp(8.5rem, 7vw, 7vw);
     font-weight: 600;
-    color: #D8D8D8;
+    color: var(--color-surface-grey-dark);
     bottom: 25%;
     line-height: 0.7;
     letter-spacing: -7px;
   }
 
   #rCard2 {
-    background-color: #e7790b; /* purple-600 */
+    background-color: var(--color-accent-orange);
   }
   #rCard6 {
-    background-color: #6840FF; /* teal-400 */
+    background-color: var(--color-accent-violet);
   }
   #rCard3 {
-    background-color: #090909; /* teal-400 */
+    background-color: var(--color-accent-black);
   }
 
   .commCardCircle{
@@ -348,7 +348,7 @@ will-change: transform;
   bottom: 10%;
   left: 50%;
   transform: translateX(-50%);
-  border-radius: 5px;
+  border-radius: var(--radius-xs);
   border: none;
   outline: none; 
   background-color: white; 
@@ -382,8 +382,8 @@ will-change: transform;
   color: white;
   padding: 8px;
   padding-inline: 10px;
-  background-color:#7A57FF ;
-  border-radius: 5px;
+  background-color: var(--color-accent-violet-tag);
+  border-radius: var(--radius-xs);
 }
 
 .mainTagAndDesc{
@@ -408,7 +408,7 @@ will-change: transform;
   width: 95%;
   height: 40%;
   background-color: rgb(245, 245, 245);
-  border-radius: 20px;
+  border-radius: var(--radius-lg);
   bottom: 2%;
   overflow: hidden;
 }
@@ -468,8 +468,8 @@ will-change: transform;
   left: 50%;
   transform: translateX(-50%);
   box-shadow: 1px 1px 15px rgba(0, 0, 0, 0.316);
-  border-radius: 10px;
-  z-index: 9;
+  border-radius: var(--radius-sm);
+  z-index: var(--z-footer-content);
 }
 #bcard2{
   left: 25%;
@@ -507,7 +507,7 @@ will-change: transform;
   left: 40%;
   opacity: 0.5;
 /*   transform: translateX(-50%);
- */  z-index: 9;
+ */  z-index: var(--z-footer-content);
 }
 @media (max-width:500px) {
   .commCardCircle{

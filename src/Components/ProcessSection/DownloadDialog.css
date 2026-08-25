@@ -8,6 +8,8 @@
    reason: they're reproducing fixed specs, not our type scale. */
 
 .dlOverlay {
+  --dl-ease-bar: cubic-bezier(0.65, 0, 0.35, 1);
+
   position: fixed;
   inset: 0;
   z-index: 2147482000;
@@ -28,7 +30,7 @@
 .dlPanel {
   position: relative;
   width: min(52rem, 100%);
-  background: #ffffff;
+  background: var(--color-surface-white);
   border-radius: 24px;
   padding: 4rem 3.6rem 3.6rem;
   /* Clips the blurred colour blobs to the rounded corners. */
@@ -44,7 +46,7 @@
      shadow is drawn. Without a fill the element simply returns to its normal
      styles when the animation ends, and inset(0) looks identical to the
      unclipped state, so nothing jumps. */
-  animation: dlPanelIn 1.05s cubic-bezier(0.65, 0, 0.35, 1);
+  animation: dlPanelIn 1.05s var(--dl-ease-bar);
 }
 
 .dlOverlay.is-closing .dlPanel {
@@ -68,14 +70,14 @@
     clip-path: inset(48% 44% 48% 44% round 24px);
     /* Eased at both ends, so the bar grows out of nothing rather than
        snapping into motion. */
-    animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1);
+    animation-timing-function: var(--dl-ease-bar);
   }
   44% {
     opacity: 1;
     clip-path: inset(47% 0 47% 0 round 24px);
     /* The unfold picks up straight away and settles long, which stops the
        handover between the two beats reading as a stall. */
-    animation-timing-function: cubic-bezier(0.33, 1, 0.68, 1);
+    animation-timing-function: var(--ease-cubic-out);
   }
   100% {
     opacity: 1;
@@ -126,8 +128,8 @@
   height: 23rem;
   background: radial-gradient(
     circle,
-    rgba(254, 108, 37, 0.4) 0%,
-    rgba(254, 108, 37, 0) 70%
+    rgba(var(--color-brand-rgb), 0.4) 0%,
+    rgba(var(--color-brand-rgb), 0) 70%
   );
 }
 
@@ -162,22 +164,22 @@
   align-items: center;
   justify-content: center;
   border: none;
-  border-radius: 12px;
+  border-radius: var(--radius-sm-alt);
   cursor: pointer;
-  background: #f5e9e3;
-  color: #684a4a;
+  background: var(--color-surface-tint);
+  color: var(--color-text-soft);
   transition:
-    background-color 0.3s cubic-bezier(0.25, 1, 0.5, 1),
-    color 0.3s cubic-bezier(0.25, 1, 0.5, 1),
-    transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+    background-color var(--duration-dialog) var(--ease-quart-out),
+    color var(--duration-dialog) var(--ease-quart-out),
+    transform var(--duration-dialog) var(--ease-quart-out);
 }
 .dlClose svg {
   width: 1.6rem;
   height: 1.6rem;
 }
 .dlClose:hover {
-  background: #fe6c25;
-  color: #ffffff;
+  background: var(--color-brand);
+  color: var(--color-surface-white);
   transform: rotate(90deg);
 }
 
@@ -185,18 +187,18 @@
   font-size: max(2.4rem, 1.7vw);
   font-weight: 700;
   line-height: 1.15;
-  color: #4a3232;
+  color: var(--color-text-strong);
   padding-right: 4rem;
-  animation: dlRiseIn 0.62s cubic-bezier(0.33, 1, 0.68, 1) 0.5s backwards;
+  animation: dlRiseIn 0.62s var(--ease-cubic-out) 0.5s backwards;
 }
 
 .dlSubtitle {
   margin-top: 1rem;
   font-size: 1.4rem;
   line-height: 1.5;
-  color: #684a4a;
+  color: var(--color-text-soft);
   max-width: 42ch;
-  animation: dlRiseIn 0.62s cubic-bezier(0.33, 1, 0.68, 1) 0.6s backwards;
+  animation: dlRiseIn 0.62s var(--ease-cubic-out) 0.6s backwards;
 }
 
 .dlOptions {
@@ -213,14 +215,14 @@
   align-items: center;
   gap: 13px;
   padding: 14px 20px;
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
   text-decoration: none;
   transition:
-    transform 0.25s cubic-bezier(0.25, 1, 0.5, 1),
-    box-shadow 0.25s cubic-bezier(0.25, 1, 0.5, 1);
+    transform 0.25s var(--ease-quart-out),
+    box-shadow 0.25s var(--ease-quart-out);
   /* `backwards`, so each stays hidden through its delay rather than flashing
      at full opacity before the panel has finished opening. */
-  animation: dlRiseIn 0.6s cubic-bezier(0.33, 1, 0.68, 1) backwards;
+  animation: dlRiseIn 0.6s var(--ease-cubic-out) backwards;
 }
 
 .dlBadge:nth-child(1) { animation-delay: 0.74s; }
@@ -310,7 +312,7 @@
 @media (max-width: 500px) {
   .dlPanel {
     padding: 3.2rem 2.2rem 2.6rem;
-    border-radius: 20px;
+    border-radius: var(--radius-lg);
   }
   .dlTitle {
     font-size: 2.2rem;

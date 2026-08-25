@@ -10,16 +10,16 @@
    state (particle spawn, ripple, static hover fallback). */
 
 .bentoSectionParent {
-  --brand: #fe6c25;
-  --brand-rgb: 254, 108, 37;
-  --surface: #f6f0f2;
-  --surface-tint: #f5e9e3;
-  --text-strong: #4a3232;
-  --text-soft: #684a4a;
+  --brand: var(--color-brand);
+  --brand-rgb: var(--color-brand-rgb);
+  --surface: var(--color-surface);
+  --surface-tint: var(--color-surface-tint);
+  --text-strong: var(--color-text-strong);
+  --text-soft: var(--color-text-soft);
 
   position: relative;
   width: 100%;
-  background-color: #f8f8fb;
+  background-color: var(--color-canvas);
   padding-block: 12rem 14rem;
   padding-inline: 15px;
   display: flex;
@@ -43,7 +43,7 @@
 .bentoEyebrow {
   padding-inline: 1.5rem;
   padding-block: 0.8rem;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   background-color: rgba(var(--brand-rgb), 0.1);
   color: #fd722d;
   font-size: 1.3rem;
@@ -51,14 +51,14 @@
 }
 
 .bentoHeading h1 {
-  font-size: max(2.5rem, 1.8vw);
+  font-size: var(--fs-section-h1);
   color: black;
 }
 
 .bentoHeading p {
   font-size: 1.5rem;
   line-height: 140%;
-  color: rgba(0, 0, 0, 0.351);
+  color: var(--color-text-muted-section);
   max-width: 52rem;
 }
 
@@ -150,7 +150,7 @@
   gap: 1.4rem;
   min-height: 21rem;
   padding: 2.2rem;
-  border-radius: 20px;
+  border-radius: var(--radius-lg);
   background-color: var(--card-surface);
   overflow: hidden;
   will-change: transform;
@@ -414,7 +414,7 @@
 /* Stage 2 — its copy, once the card is most of the way in. */
 .bentoCard.is-in .bentoCardHeader,
 .bentoCard.is-in .bentoCardBody {
-  animation: bentoFadeIn var(--text-dur, 0.9s) cubic-bezier(0.33, 1, 0.68, 1)
+  animation: bentoFadeIn var(--text-dur, 0.9s) var(--ease-cubic-out)
     var(--text-delay, 1.7s) both;
 }
 
@@ -493,7 +493,7 @@
 
 .bentoCard.is-in .bentoCardImage {
   animation: bentoImageIn var(--img-dur, 1.1s)
-    var(--img-ease, cubic-bezier(0.22, 1, 0.36, 1)) var(--img-delay, 1.2s) both;
+    var(--img-ease, var(--ease-expo-out)) var(--img-delay, 1.2s) both;
 }
 
 /* One per card, deliberately all different: six identical slides firing at once
@@ -559,7 +559,7 @@
   position: absolute;
   width: 4px;
   height: 4px;
-  animation: bentoParticleIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) var(--spawn) backwards;
+  animation: bentoParticleIn 0.4s var(--ease-spring) var(--spawn) backwards;
 }
 
 .bentoParticles.is-out .bentoParticle {
@@ -624,7 +624,7 @@
     rgba(var(--card-glow), 0.16) 32%,
     transparent 68%
   );
-  animation: bentoRipple 0.75s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation: bentoRipple 0.75s var(--ease-expo-out) forwards;
 }
 
 @keyframes bentoRipple {
@@ -644,8 +644,8 @@
 @media (hover: none), (pointer: coarse) {
   .bentoCard {
     transition:
-      transform 0.35s cubic-bezier(0.25, 1, 0.5, 1),
-      box-shadow 0.35s cubic-bezier(0.25, 1, 0.5, 1);
+      transform var(--duration-fast) var(--ease-quart-out),
+      box-shadow var(--duration-fast) var(--ease-quart-out);
   }
   .bentoCard:active {
     transform: translateY(-2px);

@@ -1,0 +1,122 @@
+/*
+ * Design tokens — single source of truth for colour, motion, radius,
+ * shadow, type and z-index values used across the site.
+ *
+ * Reverse-documented from the codebase in ../../docs/design-system.md;
+ * every value here is copied verbatim from an existing rule so this file
+ * introduces zero visual change on its own. Component stylesheets should
+ * reference these instead of repeating literals.
+ */
+
+:root {
+  /* ---- Colour: brand orange family ---- */
+  --color-brand: #fe6c25; /* canonical — use this for anything new */
+  --color-brand-rgb: 254, 108, 37; /* same value as --color-brand, as r,g,b for rgba(var(--color-brand-rgb), alpha) */
+  --color-brand-cta: #ef5508; /* primary CTA fill (hero button, dialog buttons) */
+  --color-brand-cta-hover: #e85c17; /* primary CTA hover */
+  --color-brand-link: #f06f31; /* inline links, "read more" */
+  --color-brand-gradient-end: #ff722d; /* footer send-button gradient end */
+  --color-brand-tag: #fd722d92; /* translucent brand text on tags/eyebrows */
+  --color-brand-tag-alt: #fe6d25dc; /* translucent brand text, footer mailto link */
+  --color-brand-soft: #fca47a;
+  --color-brand-softer: #ffc8b8;
+  --color-brand-softest: #ffddd3;
+  --color-brand-softest-alt: #ffeee5; /* palest tint, footer gradient start */
+  --color-accent-auction: #d9541a;
+  --color-accent-reserve: #f06f31;
+
+  /* ---- Colour: neutrals & surfaces ---- */
+  --color-canvas: #f8f8fb; /* page canvas — body + nearly every section root */
+  --color-surface: #f6f0f2; /* warm neutral card surface */
+  --color-surface-tint: #f5e9e3; /* warmer tinted surface */
+  --color-surface-lavender: #e8e6f4; /* footer plate + arc */
+  --color-surface-white: #ffffff;
+  --color-surface-grey: #e1e1e1;
+  --color-surface-grey-dark: #d8d8d8;
+
+  /* ---- Colour: text (warm brown, not black) ---- */
+  --color-text-strong: #4a3232;
+  --color-text-soft: #684a4a;
+  --color-text-muted: rgba(74, 50, 50, 0.55);
+  --color-text-primary: rgb(0, 0, 0); /* hero headline, section H1, footer wordmark */
+  /* Four near-identical black mutes living on #F8F8FB; kept distinct so this
+     refactor doesn't silently change any section's contrast. */
+  --color-text-muted-hero: rgba(0, 0, 0, 0.466);
+  --color-text-muted-section: rgba(0, 0, 0, 0.351);
+  --color-text-muted-community: rgba(0, 0, 0, 0.467);
+  --color-text-muted-legal: rgba(0, 0, 0, 0.495);
+
+  /* ---- Colour: CardRotate accents (deliberately break the palette) ---- */
+  --color-accent-orange: #e7790b;
+  --color-accent-black: #090909;
+  --color-accent-violet: #6840ff;
+  --color-accent-violet-tag: #7a57ff;
+
+  /* ---- Motion: easing curves ---- */
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1); /* the signature spring — anything that moves/resizes */
+  --ease-expo-out: cubic-bezier(0.22, 1, 0.36, 1); /* fast start, long soft landing */
+  --ease-quart-out: cubic-bezier(0.25, 1, 0.5, 1); /* restrained version of the spring */
+  --ease-spring-extreme: cubic-bezier(0.175, 0.885, 0.32, 2.2); /* nav dock only */
+  --ease-cubic-out: cubic-bezier(0.33, 1, 0.68, 1); /* SpotlightBento fades, DownloadDialog rise-ins */
+
+  /* ---- Motion: durations ---- */
+  --duration-micro: 0.2s; /* colour/opacity hovers */
+  --duration-fast: 0.35s; /* component state change */
+  --duration-medium: 0.5s; /* component state change */
+  --duration-dock: 0.6s; /* dock/dropdown */
+  --duration-dialog: 0.3s; /* dialog buttons/close (FeatureDialog, DownloadDialog) */
+
+  /* ---- Radius ---- */
+  --radius-xs: 5px;
+  --radius-sm: 10px;
+  --radius-sm-alt: 12px;
+  --radius-md: 15px;
+  --radius-lg: 20px;
+  --radius-xl: 25px;
+  --radius-xl-alt: 30px;
+  --radius-2xl: 32px;
+  --radius-3xl: 40px;
+  --radius-4xl: 50px;
+  --radius-pill: 999px; /* fully round; use for anything pill-shaped */
+
+  /* ---- Shadow ---- */
+  --shadow-inset-glow-strong: inset 0 0 20px rgba(255, 255, 255, 0.768);
+  --shadow-inset-glow-white: inset 0px 0px 29px white;
+  --shadow-inset-glow-nav: 0 0 8px 2px rgba(255, 255, 255, 0.656) inset;
+  --shadow-drop-sm: 0 4px 20px rgba(0, 0, 0, 0.15);
+  --shadow-drop-md: 0 10px 25px rgba(0, 0, 0, 0.1);
+  --shadow-drop-panel: 0 60px 120px -30px rgba(74, 50, 50, 0.4),
+    0 20px 40px -16px rgba(74, 50, 50, 0.25);
+
+  /* ---- Gradients (only three real gradients in the project) ---- */
+  --gradient-footer-plate: linear-gradient(357deg, rgba(254, 108, 37, 0.53) -121.71%, var(--color-surface-lavender) 55.08%);
+  --gradient-email-cta: linear-gradient(130deg, var(--color-brand-softest-alt) -25.88%, var(--color-brand-gradient-end) 109.54%);
+  --gradient-section-fade: linear-gradient(180deg, transparent 0%, var(--color-canvas) 65%);
+
+  /* ---- Layout ---- */
+  --gutter-page: 15px;
+
+  /* ---- Fluid type scale — max(floor, vw), reused verbatim across sections ---- */
+  --fs-hero: max(3.5rem, 2.5vw);
+  --fs-statement: max(4rem, 2.5vw);
+  --fs-section-h1: max(2.5rem, 1.8vw);
+  --fs-small: max(1.2rem, 0.8vw);
+  --fs-footer-wordmark: max(7rem, 4.5vw);
+
+  /* ---- Fonts ---- */
+  --font-body: "Inter", sans-serif;
+  --font-display-wordmark: "Bagel Fat One", sans-serif;
+  --font-display-accent: "Baumans", sans-serif;
+
+  /* ---- Z-index scale — pick from an existing tier rather than inventing a new one ---- */
+  --z-in-section: 3;
+  --z-footer-content: 9;
+  --z-cardrotate-controls: 50;
+  --z-overlay-mixer: 99;
+  --z-sticky: 999;
+  --z-tagline: 9999;
+  --z-expand-btn: 10000;
+  --z-topnav: 99999;
+  --z-dialog: 100000;
+  --z-loading: 999999;
+}

@@ -6,7 +6,7 @@
     justify-content: center;
     align-items: center;
     position: relative;
-     background-color: #F8F8FB;
+     background-color: var(--color-canvas);
      overflow: hidden;
 }
 
@@ -17,7 +17,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    border-radius: 50px;
+    border-radius: var(--radius-4xl);
     overflow: hidden;
 
 }
@@ -56,7 +56,7 @@
     justify-content: center;
     
     align-items: center;
-    border-radius: 40px;
+    border-radius: var(--radius-pill);
     margin-left: 1%;
 }
 
@@ -68,7 +68,7 @@
 
 .cummunityContentCard p{
     width: 60%;
-    font-size: max(4rem,2.5vw);
+    font-size: var(--fs-statement);
     font-weight: 700;
     line-height: 95%;
     margin-top: 2%;
@@ -76,9 +76,9 @@
 #CommunityLastChild{
     margin-top: -1px;
     width: 50%;
-    font-size: max(1.2rem,0.8vw);
+    font-size: var(--fs-small);
     font-weight: normal;
-    color: rgba(0, 0, 0, 0.467);
+    color: var(--color-text-muted-community);
      line-height: normal;
      margin-top: -0.8%;
     
@@ -96,7 +96,7 @@
 .communityIcon img{
  width: max(4rem,6.5%);
  cursor: pointer;
- transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+ transition: all var(--duration-micro) var(--ease-spring);
 }
 
 .communityIcon img:hover{

@@ -1,20 +1,20 @@
 /* ===== Palette (matches the rest of the site: #F8F8FB / #FE6C25 / #4A3232 family) ===== */
 .fd-overlay {
-  --fd-bg: #ffffff;
-  --fd-surface: #f6f0f2;
-  --fd-surface-tint: #f5e9e3;
-  --fd-brand: #fe6c25;
-  --fd-brand-soft: #fca47a;
-  --fd-brand-softer: #ffc8b8;
-  --fd-brand-softest: #ffddd3;
-  --fd-text-strong: #4a3232;
-  --fd-text-soft: #684a4a;
-  --fd-text-muted: rgba(74, 50, 50, 0.55);
+  --fd-bg: var(--color-surface-white);
+  --fd-surface: var(--color-surface);
+  --fd-surface-tint: var(--color-surface-tint);
+  --fd-brand: var(--color-brand);
+  --fd-brand-soft: var(--color-brand-soft);
+  --fd-brand-softer: var(--color-brand-softer);
+  --fd-brand-softest: var(--color-brand-softest);
+  --fd-text-strong: var(--color-text-strong);
+  --fd-text-soft: var(--color-text-soft);
+  --fd-text-muted: var(--color-text-muted);
   --fd-border: rgba(74, 50, 50, 0.1);
 
   position: fixed;
   inset: 0;
-  z-index: 100000;
+  z-index: var(--z-dialog);
   display: flex;
   justify-content: center;
   overflow-y: auto;
@@ -28,7 +28,7 @@
   --fd-pad-top: clamp(2.25rem, 4vw, 4.5rem);
   --fd-pad-x: clamp(1.75rem, 5vw, 4.5rem);
   --fd-pad-bottom: clamp(3rem, 5vw, 5rem);
-  --fd-radius: 32px;
+  --fd-radius: var(--radius-2xl);
 
   position: relative;
   width: min(88vw, 1180px);
@@ -37,9 +37,9 @@
   background: var(--fd-bg);
   border-radius: var(--fd-radius);
   padding: var(--fd-pad-top) var(--fd-pad-x) var(--fd-pad-bottom);
-  box-shadow: 0 60px 120px -30px rgba(74, 50, 50, 0.4), 0 20px 40px -16px rgba(74, 50, 50, 0.25);
+  box-shadow: var(--shadow-drop-panel);
   overflow: hidden;
-  font-family: "Inter", sans-serif;
+  font-family: var(--font-body);
   transform-origin: center;
   will-change: transform, clip-path, opacity;
 }
@@ -72,14 +72,14 @@
   width: 44px;
   height: 44px;
   border: none;
-  border-radius: 12px;
+  border-radius: var(--radius-sm-alt);
   display: inline-flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   background: var(--fd-surface-tint);
   color: var(--fd-text-soft);
-  transition: background-color 0.3s cubic-bezier(0.25, 1, 0.5, 1), color 0.3s cubic-bezier(0.25, 1, 0.5, 1), transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+  transition: background-color var(--duration-dialog) var(--ease-quart-out), color var(--duration-dialog) var(--ease-quart-out), transform var(--duration-dialog) var(--ease-quart-out);
 }
 .fd-close:hover {
   background: var(--fd-brand);
@@ -137,10 +137,10 @@
   font-size: 1rem;
   font-weight: 700;
   padding: 0.95rem 1.6rem;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   cursor: pointer;
   border: none;
-  transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1), background-color 0.3s cubic-bezier(0.25, 1, 0.5, 1), color 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+  transition: transform var(--duration-dialog) var(--ease-quart-out), background-color var(--duration-dialog) var(--ease-quart-out), color var(--duration-dialog) var(--ease-quart-out);
 }
 
 .fd-cta--primary {
@@ -149,7 +149,7 @@
 }
 .fd-cta--primary:hover {
   transform: translateY(-2px);
-  background: #e85c17;
+  background: var(--color-brand-cta-hover);
 }
 
 .fd-cta--ghost {
@@ -257,7 +257,7 @@
   left: 1.5rem;
   z-index: 2;
   padding: 0.5rem 1.1rem;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   font-size: 14px;
   font-weight: 700;
   color: var(--fd-text-strong);
@@ -280,7 +280,7 @@
 }
 
 .fd-showcase__headline {
-  font-family: "Baumans", system-ui;
+  font-family: var(--font-display-accent);
   font-weight: 400;
   font-size: clamp(1.4rem, 2.6vw, 2rem);
   line-height: 1.25;
@@ -293,17 +293,17 @@
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  font-family: "Inter", sans-serif;
+  font-family: var(--font-body);
   font-size: 14px;
   font-weight: 700;
   color: var(--fd-text-strong);
   background: #fff;
   border: none;
   padding: 0.85rem 1.4rem;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   cursor: pointer;
   flex-shrink: 0;
-  transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1), background-color 0.3s cubic-bezier(0.25, 1, 0.5, 1), color 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+  transition: transform var(--duration-dialog) var(--ease-quart-out), background-color var(--duration-dialog) var(--ease-quart-out), color var(--duration-dialog) var(--ease-quart-out);
 }
 .fd-showcase__launch-cta:hover {
   background: var(--fd-brand);
@@ -368,7 +368,7 @@
   background: linear-gradient(180deg, var(--fd-brand) 0%, var(--fd-brand-soft) 100%);
   transform-origin: bottom;
   transform: scaleY(0);
-  animation: fd-bar-grow 1.3s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation: fd-bar-grow 1.3s var(--ease-expo-out) forwards;
   animation-delay: var(--bar-delay);
 }
 
@@ -381,18 +381,18 @@
 /* ---- accent variants (subtle per-card personality, same brand family) ---- */
 .fd-panel--liquidity .fd-eyebrow,
 .fd-panel--liquidity .fd-showcase__value {
-  color: #ef5508;
+  color: var(--color-brand-cta);
 }
 .fd-panel--liquidity .fd-live-dot {
-  background: #ef5508;
+  background: var(--color-brand-cta);
 }
 .fd-panel--liquidity .fd-chart__bar {
-  background: linear-gradient(180deg, #ef5508 0%, var(--fd-brand-soft) 100%);
+  background: linear-gradient(180deg, var(--color-brand-cta) 0%, var(--fd-brand-soft) 100%);
 }
 
 .fd-panel--auction .fd-eyebrow,
 .fd-panel--auction .fd-showcase__value {
-  color: #d9541a;
+  color: var(--color-accent-auction);
 }
 .fd-panel--auction .fd-chart__bar {
   background: linear-gradient(180deg, var(--fd-brand-soft) 0%, var(--fd-brand-softer) 100%);
@@ -400,10 +400,10 @@
 
 .fd-panel--reserve .fd-eyebrow,
 .fd-panel--reserve .fd-showcase__value {
-  color: #f06f31;
+  color: var(--color-accent-reserve);
 }
 .fd-panel--reserve .fd-chart__bar {
-  background: linear-gradient(180deg, #f06f31 0%, var(--fd-brand-softest) 100%);
+  background: linear-gradient(180deg, var(--color-accent-reserve) 0%, var(--fd-brand-softest) 100%);
 }
 
 /* ---- responsive ---- */

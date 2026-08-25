@@ -3,7 +3,7 @@
     width: 100%;
     height: auto;
     min-height: 110vh;
-    background-color: #f8f8fb;
+    background-color: var(--color-canvas);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -37,14 +37,14 @@
 }
 .featureHeading h1{
     color: black;
-    font-size: max(2.5rem,1.8vw);
+    font-size: var(--fs-section-h1);
 }
 
 .featureHeading p{
     text-align: center;
     width: 60%;
     font-size: 1.5rem;
-    color: rgba(0, 0, 0, 0.351);
+    color: var(--color-text-muted-section);
 /*     background: radial-gradient(50% 50% at 50% 50%, rgba(254, 108, 37, 0.60) 0%, rgba(102, 102, 102, 0.60) 45.67%);
  *//* background-clip: text;
 -webkit-background-clip: text;
@@ -64,8 +64,8 @@
 /*     background-color: rgb(255, 111, 111);
  */    display: flex;
     justify-content: space-between;
-    z-index: 99;
-    
+    z-index: var(--z-overlay-mixer);
+
 }
 
 
@@ -95,8 +95,8 @@
     max-width: 38rem;
     height: 50%;
     
-    background-color: #F6F0F2;
-    border-radius: 20px;
+    background-color: var(--color-surface);
+    border-radius: var(--radius-lg);
     position: relative;
     overflow: hidden;
     
@@ -149,9 +149,9 @@
     position: absolute;
     width: auto;
     padding: 10px;
-    z-index: 9999;
+    z-index: var(--z-tagline);
     background-color: rgba(255, 255, 255, 0.478);
-    border-radius: 20px;
+    border-radius: var(--radius-lg);
     left: 2%;
     bottom: 2%;
 }
@@ -160,33 +160,33 @@
     position: absolute;
     top: 4%;
     right: 4%;
-    z-index: 10000;
+    z-index: var(--z-expand-btn);
     width: 2.6rem;
     height: 2.6rem;
     border: none;
-    border-radius: 10px;
+    border-radius: var(--radius-sm);
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    color: #FE6C25;
+    color: var(--color-brand);
     background-color: rgba(255, 255, 255, 0.75);
     backdrop-filter: blur(4px);
     -webkit-backdrop-filter: blur(4px);
-    transition: background-color 0.35s cubic-bezier(0.25, 1, 0.5, 1),
-                color 0.35s cubic-bezier(0.25, 1, 0.5, 1),
-                transform 0.35s cubic-bezier(0.25, 1, 0.5, 1);
+    transition: background-color var(--duration-fast) var(--ease-quart-out),
+                color var(--duration-fast) var(--ease-quart-out),
+                transform var(--duration-fast) var(--ease-quart-out);
 }
 
 .cardExpandBtn:hover{
-    background-color: #FE6C25;
-    color: #ffffff;
+    background-color: var(--color-brand);
+    color: var(--color-surface-white);
     transform: scale(1.08);
 }
 .blTag > p{
     font-size: 1.2rem;
     font-weight: bolder;
-    color: #FCA47A;
+    color: var(--color-brand-soft);
     font-weight: bolder;
 }
 
@@ -196,7 +196,7 @@
         width: 98%;
         gap: 0;
         height: 12rem;
-    z-index: 99;
+    z-index: var(--z-overlay-mixer);
     justify-content: flex-end;
     }
     .featureHeading p{
