@@ -8,15 +8,21 @@ import DownloadDialog from "./DownloadDialog.jsx";
 
 gsap.registerPlugin(ScrollTrigger);
 
-// Pinned, scroll-linked process section.
+// Pinned, scroll-linked process section — pinned at every screen size. On a
+// touch device this does mean scroll gets taken over for the section's
+// travel distance rather than staying fully native; that trade was made
+// deliberately in favour of matching the desktop experience exactly, rather
+// than the lighter, non-pinned mobile fallback this used to have.
 //
 // ScrollTrigger pins the section and reports its own 0..1 progress, which maps
 // onto a step position 0..n-1. The tracker is a large ring whose centre sits
-// off-screen to the left: each number is pegged to a fixed angle on that ring,
-// and the ring itself counter-rotates by the current step position, so whoever
-// is active swings round to 3 o'clock. Because each number is placed with
-// `rotate(angle) translateX(radius)`, it carries the ring's rotation with it —
-// which is what tilts the waiting numbers and leaves the active one upright.
+// off-screen (to the left on a wide viewport, off the bottom edge on a narrow
+// one — see the media query in the stylesheet): each number is pegged to a
+// fixed angle on that ring, and the ring itself counter-rotates by the
+// current step position, so whoever is active swings round to the on-screen
+// slot. Because each number is placed with `rotate(angle) translate(radius)`,
+// it carries the ring's rotation with it — which is what tilts the waiting
+// numbers and leaves the active one upright.
 //
 // The ring angle is written straight to a CSS custom property each frame
 // rather than through React: it changes every frame, and re-rendering the
@@ -49,8 +55,6 @@ const ramp = (v, from, to) => clamp((v - from) / (to - from), 0, 1);
 // makes the trail climb higher, since the numbers span
 // radius * sin((n-1) * this) vertically, all of it upward from the active slot.
 const RING_STEP_DEG = 18;
-const DESKTOP_QUERY = "(min-width: 768px)";
-const MOBILE_QUERY = "(max-width: 767px)";
 
 const prefersReducedMotion = () =>
   typeof window !== "undefined" &&
@@ -63,7 +67,6 @@ export default function ProcessSection() {
   const outroRef = useRef(null);
   const titleRef = useRef(null);
   const ringRef = useRef(null);
-  const stageRef = useRef(null);
   const panelRefs = useRef([]);
   const imageRefs = useRef([]);
 
@@ -76,9 +79,9 @@ export default function ProcessSection() {
   // plays itself once the heading scrolls into view.
   useTextSplitAnim(titleRef, { stagger: 18, threshold: 0.4 });
 
-  // Only true while the desktop pin is live. Below 768px every panel is on
-  // screen at once, so hiding the inactive ones from assistive tech would be a
-  // lie about what's actually rendered.
+  // True once the pin is live (every screen size now). Gates aria-hidden on
+  // the inactive panels — before that first ScrollTrigger update, nothing
+  // has told the panels apart yet.
   const [pinned, setPinned] = useState(false);
 
   // The step whose download picker is open, or null. Holds the step rather
@@ -94,15 +97,9 @@ export default function ProcessSection() {
     const section = sectionRef.current;
     if (!section) return;
 
-    // Pinning is desktop-only. On a phone the section falls back to a plain
-    // stacked list (see the media query in the stylesheet) — scroll-jacking a
-    // touch device fights the platform's own scrolling and reads as broken.
-    const mm = gsap.matchMedia();
+    setPinned(true);
 
-    mm.add(DESKTOP_QUERY, () => {
-      setPinned(true);
-
-      const trigger = ScrollTrigger.create({
+    const trigger = ScrollTrigger.create({
         trigger: section,
         start: "top top",
         end: () => `+=${window.innerHeight * TOTAL_TRAVEL}`,
@@ -185,105 +182,26 @@ export default function ProcessSection() {
         },
       });
 
-      return () => {
-        trigger.kill();
-
-        // Hand the panels and images back to CSS. The mobile layout shows all
-        // of them, but GSAP's inline opacity/filter/transform would outrank
-        // the stylesheet and leave them blurred and invisible after a resize
-        // across the breakpoint. Same for the outro opacity and ring angle,
-        // which are written directly to their nodes.
-        gsap.set([...panelRefs.current, ...imageRefs.current].filter(Boolean), {
-          clearProps: "opacity,transform,filter",
-        });
-        innerRef.current?.style.removeProperty("opacity");
-        ringRef.current?.style.removeProperty("--ring-angle");
-        outroRef.current?.style.removeProperty("--logo");
-        outroRef.current?.style.removeProperty("--word");
-        outroRef.current?.style.removeProperty("--line");
-        outroRef.current?.classList.remove("is-lit");
-        litRef.current = false;
-
-        setPinned(false);
-        activeRef.current = 0;
-        setActive(0);
-      };
-    });
-
-    // Mobile: each panel is a CSS scroll-snap stop (see the stylesheet), so a
-    // scroll that comes to rest anywhere near a panel settles fully onto it —
-    // "phase one, then phase two fully in view," not a stop wherever the
-    // wheel happened to run out. The ring tracks THAT: which panel is
-    // currently sitting in the centre band of the viewport, via
-    // IntersectionObserver, not by reading a raw scroll-position fraction.
-    // A raw fraction ties the ring's angle to how tall the content happens to
-    // render on this particular device — different font metrics, a wrapped
-    // line, a taller viewport all shift it — so the same scroll gesture lands
-    // the ring in a different place on different screens. Intersection ratio
-    // against the panel actually on screen doesn't have that problem: the
-    // active panel is the active panel, regardless of how many pixels of
-    // scroll it took to get there. The ring itself still turns smoothly
-    // between numbers — that's a CSS transition on --ring-angle now instead
-    // of a per-frame scroll callback, since the angle only changes at
-    // discrete panel hand-offs, not continuously. `pinned` stays false here
-    // on purpose — it also gates aria-hidden/tabIndex, and every panel really
-    // is visible and reachable at once on mobile, active number or not.
-    mm.add(MOBILE_QUERY, () => {
-      const panels = panelRefs.current.filter(Boolean);
-      if (!panels.length) return;
-
-      const visible = new Set();
-
-      const observer = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((entry) => {
-            const index = panels.indexOf(entry.target);
-            if (index === -1) return;
-
-            if (entry.isIntersecting) {
-              visible.add(index);
-              if (index !== activeRef.current) {
-                activeRef.current = index;
-                setActive(index);
-                ringRef.current?.style.setProperty(
-                  "--ring-angle",
-                  `${(index * RING_STEP_DEG).toFixed(3)}deg`
-                );
-              }
-            } else {
-              visible.delete(index);
-            }
-          });
-
-          ringRef.current?.classList.toggle("is-visible", visible.size > 0);
-        },
-        // Shrinks the observed viewport to a thin band around its vertical
-        // centre, so a panel only counts as "active" once it's actually the
-        // one sitting where scroll-snap settles it — not the moment its edge
-        // first appears at the bottom of the screen.
-        { rootMargin: "-42% 0px -42% 0px", threshold: 0 }
-      );
-
-      panels.forEach((panel) => observer.observe(panel));
-
-      return () => {
-        observer.disconnect();
-        ringRef.current?.style.removeProperty("--ring-angle");
-        ringRef.current?.classList.remove("is-visible");
-        activeRef.current = 0;
-        setActive(0);
-      };
-    });
-
-    return () => mm.revert();
+    return () => {
+      trigger.kill();
+      gsap.set([...panelRefs.current, ...imageRefs.current].filter(Boolean), {
+        clearProps: "opacity,transform,filter",
+      });
+      innerRef.current?.style.removeProperty("opacity");
+      ringRef.current?.style.removeProperty("--ring-angle");
+      outroRef.current?.style.removeProperty("--logo");
+      outroRef.current?.style.removeProperty("--word");
+      outroRef.current?.style.removeProperty("--line");
+      outroRef.current?.classList.remove("is-lit");
+      litRef.current = false;
+    };
   }, []);
 
   // Cross-transition on step change. The outgoing panel/image lifts and fades
   // out; the incoming pair rises in from below, slightly behind it so the two
-  // read as a handoff rather than a dissolve. Desktop-pin only: on mobile
-  // every panel is genuinely on screen at once (the ring just tracks which
-  // one you're nearest to), so fading the "inactive" ones here would hide
-  // panels the user can plainly see aren't hidden.
+  // read as a handoff rather than a dissolve. Gated on `pinned` so this never
+  // fires before the pin's first ScrollTrigger update has actually told the
+  // panels apart.
   useEffect(() => {
     if (!pinned) {
       previousRef.current = active;
@@ -420,7 +338,7 @@ export default function ProcessSection() {
           </div>
 
           {/* Centre column: text */}
-          <div className="processStage" ref={stageRef}>
+          <div className="processStage">
             {processSteps.map((step, index) => (
               <article
                 key={step.id}

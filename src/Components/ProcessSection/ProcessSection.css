@@ -621,80 +621,65 @@
   );
 }
 
-/* ---- mobile: no pin, a snap-scrolled stacked list ----
-   No ScrollTrigger pin here — IntersectionObserver drives the ring instead
-   (see MOBILE_QUERY in the component), reading which panel is actually
-   centred on screen rather than a raw scroll-position fraction, so it lands
-   the same way regardless of how tall this device happens to render the
-   content. scroll-snap-type lives on `html`, scoped to this breakpoint so
-   desktop's pin-driven scroll is untouched — proximity, not mandatory, so a
-   fast scroll-past still isn't trapped, only a scroll that comes to rest
-   near a panel settles onto it. */
+/* ---- mobile: same pin, resized for a narrow viewport ----
+   Pinned at every width now — matching the desktop experience exactly was
+   the point, not a scoped-down fallback. Everything below is sizing only:
+   the ring shrinks and moves to a bottom-anchored origin since there's no
+   room for desktop's wide left-edge sweep, the image column drops since
+   there's no width left for it once the ring and the text both need room,
+   and type scales down. The pin itself, the single-panel stacking, the
+   cross-fade and the outro handoff are all the same code path as desktop —
+   nothing here re-implements any of that. */
 @media (max-width: 767px) {
-  html {
-    scroll-snap-type: y proximity;
-  }
-
-  .processSection {
-    height: auto;
-  }
-
   .processInner {
-    height: auto;
-    padding: 8rem 15px;
-    gap: 3rem;
+    padding: 6rem 15px 4rem;
+    gap: 2.5rem;
   }
 
   .processBody {
     grid-template-columns: 1fr;
-    gap: 3rem;
   }
 
-  .processFade,
-  .processOutro {
+  .processStage {
+    grid-column: 1;
+    min-height: 30rem;
+  }
+
+  .processTitle {
+    font-size: 2.6rem;
+  }
+
+  .processText {
+    font-size: 1.4rem;
+  }
+
+  /* Same reasoning as the ring below: no width left for a side column once
+     the text needs the full narrow viewport to itself. */
+  .processVisual {
     display: none;
   }
 
   /* Same ring, same --angle/--ring-angle mechanics as desktop — only the
-     axis changes. Desktop's centre sits off-screen left and numbers push
-     out along translateX; here the centre sits off-screen below the
-     viewport and numbers push up along translateY, so the top arc peeks
-     over the bottom edge instead of the right arc peeking in from the
-     left. Fixed, not absolute: it rides along at the bottom of the
-     viewport for as long as the stacked panels are scrolling past, rather
-     than scrolling away with the section like a normal decorative element.
-     Kept small and low on purpose — this is a corner accent riding the
-     bottom edge, not something that should ever climb high enough to sit
-     over a heading while it scrolls past underneath. */
+     axis and origin change. Desktop's centre sits off-screen left and
+     numbers push out along translateX; here the centre sits off-screen
+     below the section and numbers push up along translateY, so the top arc
+     peeks over the bottom edge of the pinned viewport instead of the right
+     arc peeking in from the left. Raised above .processStage (z-index 2)
+     so it reads as a floating accent over the active panel's own text
+     rather than sitting behind it. */
   .processRing {
     --ring-radius: clamp(9rem, 30vw, 12rem);
     --ring-number: clamp(2.6rem, 7.5vw, 3.2rem);
 
-    position: fixed;
     top: auto;
     left: 50%;
     bottom: calc(5.75rem - var(--ring-radius));
-    transform: translateX(-50%) rotate(var(--ring-angle, 0deg));
-    z-index: var(--z-overlay-mixer);
-    opacity: 0;
-    /* The angle only changes at discrete panel hand-offs now (IntersectionObserver,
-       not a per-frame scroll callback), so the turn itself needs its own
-       transition to read as a move rather than a jump. */
-    transition: opacity var(--duration-medium) var(--ease-spring),
-      transform 0.6s var(--process-ease);
-  }
-  /* Toggled by the mobile IntersectionObserver — visible only while one of
-     the panels it tracks is actually on screen. */
-  .processRing.is-visible {
-    opacity: 1;
+    z-index: 3;
   }
 
-  /* A soft canvas-coloured halo behind the numbers, so wherever they still
-     cross a line of text underneath, it reads as a deliberate blend rather
-     than a hard collision — same idea as the desktop fades, just local to
-     the ring instead of the whole section edge. Painted first (::before is
-     the first child), so the numbers stack on top of it, not the other way
-     round. */
+  /* A soft canvas-coloured halo behind the numbers, so wherever they cross
+     the active panel's own text it reads as a deliberate blend rather than
+     a hard collision. */
   .processRing::before {
     content: "";
     position: absolute;
@@ -716,42 +701,6 @@
   .processRingStep {
     font-size: 1.1rem;
     transform: rotate(var(--angle)) translateY(calc(-1 * var(--ring-radius)));
-  }
-
-  .processStage,
-  .processVisual {
-    grid-column: 1;
-    height: auto;
-    min-height: 0;
-  }
-
-  .processStage {
-    display: flex;
-    flex-direction: column;
-    gap: 5rem;
-  }
-
-  .processPanel {
-    position: relative;
-    inset: auto;
-    opacity: 1;
-    pointer-events: auto;
-    gap: 1.2rem;
-    scroll-snap-align: center;
-  }
-
-  .processTitle {
-    font-size: 3rem;
-  }
-
-  .processText {
-    font-size: 1.4rem;
-  }
-
-  /* One visual per panel would need a different DOM shape; on mobile the
-     stacked images add weight without adding information, so they go. */
-  .processVisual {
-    display: none;
   }
 }
 
