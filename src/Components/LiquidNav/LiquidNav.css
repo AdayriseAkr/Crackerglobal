@@ -215,7 +215,187 @@ border-bottom-right-radius: 0;
 .ProductsOptions span:hover{
   background-color: rgba(255, 255, 255, 0.591);
   color: black;
-  
+
 }
 
+/* ---- Mobile hamburger nav (bottom-right) ----
+   Hidden by default; swaps in for the centered dock under the breakpoint
+   where the 44rem-wide dock no longer has room to breathe. */
+.mobileNavToggle,
+.mobileMenuPanel {
+  display: none;
+}
+
+@media (max-width: 640px) {
+  .desktopDock {
+    display: none;
+  }
+
+  .mobileNavToggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 5rem;
+    height: 5rem;
+    min-width: 0;
+    max-width: none;
+    left: auto;
+    right: 5%;
+    bottom: 4%;
+    transform: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    border-radius: var(--radius-pill);
+    overflow: hidden;
+    transition: transform var(--duration-fast) var(--ease-quart-out);
+  }
+  .mobileNavToggle:active {
+    transform: scale(0.93);
+  }
+
+  .hamburgerIcon {
+    position: relative;
+    z-index: 3;
+    display: block;
+    width: 1.8rem;
+    height: 1.3rem;
+  }
+  .hamburgerLine {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    border-radius: var(--radius-xs);
+    background-color: black;
+    transition: transform var(--duration-fast) var(--ease-quart-out),
+      opacity var(--duration-fast) var(--ease-quart-out),
+      top var(--duration-fast) var(--ease-quart-out);
+  }
+  .hamburgerLine:nth-child(1) { top: 0; }
+  .hamburgerLine:nth-child(2) { top: 50%; transform: translateY(-50%); }
+  .hamburgerLine:nth-child(3) { top: 100%; transform: translateY(-100%); }
+
+  .mobileNavToggle.is-open .hamburgerLine:nth-child(1) {
+    top: 50%;
+    transform: translateY(-50%) rotate(45deg);
+  }
+  .mobileNavToggle.is-open .hamburgerLine:nth-child(2) {
+    opacity: 0;
+  }
+  .mobileNavToggle.is-open .hamburgerLine:nth-child(3) {
+    top: 50%;
+    transform: translateY(-50%) rotate(-45deg);
+  }
+
+  /* grid-template-rows 0fr -> 1fr animates to the panel's natural content
+     height without having to guess a fixed pixel target. */
+  .mobileMenuPanel {
+    display: grid;
+    grid-template-rows: 0fr;
+    position: fixed;
+    left: auto;
+    right: 5%;
+    bottom: calc(4% + 6.5rem);
+    width: 18rem;
+    min-width: 0;
+    max-width: calc(100vw - 10%);
+    height: auto;
+    border-radius: var(--radius-2xl);
+    overflow: hidden;
+    transform-origin: bottom right;
+    opacity: 0;
+    scale: 0.85;
+    pointer-events: none;
+    transition: grid-template-rows var(--duration-medium) var(--ease-spring),
+      opacity var(--duration-medium) var(--ease-spring),
+      scale var(--duration-medium) var(--ease-spring);
+  }
+  .mobileMenuPanel.is-open {
+    grid-template-rows: 1fr;
+    opacity: 1;
+    scale: 1;
+    pointer-events: auto;
+  }
+
+  .mobileMenuInner {
+    position: relative;
+    z-index: 3;
+    overflow: hidden;
+    min-height: 0;
+  }
+
+  .mobileNavOptions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    padding: 1.2rem;
+  }
+
+  .mobileNavOption {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    border: none;
+    background-color: transparent;
+    font-family: inherit;
+    font-size: 1.7rem;
+    font-weight: 600;
+    color: black;
+    padding-block: 1.3rem;
+    border-radius: var(--radius-pill);
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color var(--duration-micro) ease-in-out,
+      color var(--duration-micro) ease-in-out;
+  }
+  .mobileNavOption:hover,
+  .mobileNavOption:active {
+    background-color: #ffffff3b;
+  }
+  .mobileNavOption.active {
+    background-color: var(--color-brand);
+    color: white;
+    box-shadow: var(--shadow-inset-glow-nav);
+  }
+
+  .mobileProductsSub {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows var(--duration-medium) var(--ease-spring);
+  }
+  .mobileProductsSub.is-open {
+    grid-template-rows: 1fr;
+  }
+  .mobileProductsSubInner {
+    overflow: hidden;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    padding-left: 1.2rem;
+  }
+  .mobileProductsSubInner span {
+    display: block;
+    padding-block: 1rem;
+    font-size: 1.5rem;
+    font-weight: 500;
+    color: rgba(0, 0, 0, 0.563);
+    text-align: center;
+    border-radius: var(--radius-pill);
+    cursor: pointer;
+  }
+  .mobileProductsSubInner span:hover {
+    background-color: rgba(255, 255, 255, 0.591);
+    color: black;
+  }
+
+  .mobileLoginOption {
+    margin-top: 0.4rem;
+    background-color: rgb(0, 0, 0);
+    color: white;
+    box-shadow: var(--shadow-inset-glow-nav);
+  }
+}
 

@@ -6,13 +6,22 @@ const links = [
   { to: "/", label: "Home", end: true },
   { label: "Products", isStatic: true },
   { to: "/contact", label: "Contact" },
-  { to: "/blogs", label: "News" },
 ];
 const LiquidNav = () => {
 let [hovered, setHovered] = React.useState(false);
+let [menuOpen, setMenuOpen] = React.useState(false);
+let [mobileProductsOpen, setMobileProductsOpen] = React.useState(false);
 
+const toggleMenu = () => {
+  setMenuOpen((open) => {
+    const next = !open;
+    if (!next) setMobileProductsOpen(false);
+    return next;
+  });
+};
 
   return (
+    <>
     <motion.div initial={{ width: "0%", height: "3rem" }}
       animate={{ width: "30%", height: "5rem" }}
       transition={{
@@ -20,9 +29,9 @@ let [hovered, setHovered] = React.useState(false);
         stiffness: 80,
         damping: 6, // lower damping = more bounce
         mass: 1.1, // smaller mass = faster bounce
-       
+
       }}
-       className="liquidGlass-wrapper dock">
+       className="liquidGlass-wrapper dock desktopDock">
       <div className="liquidGlass-effect"></div>
       <div className="liquidGlass-tint"></div>
       <div className="liquidGlass-shine"></div>
@@ -66,11 +75,11 @@ let [hovered, setHovered] = React.useState(false);
 
          <div className="dividerLine"></div>
 
-         <motion className="navSideOption">
+         <button type="button" className="navSideOption">
           <span>Login</span>
-         </motion>
+         </button>
         </div>
-        
+
         </div>
       </div>
 
@@ -134,6 +143,70 @@ let [hovered, setHovered] = React.useState(false);
 
 
     </motion.div>
+
+    {/* ---- Mobile: hamburger trigger, bottom-right, same glass look ---- */}
+    <button
+      type="button"
+      className={`liquidGlass-wrapper mobileNavToggle ${menuOpen ? "is-open" : ""}`}
+      aria-label={menuOpen ? "Close menu" : "Open menu"}
+      aria-expanded={menuOpen}
+      onClick={toggleMenu}
+    >
+      <div className="liquidGlass-effect"></div>
+      <div className="liquidGlass-tint"></div>
+      <div className="liquidGlass-shine"></div>
+      <span className="hamburgerIcon">
+        <span className="hamburgerLine"></span>
+        <span className="hamburgerLine"></span>
+        <span className="hamburgerLine"></span>
+      </span>
+    </button>
+
+    {/* ---- Mobile: expanded options panel ---- */}
+    <div className={`liquidGlass-wrapper mobileMenuPanel ${menuOpen ? "is-open" : ""}`}>
+      <div className="liquidGlass-effect"></div>
+      <div className="liquidGlass-tint"></div>
+      <div className="liquidGlass-shine"></div>
+      <div className="mobileMenuInner">
+        <nav className="mobileNavOptions">
+          {links.map((link) =>
+            link.isStatic ? (
+              <React.Fragment key={link.label}>
+                <button
+                  type="button"
+                  className="mobileNavOption"
+                  aria-expanded={mobileProductsOpen}
+                  onClick={() => setMobileProductsOpen((open) => !open)}
+                >
+                  {link.label}
+                </button>
+                <div className={`mobileProductsSub ${mobileProductsOpen ? "is-open" : ""}`}>
+                  <div className="mobileProductsSubInner">
+                    <span>Launchpad</span>
+                    <span>Dex</span>
+                    <span>Wallet</span>
+                  </div>
+                </div>
+              </React.Fragment>
+            ) : (
+              <NavLink
+                key={link.to}
+                to={link.to}
+                end={link.end}
+                onClick={() => setMenuOpen(false)}
+                className={({ isActive }) => `mobileNavOption ${isActive ? "active" : ""}`}
+              >
+                {link.label}
+              </NavLink>
+            )
+          )}
+          <button type="button" className="mobileNavOption mobileLoginOption">
+            Login
+          </button>
+        </nav>
+      </div>
+    </div>
+    </>
   );
 };
 
