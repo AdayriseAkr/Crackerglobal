@@ -1,14 +1,19 @@
 /* LIQUID GLASS STYLES */
 .liquidGlass-wrapper {
     position: fixed;
-    width: auto;
+    /* Centered via left:0/right:0 + auto margins rather than the usual
+       left:50%/translateX(-50%) trick — framer-motion's scale animation
+       writes its own inline `transform`, which replaces the whole property
+       rather than merging with it, so a transform-based centering trick
+       here would get silently overwritten the moment anything animates
+       transform on this element. */
+    left: 0;
+    right: 0;
+    width: fit-content;
+    margin-inline: auto;
     height: 5rem;
-    max-width: none;
-    min-width: 0;
 
  bottom: 4%;
-  left: 50%;
-  transform: translateX(-50%);
   display: flex;
   font-weight: 600;
 z-index: var(--z-tagline);
@@ -251,6 +256,7 @@ border-bottom-right-radius: 0;
     left: auto;
     right: 5%;
     bottom: 4%;
+    margin: 0;
     transform: none;
     width: 5rem;
     height: auto;
