@@ -1,10 +1,10 @@
 /* LIQUID GLASS STYLES */
 .liquidGlass-wrapper {
     position: fixed;
-    width: 40rem;
+    width: auto;
     height: 8rem;
-    max-width: 40rem;
-    min-width: 40rem;
+    max-width: none;
+    min-width: 0;
 
  bottom: 4%;
   left: 50%;
@@ -49,20 +49,21 @@ z-index: var(--z-tagline);
   color: black;
 }
 
-/* Dock styles */
+/* Dock styles
+   inline-flex so both the inner content row and (were it not blockified by
+   position:fixed) the outer pill shrink-wrap to their content instead of
+   stretching to fill a fixed width — the pill's real width now just follows
+   however many links it holds, no magic number to retune by hand again. */
 .dock,.mainContentDock {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  
+
   gap: 8px;
   border-radius: 2rem;
 padding-left: 0.2rem;
 }
 .mainContentDock{
-    position: absolute;
-    width: 100%;
-    justify-content: space-between;
-    padding-inline: 0.8rem;
+    padding-inline: 0.6rem;
 }
 .navOptions{
     
@@ -144,21 +145,28 @@ padding-left: 0.2rem;
 }
 
 .navSideOption{
-    width: 19.5%;
+    width: auto;
     height: 4rem;
+    padding-inline: 1.8rem;
     background-color: rgb(0, 0, 0);
+    border: none;
     border-radius: var(--radius-pill);
     display: flex;
     justify-content: center;
     align-items: center;
+    font-family: inherit;
     font-size: 1.5rem;
     color: white;
     box-shadow: var(--shadow-inset-glow-nav);
-    transition: transform 0.6s var(--ease-spring);
+    outline: none;
+    transition: transform 0.6s var(--ease-spring), box-shadow var(--duration-fast) var(--ease-quart-out);
 }
 .navSideOption:hover{
     transform: scale(0.95);
     cursor: pointer;
+}
+.navSideOption:focus-visible{
+    box-shadow: var(--shadow-inset-glow-nav), 0 0 0 3px var(--color-brand);
 }
 
 .productsOption{
@@ -274,10 +282,17 @@ border-bottom-right-radius: 0;
     border: none;
     background: transparent;
     padding: 0;
+    outline: none;
     cursor: pointer;
   }
   .hamburgerToggleBtn:active {
     transform: scale(0.93);
+  }
+  .hamburgerToggleBtn:focus-visible {
+    /* Inset, not a box-shadow ring — the wrapper clips overflow to its own
+       rounded edge, so an outward ring here would just get cut off. */
+    outline: 2px solid var(--color-brand);
+    outline-offset: -4px;
   }
 
   .hamburgerIcon {
@@ -346,8 +361,13 @@ border-bottom-right-radius: 0;
     border-radius: var(--radius-pill);
     text-decoration: none;
     cursor: pointer;
+    outline: none;
     transition: background-color var(--duration-micro) ease-in-out,
       color var(--duration-micro) ease-in-out;
+  }
+  .mobileNavOption:focus-visible {
+    outline: 2px solid var(--color-brand);
+    outline-offset: 2px;
   }
   .mobileNavOption:hover,
   .mobileNavOption:active {
