@@ -621,11 +621,20 @@
   );
 }
 
-/* ---- mobile: no pin, just a stacked list ----
-   ScrollTrigger is only created above 768px (gsap.matchMedia in the
-   component), so nothing here has to undo a pin — it only has to make the
-   stacked-and-hidden desktop layout flow normally again. */
+/* ---- mobile: no pin, a snap-scrolled stacked list ----
+   No ScrollTrigger pin here — IntersectionObserver drives the ring instead
+   (see MOBILE_QUERY in the component), reading which panel is actually
+   centred on screen rather than a raw scroll-position fraction, so it lands
+   the same way regardless of how tall this device happens to render the
+   content. scroll-snap-type lives on `html`, scoped to this breakpoint so
+   desktop's pin-driven scroll is untouched — proximity, not mandatory, so a
+   fast scroll-past still isn't trapped, only a scroll that comes to rest
+   near a panel settles onto it. */
 @media (max-width: 767px) {
+  html {
+    scroll-snap-type: y proximity;
+  }
+
   .processSection {
     height: auto;
   }
@@ -641,13 +650,72 @@
     gap: 3rem;
   }
 
-  /* The ring only makes sense while the section is pinned and rotating, and
-     with no ring there is nothing for the fades to dissolve. The outro is the
-     tail of that same pinned scroll, so it goes with them. */
-  .processRing,
   .processFade,
   .processOutro {
     display: none;
+  }
+
+  /* Same ring, same --angle/--ring-angle mechanics as desktop — only the
+     axis changes. Desktop's centre sits off-screen left and numbers push
+     out along translateX; here the centre sits off-screen below the
+     viewport and numbers push up along translateY, so the top arc peeks
+     over the bottom edge instead of the right arc peeking in from the
+     left. Fixed, not absolute: it rides along at the bottom of the
+     viewport for as long as the stacked panels are scrolling past, rather
+     than scrolling away with the section like a normal decorative element.
+     Kept small and low on purpose — this is a corner accent riding the
+     bottom edge, not something that should ever climb high enough to sit
+     over a heading while it scrolls past underneath. */
+  .processRing {
+    --ring-radius: clamp(9rem, 30vw, 12rem);
+    --ring-number: clamp(2.6rem, 7.5vw, 3.2rem);
+
+    position: fixed;
+    top: auto;
+    left: 50%;
+    bottom: calc(5.75rem - var(--ring-radius));
+    transform: translateX(-50%) rotate(var(--ring-angle, 0deg));
+    z-index: var(--z-overlay-mixer);
+    opacity: 0;
+    /* The angle only changes at discrete panel hand-offs now (IntersectionObserver,
+       not a per-frame scroll callback), so the turn itself needs its own
+       transition to read as a move rather than a jump. */
+    transition: opacity var(--duration-medium) var(--ease-spring),
+      transform 0.6s var(--process-ease);
+  }
+  /* Toggled by the mobile IntersectionObserver — visible only while one of
+     the panels it tracks is actually on screen. */
+  .processRing.is-visible {
+    opacity: 1;
+  }
+
+  /* A soft canvas-coloured halo behind the numbers, so wherever they still
+     cross a line of text underneath, it reads as a deliberate blend rather
+     than a hard collision — same idea as the desktop fades, just local to
+     the ring instead of the whole section edge. Painted first (::before is
+     the first child), so the numbers stack on top of it, not the other way
+     round. */
+  .processRing::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: calc(var(--ring-radius) * 2.2);
+    height: calc(var(--ring-radius) * 2.2);
+    margin: calc(var(--ring-radius) * -1.1);
+    border-radius: 50%;
+    background: radial-gradient(
+      circle,
+      var(--color-canvas) 0%,
+      var(--color-canvas) 42%,
+      transparent 70%
+    );
+    pointer-events: none;
+  }
+
+  .processRingStep {
+    font-size: 1.1rem;
+    transform: rotate(var(--angle)) translateY(calc(-1 * var(--ring-radius)));
   }
 
   .processStage,
@@ -669,6 +737,7 @@
     opacity: 1;
     pointer-events: auto;
     gap: 1.2rem;
+    scroll-snap-align: center;
   }
 
   .processTitle {

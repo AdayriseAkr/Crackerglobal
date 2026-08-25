@@ -50,6 +50,7 @@ const ramp = (v, from, to) => clamp((v - from) / (to - from), 0, 1);
 // radius * sin((n-1) * this) vertically, all of it upward from the active slot.
 const RING_STEP_DEG = 18;
 const DESKTOP_QUERY = "(min-width: 768px)";
+const MOBILE_QUERY = "(max-width: 767px)";
 
 const prefersReducedMotion = () =>
   typeof window !== "undefined" &&
@@ -62,6 +63,7 @@ export default function ProcessSection() {
   const outroRef = useRef(null);
   const titleRef = useRef(null);
   const ringRef = useRef(null);
+  const stageRef = useRef(null);
   const panelRefs = useRef([]);
   const imageRefs = useRef([]);
 
@@ -208,13 +210,86 @@ export default function ProcessSection() {
       };
     });
 
+    // Mobile: each panel is a CSS scroll-snap stop (see the stylesheet), so a
+    // scroll that comes to rest anywhere near a panel settles fully onto it —
+    // "phase one, then phase two fully in view," not a stop wherever the
+    // wheel happened to run out. The ring tracks THAT: which panel is
+    // currently sitting in the centre band of the viewport, via
+    // IntersectionObserver, not by reading a raw scroll-position fraction.
+    // A raw fraction ties the ring's angle to how tall the content happens to
+    // render on this particular device — different font metrics, a wrapped
+    // line, a taller viewport all shift it — so the same scroll gesture lands
+    // the ring in a different place on different screens. Intersection ratio
+    // against the panel actually on screen doesn't have that problem: the
+    // active panel is the active panel, regardless of how many pixels of
+    // scroll it took to get there. The ring itself still turns smoothly
+    // between numbers — that's a CSS transition on --ring-angle now instead
+    // of a per-frame scroll callback, since the angle only changes at
+    // discrete panel hand-offs, not continuously. `pinned` stays false here
+    // on purpose — it also gates aria-hidden/tabIndex, and every panel really
+    // is visible and reachable at once on mobile, active number or not.
+    mm.add(MOBILE_QUERY, () => {
+      const panels = panelRefs.current.filter(Boolean);
+      if (!panels.length) return;
+
+      const visible = new Set();
+
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            const index = panels.indexOf(entry.target);
+            if (index === -1) return;
+
+            if (entry.isIntersecting) {
+              visible.add(index);
+              if (index !== activeRef.current) {
+                activeRef.current = index;
+                setActive(index);
+                ringRef.current?.style.setProperty(
+                  "--ring-angle",
+                  `${(index * RING_STEP_DEG).toFixed(3)}deg`
+                );
+              }
+            } else {
+              visible.delete(index);
+            }
+          });
+
+          ringRef.current?.classList.toggle("is-visible", visible.size > 0);
+        },
+        // Shrinks the observed viewport to a thin band around its vertical
+        // centre, so a panel only counts as "active" once it's actually the
+        // one sitting where scroll-snap settles it — not the moment its edge
+        // first appears at the bottom of the screen.
+        { rootMargin: "-42% 0px -42% 0px", threshold: 0 }
+      );
+
+      panels.forEach((panel) => observer.observe(panel));
+
+      return () => {
+        observer.disconnect();
+        ringRef.current?.style.removeProperty("--ring-angle");
+        ringRef.current?.classList.remove("is-visible");
+        activeRef.current = 0;
+        setActive(0);
+      };
+    });
+
     return () => mm.revert();
   }, []);
 
   // Cross-transition on step change. The outgoing panel/image lifts and fades
   // out; the incoming pair rises in from below, slightly behind it so the two
-  // read as a handoff rather than a dissolve.
+  // read as a handoff rather than a dissolve. Desktop-pin only: on mobile
+  // every panel is genuinely on screen at once (the ring just tracks which
+  // one you're nearest to), so fading the "inactive" ones here would hide
+  // panels the user can plainly see aren't hidden.
   useEffect(() => {
+    if (!pinned) {
+      previousRef.current = active;
+      return;
+    }
+
     const from = previousRef.current;
     const to = active;
     previousRef.current = to;
@@ -280,7 +355,7 @@ export default function ProcessSection() {
         delay: 0.08,
       }
     );
-  }, [active]);
+  }, [active, pinned]);
 
   // The CTA's glare tracks the pointer across the button. Written as custom
   // properties on the element rather than through state: this fires on every
@@ -345,7 +420,7 @@ export default function ProcessSection() {
           </div>
 
           {/* Centre column: text */}
-          <div className="processStage">
+          <div className="processStage" ref={stageRef}>
             {processSteps.map((step, index) => (
               <article
                 key={step.id}
