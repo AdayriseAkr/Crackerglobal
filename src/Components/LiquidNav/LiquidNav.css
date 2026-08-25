@@ -1,11 +1,11 @@
 /* LIQUID GLASS STYLES */
 .liquidGlass-wrapper {
     position: fixed;
-    width: 44rem;
+    width: 40rem;
     height: 8rem;
-    max-width: 44rem;
-    min-width: 44rem;
-    
+    max-width: 40rem;
+    min-width: 40rem;
+
  bottom: 4%;
   left: 50%;
   transform: translateX(-50%);
@@ -61,7 +61,8 @@ padding-left: 0.2rem;
 .mainContentDock{
     position: absolute;
     width: 100%;
-   
+    justify-content: space-between;
+    padding-inline: 0.8rem;
 }
 .navOptions{
     
@@ -221,8 +222,7 @@ border-bottom-right-radius: 0;
 /* ---- Mobile hamburger nav (bottom-right) ----
    Hidden by default; swaps in for the centered dock under the breakpoint
    where the 44rem-wide dock no longer has room to breathe. */
-.mobileNavToggle,
-.mobileMenuPanel {
+.mobileNavToggle {
   display: none;
 }
 
@@ -231,32 +231,57 @@ border-bottom-right-radius: 0;
     display: none;
   }
 
+  /* The tab and the panel are the same element: a two-row grid where row 1
+     (the option list) collapses via grid-template-rows 0fr->1fr — animating
+     to its true content height with no guessed pixel target — while row 2
+     (the toggle button) stays put. Width and border-radius morph alongside
+     it, so the whole glass tab grows into the panel and shrinks back into
+     the button, rather than swapping between two separate elements. */
   .mobileNavToggle {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 5rem;
-    height: 5rem;
-    min-width: 0;
-    max-width: none;
+    display: grid;
+    grid-template-rows: 0fr auto;
+    grid-template-columns: 1fr;
     left: auto;
     right: 5%;
     bottom: 4%;
     transform: none;
-    border: none;
-    padding: 0;
-    cursor: pointer;
+    width: 5rem;
+    height: auto;
+    min-width: 0;
+    max-width: calc(100vw - 10%);
     border-radius: var(--radius-pill);
     overflow: hidden;
-    transition: transform var(--duration-fast) var(--ease-quart-out);
+    transition: width var(--duration-medium) var(--ease-spring),
+      grid-template-rows var(--duration-medium) var(--ease-spring),
+      border-radius var(--duration-medium) var(--ease-spring);
   }
-  .mobileNavToggle:active {
+  .mobileNavToggle.is-open {
+    width: 18rem;
+    grid-template-rows: 1fr auto;
+    border-radius: var(--radius-2xl);
+  }
+
+  .hamburgerToggleBtn {
+    position: relative;
+    z-index: 3;
+    justify-self: end;
+    flex-shrink: 0;
+    width: 5rem;
+    height: 5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    background: transparent;
+    padding: 0;
+    cursor: pointer;
+  }
+  .hamburgerToggleBtn:active {
     transform: scale(0.93);
   }
 
   .hamburgerIcon {
     position: relative;
-    z-index: 3;
     display: block;
     width: 1.8rem;
     height: 1.3rem;
@@ -288,41 +313,15 @@ border-bottom-right-radius: 0;
     transform: translateY(-50%) rotate(-45deg);
   }
 
-  /* grid-template-rows 0fr -> 1fr animates to the panel's natural content
-     height without having to guess a fixed pixel target. */
-  .mobileMenuPanel {
-    display: grid;
-    grid-template-rows: 0fr;
-    position: fixed;
-    left: auto;
-    right: 5%;
-    bottom: calc(4% + 6.5rem);
-    width: 18rem;
-    min-width: 0;
-    max-width: calc(100vw - 10%);
-    height: auto;
-    border-radius: var(--radius-2xl);
-    overflow: hidden;
-    transform-origin: bottom right;
-    opacity: 0;
-    scale: 0.85;
-    pointer-events: none;
-    transition: grid-template-rows var(--duration-medium) var(--ease-spring),
-      opacity var(--duration-medium) var(--ease-spring),
-      scale var(--duration-medium) var(--ease-spring);
-  }
-  .mobileMenuPanel.is-open {
-    grid-template-rows: 1fr;
-    opacity: 1;
-    scale: 1;
-    pointer-events: auto;
-  }
-
-  .mobileMenuInner {
-    position: relative;
-    z-index: 3;
+  .mobileNavOptionsRow {
     overflow: hidden;
     min-height: 0;
+    min-width: 0;
+  }
+
+  .mobileNavOptionsInner {
+    position: relative;
+    z-index: 3;
   }
 
   .mobileNavOptions {

@@ -145,66 +145,65 @@ const toggleMenu = () => {
     </motion.div>
 
     {/* ---- Mobile: hamburger trigger, bottom-right, same glass look ---- */}
-    <button
-      type="button"
-      className={`liquidGlass-wrapper mobileNavToggle ${menuOpen ? "is-open" : ""}`}
-      aria-label={menuOpen ? "Close menu" : "Open menu"}
-      aria-expanded={menuOpen}
-      onClick={toggleMenu}
-    >
+    <div className={`liquidGlass-wrapper mobileNavToggle ${menuOpen ? "is-open" : ""}`}>
       <div className="liquidGlass-effect"></div>
       <div className="liquidGlass-tint"></div>
       <div className="liquidGlass-shine"></div>
-      <span className="hamburgerIcon">
-        <span className="hamburgerLine"></span>
-        <span className="hamburgerLine"></span>
-        <span className="hamburgerLine"></span>
-      </span>
-    </button>
 
-    {/* ---- Mobile: expanded options panel ---- */}
-    <div className={`liquidGlass-wrapper mobileMenuPanel ${menuOpen ? "is-open" : ""}`}>
-      <div className="liquidGlass-effect"></div>
-      <div className="liquidGlass-tint"></div>
-      <div className="liquidGlass-shine"></div>
-      <div className="mobileMenuInner">
-        <nav className="mobileNavOptions">
-          {links.map((link) =>
-            link.isStatic ? (
-              <React.Fragment key={link.label}>
-                <button
-                  type="button"
-                  className="mobileNavOption"
-                  aria-expanded={mobileProductsOpen}
-                  onClick={() => setMobileProductsOpen((open) => !open)}
+      <div className="mobileNavOptionsRow">
+        <div className="mobileNavOptionsInner">
+          <nav className="mobileNavOptions">
+            {links.map((link) =>
+              link.isStatic ? (
+                <React.Fragment key={link.label}>
+                  <button
+                    type="button"
+                    className="mobileNavOption"
+                    aria-expanded={mobileProductsOpen}
+                    onClick={() => setMobileProductsOpen((open) => !open)}
+                  >
+                    {link.label}
+                  </button>
+                  <div className={`mobileProductsSub ${mobileProductsOpen ? "is-open" : ""}`}>
+                    <div className="mobileProductsSubInner">
+                      <span>Launchpad</span>
+                      <span>Dex</span>
+                      <span>Wallet</span>
+                    </div>
+                  </div>
+                </React.Fragment>
+              ) : (
+                <NavLink
+                  key={link.to}
+                  to={link.to}
+                  end={link.end}
+                  onClick={() => setMenuOpen(false)}
+                  className={({ isActive }) => `mobileNavOption ${isActive ? "active" : ""}`}
                 >
                   {link.label}
-                </button>
-                <div className={`mobileProductsSub ${mobileProductsOpen ? "is-open" : ""}`}>
-                  <div className="mobileProductsSubInner">
-                    <span>Launchpad</span>
-                    <span>Dex</span>
-                    <span>Wallet</span>
-                  </div>
-                </div>
-              </React.Fragment>
-            ) : (
-              <NavLink
-                key={link.to}
-                to={link.to}
-                end={link.end}
-                onClick={() => setMenuOpen(false)}
-                className={({ isActive }) => `mobileNavOption ${isActive ? "active" : ""}`}
-              >
-                {link.label}
-              </NavLink>
-            )
-          )}
-          <button type="button" className="mobileNavOption mobileLoginOption">
-            Login
-          </button>
-        </nav>
+                </NavLink>
+              )
+            )}
+            <button type="button" className="mobileNavOption mobileLoginOption">
+              Login
+            </button>
+          </nav>
+        </div>
       </div>
+
+      <button
+        type="button"
+        className="hamburgerToggleBtn"
+        aria-label={menuOpen ? "Close menu" : "Open menu"}
+        aria-expanded={menuOpen}
+        onClick={toggleMenu}
+      >
+        <span className="hamburgerIcon">
+          <span className="hamburgerLine"></span>
+          <span className="hamburgerLine"></span>
+          <span className="hamburgerLine"></span>
+        </span>
+      </button>
     </div>
     </>
   );
