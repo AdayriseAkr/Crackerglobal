@@ -32,21 +32,54 @@ CustomEase.create(
 
 // Real-world names on the "Real Stocks" card: real logo assets (not traced
 // substitutes) floating over the card and echoed as a small ticker/change
-// strip underneath.
+// strip underneath. `seedChange` is just the starting point for the jitter
+// below, not a real quote — see JITTER_* for where the live-looking number
+// actually comes from.
 const STOCK_LOGOS = [
-  { symbol: "AAPL", name: "Apple", logo: appleLogo, change: 1.28 },
-  { symbol: "TSLA", name: "Tesla", logo: teslaLogo, change: -0.84 },
-  { symbol: "NVDA", name: "Nvidia", logo: nvidiaLogo, change: 2.41 },
-  { symbol: "AMZN", name: "Amazon", logo: amazonLogo, change: 1.17 },
-  { symbol: "META", name: "Meta", logo: metaLogo, change: 0.62 },
-  { symbol: "SPCX", name: "SpaceX", logo: spacexLogo, change: 3.05 },
+  { symbol: "AAPL", name: "Apple", logo: appleLogo, seedChange: 1.28 },
+  { symbol: "TSLA", name: "Tesla", logo: teslaLogo, seedChange: -0.84 },
+  { symbol: "NVDA", name: "Nvidia", logo: nvidiaLogo, seedChange: 2.41 },
+  { symbol: "AMZN", name: "Amazon", logo: amazonLogo, seedChange: 1.17 },
+  { symbol: "META", name: "Meta", logo: metaLogo, seedChange: 0.62 },
+  { symbol: "SPCX", name: "SpaceX", logo: spacexLogo, seedChange: 3.05 },
 ];
+
+// Not real market data — nothing here calls out to an API. Every tick,
+// each symbol's percentage takes a small random step from wherever it
+// currently is (not a fresh random value — a fresh value would visibly
+// jump around instead of drifting) and gets clamped to a range a real
+// day's move would plausibly stay inside. That's what makes the strip
+// read as "live" rather than a number stamped on the page once.
+const JITTER_INTERVAL_MS = 2800;
+const JITTER_STEP = 0.6; // max +/- change applied on any one tick
+const JITTER_MIN = -6;
+const JITTER_MAX = 6;
 const CardRotator = () => {
   const animRef2 = useRef(null);
   const pRef2 = useRef(null);
   const containerRef = useRef(null);
   const dragMoverRef = useRef(null);
   const [onHover, setOnHover] = React.useState(false);
+
+  const [liveChanges, setLiveChanges] = React.useState(() =>
+    Object.fromEntries(STOCK_LOGOS.map((s) => [s.symbol, s.seedChange]))
+  );
+
+  useEffect(() => {
+    const id = setInterval(() => {
+      setLiveChanges((prev) => {
+        const next = { ...prev };
+        for (const stock of STOCK_LOGOS) {
+          const delta = (Math.random() - 0.5) * 2 * JITTER_STEP;
+          const walked = prev[stock.symbol] + delta;
+          next[stock.symbol] = +Math.max(JITTER_MIN, Math.min(JITTER_MAX, walked)).toFixed(2);
+        }
+        return next;
+      });
+    }, JITTER_INTERVAL_MS);
+    return () => clearInterval(id);
+  }, []);
+
   /* ================= CONFIG ================= */
 
   let WHEEL_RADIUS = "120vw"; // arc 120 depth (bigger = flatter)
@@ -314,7 +347,8 @@ useTextSplitAnim(animRef2, { stagger: 40, startDelay: 300 });
         <div className="stockStatsRow">
           <div className="stockStatsTrack">
             {[...STOCK_LOGOS, ...STOCK_LOGOS].map((stock, i) => {
-              const up = stock.change >= 0;
+              const change = liveChanges[stock.symbol];
+              const up = change >= 0;
               // The list is duplicated back-to-back so the marquee can loop
               // seamlessly (see the CSS) — the second copy is a visual
               // repeat, not new content, so it's hidden from assistive tech
@@ -334,7 +368,7 @@ useTextSplitAnim(animRef2, { stagger: 40, startDelay: 300 });
                   <span className="stockStat__body">
                     <span className="stockStat__symbol">{stock.symbol}</span>
                     <span className={`stockStat__change ${up ? "is-up" : "is-down"}`}>
-                      {up ? "+" : ""}{stock.change}%
+                      {up ? "+" : ""}{change.toFixed(2)}%
                     </span>
                   </span>
                 </a>

@@ -457,6 +457,7 @@ will-change: transform;
   }
   .stockStat__trend {
     font-size: 1rem;
+    transition: color var(--duration-medium) var(--ease-spring);
   }
   .stockStat__trend.is-up { color: #1a9c5c; }
   .stockStat__trend.is-down { color: #d9432e; }
@@ -474,6 +475,7 @@ will-change: transform;
   .stockStat__change {
     font-size: 1rem;
     font-weight: 600;
+    transition: color var(--duration-medium) var(--ease-spring);
   }
   .stockStat__change.is-up { color: #1a9c5c; }
   .stockStat__change.is-down { color: #d9432e; }
