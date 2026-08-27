@@ -269,18 +269,38 @@ will-change: transform;
     color: var(--color-accent-violet);
   }
 
-  /* Six real logos riding one rigid ring, not drifting independently. The
-     whole .stockOrbit__track spins as a single group (--orbit-radius sets
-     both this and the visible ring below, so the badges trace exactly the
-     line drawn for them) — .stockOrbit__slot fixes each logo's angular seat
-     on that ring using the same rotate()+translateX() zero-size-origin
-     technique as .processRingStep / #ciN elsewhere in this codebase. The
-     .stockOrbit__logo badge inside each slot then cancels BOTH the track's
-     live spin and its own slot's fixed angle (see the keyframes below), so
-     every badge stays upright and dead-centred on its white circle through
-     the whole orbit instead of tipping or drifting inside it. */
+  /* Six real logos riding one rigid ring in a tilted 3D-looking orbit, not
+     a flat top-down circle. The tilt is a squash, not a true CSS
+     perspective/rotateX — .stockOrbit__ring and .stockOrbit__track share
+     the exact same scaleY() and --orbit-radius, so the visible ring and
+     the path the logos actually travel are the same math, guaranteed to
+     line up rather than two separately-eyeballed shapes.
+
+     Why a squash instead of perspective: a circle scaled down on one axis
+     IS the correct 2D projection of a circle viewed at an angle — same
+     visual result as true 3D, without needing preserve-3d and without the
+     badges' own artwork getting foreshortened/skewed by the tilt (which a
+     literal rotateX on the icons would do).
+
+     .stockOrbit__slot fixes each logo's angular seat via the same
+     rotate()+translateX() zero-size-origin technique as .processRingStep /
+     #ciN elsewhere — because that rotate happens on the UNSQUASHED radius
+     before the ancestor's scaleY is applied, the resulting point still
+     lands exactly on the ellipse (squash(rotate(θ)·translateX(r)) traces
+     x=r·cosθ, y=k·r·sinθ — an ellipse), not somewhere off it.
+
+     .stockOrbit__logo then has to undo BOTH ancestor distortions for its
+     OWN shape — the track's live spin and the ring's fixed squash — so the
+     badge itself renders as a plain upright circle at that point instead
+     of a rotating oval. Because `scale` and `rotate` as separate CSS
+     properties always compose in a fixed order (scale outside rotate) that
+     doesn't match the order needed to cancel this specific pair, the
+     cancellation has to be one explicit `transform` function list —
+     rotate(-angle) scale(1, 1/squash) translate(-50%,-50%), rotate
+     outermost — rather than the separate properties. */
   .stockOrbit {
-    --orbit-radius: clamp(7rem, 15vw, 9.5rem);
+    --orbit-radius: clamp(7.5rem, 16vw, 10.5rem);
+    --orbit-squash: 0.5;
     position: relative;
     width: 100%;
     flex: 1;
@@ -293,9 +313,9 @@ will-change: transform;
     left: 50%;
     width: calc(var(--orbit-radius) * 2);
     height: calc(var(--orbit-radius) * 2);
-    transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%) scaleY(var(--orbit-squash));
     border-radius: 50%;
-    border: 1px solid rgba(74, 50, 50, 0.12);
+    border: 1px solid rgba(74, 50, 50, 0.14);
   }
 
   .stockOrbit__track {
@@ -304,10 +324,12 @@ will-change: transform;
     left: 50%;
     width: 0;
     height: 0;
+    transform: scaleY(var(--orbit-squash)) rotate(0deg);
     animation: stockOrbitSpin 28s linear infinite;
   }
   @keyframes stockOrbitSpin {
-    to { transform: rotate(360deg); }
+    from { transform: scaleY(var(--orbit-squash)) rotate(0deg); }
+    to   { transform: scaleY(var(--orbit-squash)) rotate(360deg); }
   }
 
   .stockOrbit__slot {
@@ -319,11 +341,44 @@ will-change: transform;
     transform: rotate(var(--slot-angle)) translateX(var(--orbit-radius));
   }
 
+  /* Cancelling the ancestor chain (track's live spin + squash, both
+     non-commuting with rotation) takes two separate wrapper layers applied
+     in the matching reverse order, not one combined transform on the badge
+     itself — (Squash·Rotate)⁻¹ is Rotate⁻¹·Squash⁻¹, not the other way
+     round, and packing rotate+scale+translate into a single `transform`
+     list got that order wrong (verified: it measurably pulled every badge
+     off the ellipse). Rotation-cancel goes first/outer, scale-cancel
+     second/inner, each alone on its own zero-size wrapper so there's no
+     ambiguity about which composes with what. */
+  .stockOrbit__counterSpin {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 0;
+    rotate: calc(-1 * var(--slot-angle));
+    animation: stockOrbitCounterSpin 28s linear infinite;
+  }
+  @keyframes stockOrbitCounterSpin {
+    from { rotate: calc(-1 * var(--slot-angle)); }
+    to   { rotate: calc(-1 * var(--slot-angle) - 360deg); }
+  }
+
+  .stockOrbit__counterSquash {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 0;
+    scale: 1 calc(1 / var(--orbit-squash));
+  }
+
   /* Every logo is the same physical size — "must be on the same sides" —
      padding inside each is what varies, tuned per source image so the mark
      itself reads at a consistent visual weight despite very different
      amounts of built-in whitespace (Nvidia's asset is a solid square with
-     none; Apple's and SpaceX's have a lot). */
+     none; Apple's and SpaceX's have a lot). Plain, static, unrotated
+     centering — all the dynamic cancellation happened above this. */
   .stockOrbit__logo {
     position: absolute;
     top: 0;
@@ -338,27 +393,22 @@ will-change: transform;
     align-items: center;
     justify-content: center;
     padding: 1rem;
-    animation: stockOrbitCounterSpin 28s linear infinite;
   }
   .stockOrbit__logo img {
     width: 100%;
     height: 100%;
     object-fit: contain;
   }
-  @keyframes stockOrbitCounterSpin {
-    from { rotate: calc(-1 * var(--slot-angle)); }
-    to   { rotate: calc(-1 * var(--slot-angle) - 360deg); }
-  }
 
   .stockOrbit__logo--AAPL  { padding: 0.85rem; }
-  .stockOrbit__logo--TSLA  { padding: 1.05rem; }
-  .stockOrbit__logo--NVDA  { padding: 1.15rem; }
+  .stockOrbit__logo--TSLA  { padding: 0.6rem; }
+  .stockOrbit__logo--NVDA  { padding: 0.75rem; }
   .stockOrbit__logo--AMZN  { padding: 1.1rem; }
   .stockOrbit__logo--META  { padding: 1.2rem; }
   /* SpaceX's mark is a wide, short glyph — object-fit:contain sizes off
      its longest dimension, so it needs LESS padding (more room), not more,
      to read at the same visual weight as the others. */
-  .stockOrbit__logo--SPCX  { padding: 1.9rem 0.5rem; }
+  .stockOrbit__logo--SPCX  { padding: 1.4rem 0.15rem; }
 
   .stockStatsRow {
     width: 100%;
@@ -706,7 +756,7 @@ will-change: transform;
 
 @media (prefers-reduced-motion: reduce) {
   .stockOrbit__track,
-  .stockOrbit__logo,
+  .stockOrbit__counterSpin,
   .stockStatsTrack {
     animation: none;
   }

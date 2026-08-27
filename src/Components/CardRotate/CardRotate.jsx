@@ -299,8 +299,12 @@ useTextSplitAnim(animRef2, { stagger: 40, startDelay: 300 });
                 style={{ "--slot-angle": `${i * (360 / STOCK_LOGOS.length)}deg` }}
                 key={stock.symbol}
               >
-                <span className={`stockOrbit__logo stockOrbit__logo--${stock.symbol}`}>
-                  <img src={stock.logo} alt={stock.name} />
+                <span className="stockOrbit__counterSpin">
+                  <span className="stockOrbit__counterSquash">
+                    <span className={`stockOrbit__logo stockOrbit__logo--${stock.symbol}`}>
+                      <img src={stock.logo} alt={stock.name} />
+                    </span>
+                  </span>
                 </span>
               </span>
             ))}
