@@ -23,6 +23,21 @@ CustomEase.create(
   "osmoEase",
   "0.25, 1, 0.5, 1"
 );
+
+// Real-world names on the "Real Stocks" card's marquee. Rendered as a
+// monogram + ticker chip rather than traced brand logos — that keeps the
+// set legible and visually consistent (a real logo wall is a mess of
+// unrelated shapes and colors) without reproducing anyone's actual mark.
+const STOCK_TICKERS = [
+  { symbol: "AAPL", name: "Apple" },
+  { symbol: "TSLA", name: "Tesla" },
+  { symbol: "NVDA", name: "Nvidia" },
+  { symbol: "SPCX", name: "SpaceX" },
+  { symbol: "AMZN", name: "Amazon" },
+  { symbol: "GOOGL", name: "Google" },
+  { symbol: "MSFT", name: "Microsoft" },
+  { symbol: "META", name: "Meta" },
+];
 const CardRotator = () => {
   const animRef2 = useRef(null);
   const pRef2 = useRef(null);
@@ -252,43 +267,34 @@ useTextSplitAnim(animRef2, { stagger: 40, startDelay: 300 });
 
       </div>
 
-      <div id="rCard1" className="rCard purple">
+      <div id="rCard1" className="rCard stocks">
          <div className="commonCardContent">
           <div className="tagLines">
-          <div style={{backgroundColor:"#D4D4D4" , color:"rgba(0, 0, 0, 0.66)"}} className="tagDiv">BUILD FOR</div>
-          <div style={{backgroundColor:"#D4D4D4", color:"rgba(0, 0, 0, 0.66)"}} className="tagDiv">TRUST</div>
+          <div className="tagDiv">TOKENIZED</div>
+          <div className="tagDiv">ON-CHAIN</div>
           </div>
-          <svg width="59" height="65" viewBox="0 0 59 65" fill="none" xmlns="http://www.w3.org/2000/svg">
-<g filter="url(#filter0_i_4256_625)">
-<path d="M29.8135 0.926758L31.2646 2.15332L31.752 2.54102C32.0711 2.78814 32.5417 3.14161 33.1494 3.56934C34.3655 4.42532 36.1292 5.57781 38.3262 6.7666C42.3414 8.93926 48.6612 11.68 55.999 12.4336L57.9316 12.6318L58.3623 12.6758L58.3809 13.1084L58.4629 15.0498C58.479 15.4282 58.7899 23.7751 55.5752 33.8809C53.6769 39.8487 50.9329 45.2034 47.416 49.793C42.9984 55.5582 37.3632 60.1018 30.6728 63.2969L29.7041 63.7598L29.4893 63.8623L29.2734 63.7598L28.3047 63.2969C21.6143 60.1018 15.98 55.5579 11.5625 49.793C8.04559 45.2031 5.3007 39.8489 3.40234 33.8809C0.187961 23.7758 0.49853 15.4292 0.514648 15.0498L0.597656 13.1074L0.616211 12.6758L1.0459 12.6318L2.97949 12.4336C10.317 11.68 16.6362 8.93922 20.6514 6.7666C22.8483 5.57784 24.6127 4.42554 25.8291 3.56934C26.437 3.14142 26.9081 2.7874 27.2275 2.54004C27.3871 2.41645 27.5087 2.31924 27.5908 2.25293C27.6319 2.21976 27.6636 2.19406 27.6846 2.17676C27.6949 2.16825 27.7027 2.16166 27.708 2.15723C27.7128 2.15322 27.7153 2.15082 27.7158 2.15039L29.168 0.926758L29.4912 0.654297L29.8135 0.926758ZM29.4883 7.70898C28.1371 8.68595 26.0565 10.0823 23.3818 11.5371C20.545 13.0801 17.6118 14.3796 14.6631 15.3994C11.7942 16.3915 8.90205 17.1168 6.03613 17.5703C6.16436 20.5605 6.68829 26.14 8.68457 32.3564C10.401 37.7011 12.8561 42.4652 15.9775 46.5205C19.5899 51.2137 24.1297 54.9853 29.4893 57.749C34.8749 54.9717 39.4326 51.1767 43.0537 46.4512C46.1774 42.3746 48.6295 37.5861 50.3379 32.2148C52.3053 26.0304 52.8187 20.5293 52.9434 17.5703C50.077 17.1168 47.1847 16.3917 44.3154 15.3994C41.3666 14.3796 38.4327 13.0802 35.5957 11.5371C32.9206 10.082 30.8395 8.68588 29.4883 7.70898Z" fill="black" stroke="black"/>
-<path d="M45.6289 25.2627L26.9189 43.9727L26.5654 43.6191L16.6582 33.7109L16.3047 33.3574L20.1904 29.4717L26.9189 36.2002L38.2539 24.8662L41.7432 21.377L45.6289 25.2627Z" fill="black" stroke="black"/>
-</g>
-<defs>
-<filter id="filter0_i_4256_625" x="0" y="0" width="62.9766" height="68.417" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
-<feFlood flood-opacity="0" result="BackgroundImageFix"/>
-<feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
-<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
-<feOffset dx="5" dy="5"/>
-<feGaussianBlur stdDeviation="2"/>
-<feComposite in2="hardAlpha" operator="arithmetic" k2="-1" k3="1"/>
-<feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.38 0"/>
-<feBlend mode="normal" in2="shape" result="effect1_innerShadow_4256_625"/>
-</filter>
-</defs>
+          <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M9 47L23.5 32L33.5 42L55 19" stroke="white" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"/>
+<path d="M40 19H55V34" stroke="white" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"/>
+<path d="M9 55H55" stroke="white" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" strokeOpacity="0.4"/>
 </svg>
 
-
 <div className="mainTagAndDesc">
-  <h1 style={{color:"#201D1D"}}>Verify Badges</h1>
-  <p style={{color:"#201D1D"}}>Optional KYC for real transparency</p>
+  <h1>Real Stocks</h1>
+  <p>Apple, Tesla, Nvidia &amp; more — tokenized and tradable on Cracker.</p>
 </div>
 </div>
 
-
-
-
-        
-      <span>CRACKER</span>
+<div className="stockLogoStrip" aria-hidden="true">
+  <div className="stockLogoTrack">
+    {[...STOCK_TICKERS, ...STOCK_TICKERS].map((stock, i) => (
+      <div className="stockChip" key={`${stock.symbol}-${i}`}>
+        <span className="stockChip__mark">{stock.name.charAt(0)}</span>
+        <span className="stockChip__symbol">{stock.symbol}</span>
+      </div>
+    ))}
+  </div>
+</div>
       </div>
 
       <div id="rCard3" className="rCard">
