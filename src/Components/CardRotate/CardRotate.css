@@ -216,67 +216,169 @@ will-change: transform;
       transform: scale(0.95);
   }
 
+  /* Light card, on purpose — every sibling card here (orange/black/violet)
+     is a solid saturated fill, and this one used to be flat grey. A soft
+     white-to-lavender gradient (the same lavender the footer uses) reads as
+     a distinct, deliberate treatment rather than "the one nobody styled",
+     without introducing a colour outside the palette. */
   #rCard1 {
-    background-color: var(--color-text-strong);
+    background: linear-gradient(165deg, #ffffff 0%, var(--color-surface-lavender) 130%);
+    color: var(--color-text-strong);
+    justify-content: flex-start;
+    gap: 1.1rem;
+    padding-top: 2.6rem;
   }
 
-  /* Infinite marquee of tradable names, filling the lower half of the card
-     the way the image slideshow / black-card rects / community ring do on
-     the sibling cards — every rCard puts something in that space. */
-  .stockLogoStrip {
-    position: absolute;
-    bottom: 8%;
-    left: 0;
-    width: 100%;
-    overflow: hidden;
-    -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 10%, #000 90%, transparent 100%);
-    mask-image: linear-gradient(90deg, transparent 0%, #000 10%, #000 90%, transparent 100%);
+  /* The shared .commonCardContent is absolutely positioned to hold exactly
+     the top half, sized for a card whose bottom half is one other element
+     (an image, a rect cluster). This card's bottom half has two (the orbit
+     and the stats row), so it flows in normal flex order instead — same
+     content, just not fighting the other cards' layout assumption. */
+  #rCard1 .commonCardContent {
+    position: relative;
+    height: auto;
+    padding-top: 0;
+    gap: 1rem;
   }
 
-  .stockLogoTrack {
-    display: flex;
-    align-items: center;
-    gap: 2.2rem;
-    width: max-content;
-    /* The track holds the ticker list twice back to back (see the .map in
-       CardRotate.jsx), so translating exactly -50% loops seamlessly from
-       the second copy back into the first with no visible seam or jump. */
-    animation: stockScroll 22s linear infinite;
+  #rCard1 .mainTagAndDesc h1 {
+    color: var(--color-text-strong);
+  }
+  #rCard1 .mainTagAndDesc p {
+    color: var(--color-text-muted-section);
   }
 
-  .stockChip {
-    display: flex;
-    align-items: center;
-    gap: 0.7rem;
-    flex-shrink: 0;
+  .tagDiv.tagDiv--violet {
+    background: rgba(104, 64, 255, 0.12);
+    color: var(--color-accent-violet);
+  }
+  .tagDiv.tagDiv--brand {
+    background: rgba(254, 108, 37, 0.12);
+    color: var(--color-brand);
   }
 
-  .stockChip__mark {
-    width: 3.6rem;
-    height: 3.6rem;
+  .stockIconBadge {
+    width: 4.4rem;
+    height: 4.4rem;
     flex-shrink: 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: var(--radius-pill);
-    background: rgba(255, 255, 255, 0.12);
-    border: 1px solid rgba(255, 255, 255, 0.24);
-    color: var(--color-brand-soft);
-    font-size: 1.5rem;
+    border-radius: var(--radius-lg);
+    background: rgba(104, 64, 255, 0.1);
+    color: var(--color-accent-violet);
+  }
+
+  /* Six real logos, each floating on its own small circular drift (see
+     .stockOrbit__logo img below) around a fixed "home" position on a faint
+     ring — a scattered cluster in gentle independent motion, not a rigid
+     row. The outer span carries the position/centring transform; the
+     animation lives on the inner img so the two transforms never fight. */
+  .stockOrbit {
+    position: relative;
+    width: 100%;
+    flex: 1;
+    min-height: 13rem;
+  }
+
+  .stockOrbit__ring {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 84%;
+    height: 62%;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    border: 1px solid rgba(74, 50, 50, 0.12);
+  }
+
+  .stockOrbit__logo {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    background: var(--color-surface-white);
+    box-shadow: var(--shadow-drop-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.7rem;
+  }
+  .stockOrbit__logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    animation: stockFloat 7s ease-in-out infinite;
+  }
+
+  .stockOrbit__logo--0 { top: 14%; left: 30%; width: 4.8rem; height: 4.8rem; }
+  .stockOrbit__logo--0 img { animation-duration: 7.2s; animation-delay: 0s; }
+
+  .stockOrbit__logo--1 { top: 10%; left: 68%; width: 4.2rem; height: 4.2rem; }
+  .stockOrbit__logo--1 img { animation-duration: 6.4s; animation-delay: 0.6s; }
+
+  .stockOrbit__logo--2 { top: 48%; left: 84%; width: 3.8rem; height: 3.8rem; }
+  .stockOrbit__logo--2 img { animation-duration: 6.9s; animation-delay: 1.2s; }
+
+  .stockOrbit__logo--3 { top: 78%; left: 30%; width: 4rem; height: 4rem; }
+  .stockOrbit__logo--3 img { animation-duration: 7.6s; animation-delay: 0.3s; }
+
+  .stockOrbit__logo--4 { top: 76%; left: 66%; width: 4rem; height: 4rem; }
+  .stockOrbit__logo--4 img { animation-duration: 6.6s; animation-delay: 0.9s; }
+
+  .stockOrbit__logo--5 { top: 46%; left: 15%; width: 3.6rem; height: 3.6rem; }
+  .stockOrbit__logo--5 img { animation-duration: 7.4s; animation-delay: 1.5s; }
+
+  @keyframes stockFloat {
+    0%   { transform: translate(0, 0); }
+    25%  { transform: translate(0.5rem, -0.55rem); }
+    50%  { transform: translate(0, -1rem); }
+    75%  { transform: translate(-0.5rem, -0.55rem); }
+    100% { transform: translate(0, 0); }
+  }
+
+  .stockStatsRow {
+    width: 100%;
+    display: flex;
+    gap: 0.6rem;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .stockStatsRow::-webkit-scrollbar {
+    display: none;
+  }
+
+  .stockStat {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.7rem 1rem;
+    border-radius: var(--radius-lg);
+    background: rgba(74, 50, 50, 0.05);
+    border: 1px solid rgba(74, 50, 50, 0.08);
+  }
+  .stockStat__trend {
+    font-size: 1rem;
+  }
+  .stockStat__trend.is-up { color: #1a9c5c; }
+  .stockStat__trend.is-down { color: #d9432e; }
+
+  .stockStat__body {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.25;
+  }
+  .stockStat__symbol {
+    font-size: 1.2rem;
     font-weight: 700;
+    color: var(--color-text-strong);
   }
-
-  .stockChip__symbol {
-    font-size: 1.4rem;
+  .stockStat__change {
+    font-size: 1rem;
     font-weight: 600;
-    letter-spacing: 0.02em;
-    color: rgba(255, 255, 255, 0.78);
   }
-
-  @keyframes stockScroll {
-    from { transform: translateX(0); }
-    to { transform: translateX(-50%); }
-  }
+  .stockStat__change.is-up { color: #1a9c5c; }
+  .stockStat__change.is-down { color: #d9432e; }
 
   #rCard2 {
     background-color: var(--color-accent-orange);
@@ -568,7 +670,7 @@ will-change: transform;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .stockLogoTrack {
+  .stockOrbit__logo img {
     animation: none;
   }
 }

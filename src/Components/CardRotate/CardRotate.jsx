@@ -16,6 +16,12 @@ import roboFair1 from "../../assets/FairRobo.png"
 import roboFair2 from "../../assets/FairRobo2.png"
 import backGradient from "../../assets/FeatureGradient.png"
 import useTextSplitAnim from "../CustomHook/useTextSplitAnim.jsx";
+import appleLogo from "../../assets/apple.png";
+import teslaLogo from "../../assets/tesla.png";
+import nvidiaLogo from "../../assets/nvidia.png";
+import amazonLogo from "../../assets/amazon.png";
+import metaLogo from "../../assets/meta.png";
+import spacexLogo from "../../assets/spacex.png";
 
 
 gsap.registerPlugin(Draggable, CustomEase, ScrollTrigger);
@@ -24,19 +30,16 @@ CustomEase.create(
   "0.25, 1, 0.5, 1"
 );
 
-// Real-world names on the "Real Stocks" card's marquee. Rendered as a
-// monogram + ticker chip rather than traced brand logos — that keeps the
-// set legible and visually consistent (a real logo wall is a mess of
-// unrelated shapes and colors) without reproducing anyone's actual mark.
-const STOCK_TICKERS = [
-  { symbol: "AAPL", name: "Apple" },
-  { symbol: "TSLA", name: "Tesla" },
-  { symbol: "NVDA", name: "Nvidia" },
-  { symbol: "SPCX", name: "SpaceX" },
-  { symbol: "AMZN", name: "Amazon" },
-  { symbol: "GOOGL", name: "Google" },
-  { symbol: "MSFT", name: "Microsoft" },
-  { symbol: "META", name: "Meta" },
+// Real-world names on the "Real Stocks" card: real logo assets (not traced
+// substitutes) floating over the card and echoed as a small ticker/change
+// strip underneath.
+const STOCK_LOGOS = [
+  { symbol: "AAPL", name: "Apple", logo: appleLogo, change: 1.28 },
+  { symbol: "TSLA", name: "Tesla", logo: teslaLogo, change: -0.84 },
+  { symbol: "NVDA", name: "Nvidia", logo: nvidiaLogo, change: 2.41 },
+  { symbol: "AMZN", name: "Amazon", logo: amazonLogo, change: 1.17 },
+  { symbol: "META", name: "Meta", logo: metaLogo, change: 0.62 },
+  { symbol: "SPCX", name: "SpaceX", logo: spacexLogo, change: 3.05 },
 ];
 const CardRotator = () => {
   const animRef2 = useRef(null);
@@ -270,31 +273,50 @@ useTextSplitAnim(animRef2, { stagger: 40, startDelay: 300 });
       <div id="rCard1" className="rCard stocks">
          <div className="commonCardContent">
           <div className="tagLines">
-          <div className="tagDiv">TOKENIZED</div>
-          <div className="tagDiv">ON-CHAIN</div>
+          <div className="tagDiv tagDiv--violet">TOKENIZED</div>
+          <div className="tagDiv tagDiv--brand">ON-CHAIN</div>
           </div>
-          <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M9 47L23.5 32L33.5 42L55 19" stroke="white" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"/>
-<path d="M40 19H55V34" stroke="white" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"/>
-<path d="M9 55H55" stroke="white" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" strokeOpacity="0.4"/>
-</svg>
 
-<div className="mainTagAndDesc">
-  <h1>Real Stocks</h1>
-  <p>Apple, Tesla, Nvidia &amp; more — tokenized and tradable on Cracker.</p>
-</div>
-</div>
+          <div className="stockIconBadge">
+            <svg width="28" height="28" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M9 47L23.5 32L33.5 42L55 19" stroke="currentColor" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round"/>
+              <path d="M40 19H55V34" stroke="currentColor" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </div>
 
-<div className="stockLogoStrip" aria-hidden="true">
-  <div className="stockLogoTrack">
-    {[...STOCK_TICKERS, ...STOCK_TICKERS].map((stock, i) => (
-      <div className="stockChip" key={`${stock.symbol}-${i}`}>
-        <span className="stockChip__mark">{stock.name.charAt(0)}</span>
-        <span className="stockChip__symbol">{stock.symbol}</span>
-      </div>
-    ))}
-  </div>
-</div>
+          <div className="mainTagAndDesc">
+            <h1>Real Stocks</h1>
+            <p>Apple, Tesla, Nvidia &amp; more — tokenized and tradable on Cracker.</p>
+          </div>
+        </div>
+
+        <div className="stockOrbit" aria-hidden="true">
+          <span className="stockOrbit__ring" />
+          {STOCK_LOGOS.map((stock, i) => (
+            <span className={`stockOrbit__logo stockOrbit__logo--${i}`} key={stock.symbol}>
+              <img src={stock.logo} alt="" />
+            </span>
+          ))}
+        </div>
+
+        <div className="stockStatsRow">
+          {STOCK_LOGOS.map((stock) => {
+            const up = stock.change >= 0;
+            return (
+              <div className="stockStat" key={stock.symbol}>
+                <span className={`stockStat__trend ${up ? "is-up" : "is-down"}`} aria-hidden="true">
+                  {up ? "▲" : "▼"}
+                </span>
+                <span className="stockStat__body">
+                  <span className="stockStat__symbol">{stock.symbol}</span>
+                  <span className={`stockStat__change ${up ? "is-up" : "is-down"}`}>
+                    {up ? "+" : ""}{stock.change}%
+                  </span>
+                </span>
+              </div>
+            );
+          })}
+        </div>
       </div>
 
       <div id="rCard3" className="rCard">
