@@ -31,12 +31,12 @@ const WORDMARK_PATHS = [
 ];
 
 // One full cycle: logo -> draw -> hold -> back to logo.
-const LOGO_HOLD = 4; // seconds the static icon stays put before the draw starts
+const LOGO_HOLD = 9; // seconds the static icon stays put before the draw starts
 const CROSSFADE = 0.35; // icon <-> wordmark fade
 const DRAW_DURATION = 1.1; // seconds each letter's outline takes to draw
 const DRAW_STAGGER = 0.11; // gap between one letter starting and the next
 const FILL_IN = 0.35; // outline -> solid fill, once fully drawn
-const TEXT_HOLD = 4; // seconds the finished wordmark stays put before fading back
+const TEXT_HOLD = 4.5; // seconds the finished wordmark stays put before fading back
 
 const prefersReducedMotion = () =>
   typeof window !== "undefined" &&
