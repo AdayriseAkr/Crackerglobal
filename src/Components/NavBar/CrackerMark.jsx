@@ -30,16 +30,13 @@ const WORDMARK_PATHS = [
   "M82.0959 7.26395C82.16 7.25778 82.2246 7.25277 82.2892 7.24898C83.0673 7.20369 84.8455 7.2029 84.8471 8.28928C84.8488 9.75153 83.4711 9.17212 82.6018 9.16899C81.3262 9.16444 80.0614 10.1219 79.788 11.3765C79.5538 12.3979 79.6317 13.4702 79.6326 14.5158V17.9719C79.565 19.2747 77.7802 19.1017 77.7277 18.1823C77.6947 17.6002 77.7206 16.726 77.7206 16.1106L77.7239 13.5047C77.7222 12.8499 77.6785 12.1594 77.7631 11.5123C78.0669 9.18901 79.8263 7.56638 82.0959 7.26395Z",
 ];
 
-// One full cycle: logo -> draw -> hold -> back to logo. A 7-letter word
-// drawing convincingly needs at least ~1.5-2s on its own, so anything
-// tighter than ~6s starts to feel rushed rather than "written"; much past
-// ~9-10s and the loop reads as slow/forgotten. ~7.7s lands in the middle.
-const LOGO_HOLD = 2.5; // seconds the static icon stays put
+// One full cycle: logo -> draw -> hold -> back to logo.
+const LOGO_HOLD = 4; // seconds the static icon stays put before the draw starts
 const CROSSFADE = 0.35; // icon <-> wordmark fade
 const DRAW_DURATION = 1.1; // seconds each letter's outline takes to draw
 const DRAW_STAGGER = 0.11; // gap between one letter starting and the next
 const FILL_IN = 0.35; // outline -> solid fill, once fully drawn
-const TEXT_HOLD = 2.2; // seconds the finished wordmark stays put
+const TEXT_HOLD = 4; // seconds the finished wordmark stays put before fading back
 
 const prefersReducedMotion = () =>
   typeof window !== "undefined" &&
