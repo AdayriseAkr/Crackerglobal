@@ -1,0 +1,26 @@
+/* Same responsive sizing the plain <img> used before (2.5% of the nav,
+   floored at 3.4rem) — aspect-ratio:1 keeps it a square tied to that
+   width, so the wide 85:19 wordmark can be absolutely positioned inside
+   at a fixed proportion of it without the container's own footprint
+   jumping when the two crossfade. */
+.crackerMark {
+  position: relative;
+  width: 2.5%;
+  min-width: 3.4rem;
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+}
+
+.crackerMark__logo {
+  height: 100%;
+  width: 100%;
+  object-fit: contain;
+}
+
+.crackerMark__wordmark {
+  position: absolute;
+  left: 0;
+  height: 55%;
+  width: auto;
+}

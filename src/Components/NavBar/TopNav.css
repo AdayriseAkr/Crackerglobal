@@ -19,13 +19,8 @@
     background-color: black;
     color: white;
     border-radius: var(--radius-lg);
-    outline: none;
-    border: none;
-}
-
-.topNavParent > img{
-    width: 2.5%;
-    min-width: 3.4rem;
+    outline: none !important;
+    border: none !important;
 }
 
 /* visible */

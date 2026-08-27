@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import "./TopNav.css";
-import MainLogo from "../../assets/MainLogo.png";
+import CrackerMark from "./CrackerMark.jsx";
 
 export default function TopNav() {
   const [showNav, setShowNav] = useState(true);
@@ -25,7 +25,7 @@ export default function TopNav() {
 
   return (
     <div className={`topNavParent ${showNav ? "show" : "hide"}`}>
-      <img src={MainLogo} alt="Main Logo" />
+      <CrackerMark />
       <button>Join Us</button>
     </div>
   );
