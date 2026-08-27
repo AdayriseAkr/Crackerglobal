@@ -299,12 +299,12 @@ will-change: transform;
      rotate(-angle) scale(1, 1/squash) translate(-50%,-50%), rotate
      outermost — rather than the separate properties. */
   .stockOrbit {
-    --orbit-radius: clamp(7.5rem, 16vw, 10.5rem);
+    --orbit-radius: clamp(8.5rem, 19vw, 12rem);
     --orbit-squash: 0.5;
     position: relative;
     width: 100%;
     flex: 1;
-    min-height: 13rem;
+    min-height: 14rem;
   }
 
   .stockOrbit__ring {
@@ -388,7 +388,6 @@ will-change: transform;
     transform: translate(-50%, -50%);
     border-radius: 50%;
     background: var(--color-surface-white);
-    box-shadow: var(--shadow-drop-sm);
     display: flex;
     align-items: center;
     justify-content: center;
