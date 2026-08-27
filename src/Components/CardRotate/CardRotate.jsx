@@ -311,13 +311,24 @@ useTextSplitAnim(animRef2, { stagger: 40, startDelay: 300 });
           </div>
         </div>
 
-        <div className="stockStatsRow" aria-hidden="true">
+        <div className="stockStatsRow">
           <div className="stockStatsTrack">
             {[...STOCK_LOGOS, ...STOCK_LOGOS].map((stock, i) => {
               const up = stock.change >= 0;
+              // The list is duplicated back-to-back so the marquee can loop
+              // seamlessly (see the CSS) — the second copy is a visual
+              // repeat, not new content, so it's hidden from assistive tech
+              // rather than announcing every symbol twice.
+              const isDuplicate = i >= STOCK_LOGOS.length;
               return (
-                <div className="stockStat" key={`${stock.symbol}-${i}`}>
-                  <span className={`stockStat__trend ${up ? "is-up" : "is-down"}`}>
+                <a
+                  href="#crackerswap"
+                  className="stockStat"
+                  key={`${stock.symbol}-${i}`}
+                  aria-hidden={isDuplicate || undefined}
+                  tabIndex={isDuplicate ? -1 : undefined}
+                >
+                  <span className={`stockStat__trend ${up ? "is-up" : "is-down"}`} aria-hidden="true">
                     {up ? "▲" : "▼"}
                   </span>
                   <span className="stockStat__body">
@@ -326,7 +337,7 @@ useTextSplitAnim(animRef2, { stagger: 40, startDelay: 300 });
                       {up ? "+" : ""}{stock.change}%
                     </span>
                   </span>
-                </div>
+                </a>
               );
             })}
           </div>

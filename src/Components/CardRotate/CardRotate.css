@@ -253,7 +253,7 @@ will-change: transform;
     color: var(--color-accent-violet);
   }
   .tagDiv.tagDiv--brand {
-    background: rgba(254, 108, 37, 0.12);
+    background: linear-gradient(135deg, rgba(255, 171, 72, 0.24) 0%, rgba(254, 108, 37, 0.14) 100%);
     color: var(--color-brand);
   }
 
@@ -261,6 +261,7 @@ will-change: transform;
     width: 4.4rem;
     height: 4.4rem;
     flex-shrink: 0;
+    margin-top: 0.8rem;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -440,6 +441,19 @@ will-change: transform;
     border-radius: var(--radius-lg);
     background: rgba(255, 255, 255, 0.85);
     border: 1px solid rgba(74, 50, 50, 0.08);
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color var(--duration-micro) ease-in-out,
+      border-color var(--duration-micro) ease-in-out;
+  }
+  .stockStat:hover,
+  .stockStat:focus-visible {
+    background: rgba(255, 255, 255, 1);
+    border-color: rgba(74, 50, 50, 0.16);
+  }
+  .stockStat:focus-visible {
+    outline: 2px solid var(--color-brand);
+    outline-offset: 2px;
   }
   .stockStat__trend {
     font-size: 1rem;
