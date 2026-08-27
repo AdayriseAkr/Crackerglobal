@@ -292,30 +292,40 @@ useTextSplitAnim(animRef2, { stagger: 40, startDelay: 300 });
 
         <div className="stockOrbit" aria-hidden="true">
           <span className="stockOrbit__ring" />
-          {STOCK_LOGOS.map((stock, i) => (
-            <span className={`stockOrbit__logo stockOrbit__logo--${i}`} key={stock.symbol}>
-              <img src={stock.logo} alt="" />
-            </span>
-          ))}
+          <div className="stockOrbit__track">
+            {STOCK_LOGOS.map((stock, i) => (
+              <span
+                className="stockOrbit__slot"
+                style={{ "--slot-angle": `${i * (360 / STOCK_LOGOS.length)}deg` }}
+                key={stock.symbol}
+              >
+                <span className={`stockOrbit__logo stockOrbit__logo--${stock.symbol}`}>
+                  <img src={stock.logo} alt={stock.name} />
+                </span>
+              </span>
+            ))}
+          </div>
         </div>
 
-        <div className="stockStatsRow">
-          {STOCK_LOGOS.map((stock) => {
-            const up = stock.change >= 0;
-            return (
-              <div className="stockStat" key={stock.symbol}>
-                <span className={`stockStat__trend ${up ? "is-up" : "is-down"}`} aria-hidden="true">
-                  {up ? "▲" : "▼"}
-                </span>
-                <span className="stockStat__body">
-                  <span className="stockStat__symbol">{stock.symbol}</span>
-                  <span className={`stockStat__change ${up ? "is-up" : "is-down"}`}>
-                    {up ? "+" : ""}{stock.change}%
+        <div className="stockStatsRow" aria-hidden="true">
+          <div className="stockStatsTrack">
+            {[...STOCK_LOGOS, ...STOCK_LOGOS].map((stock, i) => {
+              const up = stock.change >= 0;
+              return (
+                <div className="stockStat" key={`${stock.symbol}-${i}`}>
+                  <span className={`stockStat__trend ${up ? "is-up" : "is-down"}`}>
+                    {up ? "▲" : "▼"}
                   </span>
-                </span>
-              </div>
-            );
-          })}
+                  <span className="stockStat__body">
+                    <span className="stockStat__symbol">{stock.symbol}</span>
+                    <span className={`stockStat__change ${up ? "is-up" : "is-down"}`}>
+                      {up ? "+" : ""}{stock.change}%
+                    </span>
+                  </span>
+                </div>
+              );
+            })}
+          </div>
         </div>
       </div>
 
