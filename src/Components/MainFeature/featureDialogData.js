@@ -3,7 +3,7 @@
 // imported by MainFeature.jsx. These are the wide wordmark graphics.
 import liquidityLockArt from "../../assets/LiquidityLockedForeverEx.webp";
 import zeroPriceArt from "../../assets/zeroPriceGapEx.webp";
-import botsPayArt from "../../assets/BotsPayYpuDontEx.webp";
+import botsPayArt from "../../assets/SnipersPayTheMostEx.webp";
 import creatorFeesArt from "../../assets/EarnEveryTradeEx.webp";
 
 // The four Main Feature cards. The card face shows only `title` (see the
