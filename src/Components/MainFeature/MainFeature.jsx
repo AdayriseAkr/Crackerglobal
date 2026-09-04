@@ -14,8 +14,8 @@ import useInView from "../CustomHook/useInView.jsx";
 // different sizes across one row of cards. They are framed to a common 83%
 // width fill instead, which is what makes the set read as one family.
 //
-// Where the crop then SITS inside each card is a separate question, and one
-// that only answers itself on screen: see CardArtTuner.jsx.
+// Where the crop then SITS inside each card is set per card at the bottom of
+// MainFeature.css, as --art-scale / --art-opacity / --art-x.
 import liquidityLockArt from "../../assets/liquidityLockCard.webp";
 import zeroPriceArt from "../../assets/zeroPriceGapCard.webp";
 import botsPayArt from "../../assets/snipersPayCard.webp";
@@ -23,7 +23,6 @@ import creatorFeesArt from "../../assets/earnEveryTradeCard.webp";
 import useTextSplitAnim from "../CustomHook/useTextSplitAnim.jsx";
 import FeatureDialog from "./FeatureDialog.jsx";
 import featureDialogData from "./featureDialogData.js";
-import useCardArtTuner from "./CardArtTuner.jsx";
 
 function ExpandButton({ onClick, label }) {
   return (
@@ -106,13 +105,11 @@ export default function MainFeature() {
   // Durations and delays come from CSS variables (MainFeature.css) rather
   // than literals: an inline style is unreachable from a media query, and the
   // phone needs this sequence to run in about half the time.
-  // Framing controls for the four card images. Renders nothing and writes no
-  // inline styles unless it is switched on (dev, or ?tune in the URL).
-  const { styleFor, panel } = useCardArtTuner();
-
-  // The fade-in lands on var(--art-opacity) rather than a literal 1, so a card
-  // tuned below full opacity keeps that value instead of the entrance animation
-  // overriding it on arrival. Untuned it resolves to 1, exactly as before.
+  // Load-bearing, and easy to mistake for a leftover. The fade-in has to land on
+  // var(--art-opacity) rather than a literal 1: three of the four cards are set
+  // below full opacity at the bottom of MainFeature.css, and an inline opacity:1
+  // here would outrank the stylesheet and undo all three the moment the
+  // entrance animation finished. Falls back to 1 for any card that sets nothing.
   const ART_IN = "var(--art-opacity, 1)";
   const topLeftImgStyle = useMemo(() => (playedOnce ? { opacity: ART_IN, transition: "all var(--mf-img-dur) ease-in-out var(--mf-img-d1)" } : undefined), [playedOnce]);
   const bottomLeftImgStyle = useMemo(() => (playedOnce ? { opacity: ART_IN, transition: "all var(--mf-img-dur) ease-in-out var(--mf-img-d3)" } : undefined), [playedOnce]);
@@ -182,7 +179,7 @@ char.style.filter="blur(0px)"
             onClick={(e) => openCard("lockedLiquidity", e.currentTarget)}
           >
             <img
-              style={{ ...topLeftImgStyle, ...styleFor("topLeftCard") }}
+              style={topLeftImgStyle}
               src={liquidityLockArt}
               alt=""
               srcset=""
@@ -206,7 +203,7 @@ char.style.filter="blur(0px)"
             onClick={(e) => openCard("botsPay", e.currentTarget)}
           >
             <img
-              style={{ ...bottomLeftImgStyle, ...styleFor("bottomLeftCard") }}
+              style={bottomLeftImgStyle}
               src={botsPayArt}
               alt=""
               srcset=""
@@ -234,7 +231,7 @@ char.style.filter="blur(0px)"
               <p>Zero Price Gap</p>
             </div>
             <img
-              style={{ ...topRightImgStyle, ...styleFor("topRightCard") }}
+              style={topRightImgStyle}
               src={zeroPriceArt}
               alt=""
               srcset=""
@@ -253,7 +250,7 @@ char.style.filter="blur(0px)"
               <p>Earn Every Trade, Forever</p>
             </div>
             <img
-              style={{ ...bottomRightImgStyle, ...styleFor("bottomRightCard") }}
+              style={bottomRightImgStyle}
               src={creatorFeesArt}
               alt=""
               srcset=""
@@ -273,8 +270,6 @@ char.style.filter="blur(0px)"
         )}
       </AnimatePresence>
 
-      {/* null unless the tuner is switched on. */}
-      {panel}
     </div>
   );
 }
