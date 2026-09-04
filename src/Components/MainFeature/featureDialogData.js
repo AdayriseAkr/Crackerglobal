@@ -105,22 +105,34 @@ const featureDialogData = {
     // false one: it explains why sniping stops being worth doing, rather than
     // asking the reader to believe the contracts can recognise a bot.
     title: "Snipers Pay the Most",
+    // WHEN this applies is half the feature and the card used to leave it out.
+    // The window opens at GRADUATION, when the token lands in the CrackerSwap
+    // pool — that is the block snipers are waiting for, not the launch of the
+    // curve. Three fees live on this site and they are easy to confuse, so each
+    // card should say which phase it is talking about:
+    //   card 02  1.25%  total curve fee, while the token is still on the curve
+    //   card 03  50% -> 1.0%  the ten minutes after it graduates (here)
+    //   card 04  1.0%   the standing swap fee from then on
+    // This decay lands exactly on card 04's 1.0%, which is what makes the
+    // window read as temporary rather than as a different product.
     description:
-      "The fee on a new token opens at 50% and falls in a straight line to 1.25% over ten minutes. It is charged on every buy in that window, including yours — that is the part that makes it work. A bot racing for the first block hands over half its position, so the trade it was going to make stops being worth making.",
+      "Graduation is the block snipers are waiting for: the moment a token lands in the CrackerSwap pool and can be bought at size. So that is where the fee opens at 50%, falling 4.9 points a minute until it meets the normal 1.0% swap fee ten minutes later. It is charged on every buy in that window, including yours — that is the part that makes it work. A bot racing for the first block hands over half its position, so the trade it was going to make stops being worth making.",
     ctaPrimary: "See the Fee Curve",
     ctaSecondary: "Read the Feature Doc",
     bullets: [
-      "Opens at 50% and falls 4.9 points a minute for ten minutes",
-      "Charged on every buy in the window, yours included",
-      "Waiting ten minutes costs nothing extra. Racing costs everything",
+      "Runs for ten minutes from graduation, not from launch",
+      "Opens at 50%, falls 4.9 points a minute, lands on the normal 1.0%",
+      "Charged on every buy in that window, yours included. Racing is the cost",
       "Enforced on-chain, not optional and not creator-set",
     ],
     stats: [
       { label: "Fee in the first block", value: 50, suffix: "%" },
-      // The floor is the standing curve fee, so it has to be the same 1.25%
-      // card 02 states as "Total curve fee" — the decay lands on the normal
-      // rate, it does not undercut it.
-      { label: "Fee after ten minutes", value: 1.25, suffix: "%", decimals: 2 },
+      // 1.0, not the 1.25 this said before. 1.25% is the CURVE fee (card 02)
+      // and the decay does not land there — it lands on the post-graduation
+      // swap fee, which card 04 states as 1.0%. The two are different phases of
+      // a token's life. The arithmetic agrees: the published schedule drops 4.9
+      // points a minute for ten minutes, and 50 - 49 is 1.0 exactly.
+      { label: "Fee after ten minutes", value: 1.0, suffix: "%", decimals: 1 },
       { label: "Decay window", value: 10, suffix: " min" },
     ],
     image: botsPayArt,
@@ -132,17 +144,18 @@ const featureDialogData = {
       // it has to be the real shape. These were an exponential curve — 100, 78,
       // 60, 46 — which drew a fee that collapses in the first two minutes and
       // then crawls. The published schedule is a straight line: 4.9 points off
-      // every minute, 50% down to 1.25%. Sampled evenly across the ten minutes
+      // every minute, 50% down to 1.0%. Sampled evenly across the ten minutes
       // and written as the actual fee at each point, so the numbers here can be
       // read against the stats above rather than being shape-only. They are
       // normalised against their own max when drawn (FeatureDialog.jsx), so
-      // using real percentages costs nothing.
-      label: "Opening fee decay (first 10 minutes)",
+      // using real percentages costs nothing — and the final bar landing on 1.0
+      // is the same 1.0% swap fee card 04 charges from then on.
+      label: "Fee decay after graduation (first 10 minutes)",
       value: 50,
       suffix: "%",
       bars: [
-        50, 46.75, 43.5, 40.25, 37, 33.75, 30.5, 27.25, 24, 20.75, 17.5, 14.25,
-        11, 7.75, 4.5, 1.25,
+        50, 46.73, 43.47, 40.2, 36.93, 33.67, 30.4, 27.13, 23.87, 20.6, 17.33,
+        14.07, 10.8, 7.53, 4.27, 1,
       ],
     },
     accent: "auction",
