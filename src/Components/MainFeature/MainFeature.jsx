@@ -196,30 +196,21 @@ char.style.filter="blur(0px)"
             </div>
             {/* .bl */}
           </div>
+          {/* Slot 2. Anti-bot moved here from the top-right; fair execution
+              went the other way. Only the CONTENT swapped — the position
+              classes stay put, because they carry the layout (which cards are
+              full height) and the entrance stagger, and neither of those
+              should move with the artwork. */}
           <div
             className="bottomLeftCard"
-            onClick={(e) => openCard("zeroPriceGap", e.currentTarget)}
+            onClick={(e) => openCard("botsPay", e.currentTarget)}
           >
             <img
               style={{ ...bottomLeftImgStyle, ...styleFor("bottomLeftCard") }}
-              src={zeroPriceArt}
+              src={botsPayArt}
               alt=""
               srcset=""
             />
-            <ExpandButton
-              label="Expand Zero Price Gap"
-              onClick={(e) => openCard("zeroPriceGap", e.currentTarget.parentElement)}
-            />
-            <div className="blTag">
-              <p>Zero Price Gap</p>
-            </div>
-          </div>
-        </div>
-        <div className="rightCards">
-          <div
-            className="topRightCard"
-            onClick={(e) => openCard("botsPay", e.currentTarget)}
-          >
             <ExpandButton
               label="Expand Snipers Pay the Most"
               onClick={(e) => openCard("botsPay", e.currentTarget.parentElement)}
@@ -227,9 +218,24 @@ char.style.filter="blur(0px)"
             <div className="blTag">
               <p>Snipers Pay the Most</p>
             </div>
+          </div>
+        </div>
+        <div className="rightCards">
+          {/* Slot 3. */}
+          <div
+            className="topRightCard"
+            onClick={(e) => openCard("zeroPriceGap", e.currentTarget)}
+          >
+            <ExpandButton
+              label="Expand Zero Price Gap"
+              onClick={(e) => openCard("zeroPriceGap", e.currentTarget.parentElement)}
+            />
+            <div className="blTag">
+              <p>Zero Price Gap</p>
+            </div>
             <img
               style={{ ...topRightImgStyle, ...styleFor("topRightCard") }}
-              src={botsPayArt}
+              src={zeroPriceArt}
               alt=""
               srcset=""
             />

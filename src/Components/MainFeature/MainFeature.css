@@ -164,8 +164,10 @@
     /* Framing controls, defaulted to "untouched" so this behaves exactly as it
        did before unless something sets them. CardArtTuner writes them live
        while you drag a slider; the values you settle on get pasted back into
-       this file as a `.topLeftCard img{ --art-x: ... }` block, which is what
-       actually ships. The tuner is not in the production path.
+       this file as a per-slot block at the very bottom, which is what actually
+       ships. The tuner is not in the production path. (Deliberately not naming
+       a real selector here: a worked example in a comment is indistinguishable
+       from a live rule to grep, and this file is searched by slot name.)
 
        object-position is the right control for the crop rather than a
        translate: the image is object-fit:cover, so it is already overflowing
@@ -364,4 +366,37 @@
            full-bleed cover image and these read as posters, not tiles. */
         aspect-ratio: 3 / 4;
     }
+}
+
+/* ---- card art framing ----
+   Tuned on screen with the panel in CardArtTuner.jsx, then pasted here. These
+   are what ship; the panel is only how the numbers were found.
+
+   Read these against the images, not the slots. Anti-bot and fair execution
+   swapped places after the values were set, so each block below carries the
+   numbers for the artwork that ends up in that position, not the ones that
+   were tuned while sitting in it:
+
+     bottomLeftCard  now holds snipersPayCard    (tuned at 1.32 / 0.80)
+     topRightCard    now holds zeroPriceGapCard  (tuned at 1.01)
+
+   Getting that backwards is silent — both cards are the same size, so the
+   only symptom would be two slightly wrongly framed illustrations. */
+
+/* 02 Snipers Pay the Most */
+.bottomLeftCard img{
+  --art-scale: 1.32;
+  --art-opacity: 0.8;
+}
+
+/* 03 Zero Price Gap */
+.topRightCard img{
+  --art-scale: 1.01;
+}
+
+/* 04 Earn Every Trade, Forever */
+.bottomRightCard img{
+  --art-scale: 1.3;
+  --art-opacity: 0.85;
+  --art-x: 57%;
 }

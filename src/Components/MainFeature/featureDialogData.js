@@ -1,6 +1,6 @@
-// The expanded dialogs have their own artwork now, one per feature. The four
-// CARD FACES still use the placeholders — they are a different crop at a
-// different size, and MainFeature.jsx imports those separately.
+// The expanded dialogs have their own artwork, one per feature. The four CARD
+// FACES use a different set entirely — a portrait crop of the 3D renders,
+// imported by MainFeature.jsx. These are the wide wordmark graphics.
 import liquidityLockArt from "../../assets/LiquidityLockedForeverEx.webp";
 import zeroPriceArt from "../../assets/zeroPriceGapEx.webp";
 import botsPayArt from "../../assets/BotsPayYpuDontEx.webp";
@@ -56,7 +56,7 @@ const featureDialogData = {
 
   zeroPriceGap: {
     id: "zeroPriceGap",
-    eyebrow: "02. Fair Execution",
+    eyebrow: "03. Fair Execution",
     title: "Zero Price Gap",
     description:
       "Most launchpads let the price jump the second a token graduates to a DEX, and that gap is where bots front-run your community. Cracker's bonding curve hands off to the CrackerSwap pool at the exact same price, every time.",
@@ -92,7 +92,7 @@ const featureDialogData = {
 
   botsPay: {
     id: "botsPay",
-    eyebrow: "03. Anti-Bot Design",
+    eyebrow: "02. Anti-Bot Design",
     // Was "Bots Pay, You Don't", with a description and a launch headline that
     // said the same thing. It was not true: the fee is charged on the buy, not
     // on who is making it, so a person buying two minutes in pays 40.2% exactly
@@ -109,12 +109,14 @@ const featureDialogData = {
     // The window opens at GRADUATION, when the token lands in the CrackerSwap
     // pool — that is the block snipers are waiting for, not the launch of the
     // curve. Three fees live on this site and they are easy to confuse, so each
-    // card should say which phase it is talking about:
-    //   card 02  1.25%  total curve fee, while the token is still on the curve
-    //   card 03  50% -> 1.0%  the ten minutes after it graduates (here)
-    //   card 04  1.0%   the standing swap fee from then on
-    // This decay lands exactly on card 04's 1.0%, which is what makes the
-    // window read as temporary rather than as a different product.
+    // card should say which phase it is talking about. Naming them by feature
+    // rather than by number, because the numbering has already been reordered
+    // once and a comment that says "card 02" goes quietly wrong when it is:
+    //   Zero Price Gap        1.25%        while the token is still on the curve
+    //   Snipers Pay the Most  50% -> 1.0%  the ten minutes after it graduates (here)
+    //   Earn Every Trade      1.0%         the standing swap fee from then on
+    // This decay lands exactly on Earn Every Trade's 1.0%, which is what makes
+    // the window read as temporary rather than as a different product.
     // Three things have to survive any trim here: that the window starts at
     // graduation, that everyone pays it, and why that stops a sniper. The
     // explanations around them do not — what graduation is, the per-minute
