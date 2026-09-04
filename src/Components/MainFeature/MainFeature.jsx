@@ -201,11 +201,11 @@ char.style.filter="blur(0px)"
             onClick={(e) => openCard("botsPay", e.currentTarget)}
           >
             <ExpandButton
-              label="Expand Bots Pay, You Don't"
+              label="Expand Snipers Pay the Most"
               onClick={(e) => openCard("botsPay", e.currentTarget.parentElement)}
             />
             <div className="blTag">
-              <p>Bots Pay, You Don&apos;t</p>
+              <p>Snipers Pay the Most</p>
             </div>
             <img
               style={topRightImgStyle}

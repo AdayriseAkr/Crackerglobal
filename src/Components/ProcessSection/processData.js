@@ -38,7 +38,7 @@ export const processSteps = [
     features: [
       { label: "Liquidity Locked Forever" },
       { label: "Zero Price Jump" },
-      { label: "Bots Pay, You Don't" },
+      { label: "Snipers Pay the Most" },
     ],
     image: launchpadImage,
     cta: { label: "Launch a Token", href: LAUNCHPAD_URL },

@@ -93,39 +93,57 @@ const featureDialogData = {
   botsPay: {
     id: "botsPay",
     eyebrow: "03. Anti-Bot Design",
-    title: "Bots Pay, You Don't",
+    // Was "Bots Pay, You Don't", with a description and a launch headline that
+    // said the same thing. It was not true: the fee is charged on the buy, not
+    // on who is making it, so a person buying two minutes in pays 40.2% exactly
+    // like a bot would. There is no way to tell the two apart on-chain, which
+    // is the whole reason the mechanism is a decaying fee rather than a filter.
+    //
+    // What is true, and is the actual feature, is that the cost is a function
+    // of how early you are — so the people who race hardest pay the most, and
+    // waiting is free. Saying that plainly is also a stronger claim than the
+    // false one: it explains why sniping stops being worth doing, rather than
+    // asking the reader to believe the contracts can recognise a bot.
+    title: "Snipers Pay the Most",
     description:
-      "New tokens get sniped in the first seconds by bots, not people. Cracker's opening fee starts brutal and falls fast, punishing the snipers while your real community gets in cheap.",
+      "The fee on a new token opens at 50% and falls in a straight line to 1.25% over ten minutes. It is charged on every buy in that window, including yours — that is the part that makes it work. A bot racing for the first block hands over half its position, so the trade it was going to make stops being worth making.",
     ctaPrimary: "See the Fee Curve",
     ctaSecondary: "Read the Feature Doc",
     bullets: [
-      "Opening fee starts at 50%",
-      "Decays to 1.25% over the first 10 minutes",
-      "Fee is enforced on-chain, not optional or creator-set",
-      "Same protection on every chain Cracker supports",
+      "Opens at 50% and falls 4.9 points a minute for ten minutes",
+      "Charged on every buy in the window, yours included",
+      "Waiting ten minutes costs nothing extra. Racing costs everything",
+      "Enforced on-chain, not optional and not creator-set",
     ],
     stats: [
-      { label: "Opening fee", value: 50, suffix: "%" },
+      { label: "Fee in the first block", value: 50, suffix: "%" },
       // The floor is the standing curve fee, so it has to be the same 1.25%
       // card 02 states as "Total curve fee" — the decay lands on the normal
       // rate, it does not undercut it.
-      { label: "Settles at", value: 1.25, suffix: "%", decimals: 2 },
+      { label: "Fee after ten minutes", value: 1.25, suffix: "%", decimals: 2 },
       { label: "Decay window", value: 10, suffix: " min" },
     ],
     image: botsPayArt,
     badge: "Anti-Bot",
-    launchHeadline: "Let the bots pay for it",
+    launchHeadline: "Make sniping the expensive way in",
     launchCta: "Go to Launchpad",
     chart: {
-      // The bars are the fee schedule itself, 50% down to 1.25% across the
-      // first ten minutes, and the shape is the feature. They are drawn
-      // normalised against their own max (FeatureDialog.jsx), so 100 is the
-      // opening 50% and the tail has to land on 2.5 for the floor to read as
-      // the 1.25% the stat above claims.
+      // The bars are the fee schedule itself and the shape IS the feature, so
+      // it has to be the real shape. These were an exponential curve — 100, 78,
+      // 60, 46 — which drew a fee that collapses in the first two minutes and
+      // then crawls. The published schedule is a straight line: 4.9 points off
+      // every minute, 50% down to 1.25%. Sampled evenly across the ten minutes
+      // and written as the actual fee at each point, so the numbers here can be
+      // read against the stats above rather than being shape-only. They are
+      // normalised against their own max when drawn (FeatureDialog.jsx), so
+      // using real percentages costs nothing.
       label: "Opening fee decay (first 10 minutes)",
       value: 50,
       suffix: "%",
-      bars: [100, 78, 60, 46, 35, 27, 21, 16, 12, 9, 7, 5, 4, 3.2, 2.7, 2.5],
+      bars: [
+        50, 46.75, 43.5, 40.25, 37, 33.75, 30.5, 27.25, 24, 20.75, 17.5, 14.25,
+        11, 7.75, 4.5, 1.25,
+      ],
     },
     accent: "auction",
   },
