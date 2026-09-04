@@ -296,3 +296,14 @@
     transition: none;
   }
 }
+
+/* Clicking the backdrop closes the sheet, which is only discoverable if the
+   cursor says so. The panel itself is not a click target — its onClick only
+   stops the event reaching this — so the pointer stops at the sheet edge. */
+.legalSheet__overlay{
+  cursor: pointer;
+}
+
+.legalSheet{
+  cursor: default;
+}

@@ -821,3 +821,9 @@
     transition: none !important;
   }
 }
+
+/* The whole card is a click target (it spawns the ripple and is the hit area
+   for the feature), but it is an <article>, so nothing gave it a pointer. */
+.bentoCard{
+  cursor: pointer;
+}

@@ -5,7 +5,27 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  
+
+}
+
+/* Every browser gives <button> `cursor: default`, not pointer — only <a> gets
+   the hand automatically. So each button on the site had to remember to ask for
+   it, and most of them did not: the two legal links in the footer, Join Us in
+   the top nav, the process download, the mobile Products row and the community
+   Join all came up as an arrow.
+
+   Set once here rather than per component, because the next button added would
+   have had the same problem. :disabled is excluded and gets the cursor that
+   says why it is not responding; [role="button"] covers anything built out of
+   a div that is announced as a button. */
+button:not(:disabled),
+[role="button"]:not([aria-disabled="true"]){
+  cursor: pointer;
+}
+
+button:disabled,
+[role="button"][aria-disabled="true"]{
+  cursor: not-allowed;
 }
 
 html{

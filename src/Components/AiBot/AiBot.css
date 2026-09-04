@@ -220,3 +220,10 @@ li{
     cursor: pointer;
     scale: 0.95;
 }
+/* The launcher is a div, and so are the three icons inside it — both toggle
+   something on click, so both need the cursor a <button> would have given them
+   for free. */
+.botActiveButton,
+.botActiveButton > div{
+    cursor: pointer;
+}
