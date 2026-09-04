@@ -19,6 +19,10 @@
   --chains-inset: 0.8rem;
   --chains-height: 4.4rem;
   --chains-tile: 3.2rem;
+  /* Space after each logo. Declared here so the rail's scroll distance and the
+     item spacing cannot drift apart — the marquee maths in the keyframes below
+     reads this exact value. */
+  --chains-gap: 1.2rem;
 
   position: absolute;
   left: var(--chains-inset);
@@ -169,25 +173,52 @@
   display: flex;
   align-items: center;
   width: max-content;
-  animation: liveChainsScroll 22s linear infinite;
+  /* Load-bearing. This is a flex ITEM of .liveChainsViewport, and a flex item
+     shrinks below its max-content width by default. Without this the rail box
+     was being squeezed to the width of the window while its children (flex:none)
+     kept their size and spilled out of it — so the box the animation translates
+     was not the width of the content it holds, and the scroll distance computed
+     off it was wrong. Nothing about that is visible as a squashed layout; it
+     just makes the loop stutter. */
+  flex: none;
+  /* Width of one repeat of the chain list. --chains-count is written inline by
+     LiveChainsStrip.jsx from LIVE_CHAINS.length, so adding a chain lengthens
+     the scroll automatically. */
+  --chains-set: calc(
+    (var(--chains-tile) + var(--chains-gap)) * var(--chains-count, 4)
+  );
+  /* Timed off the distance rather than fixed, so the logos always drift past at
+     the same speed no matter how many there are — 8s for a 17.6rem set is
+     about 22px a second, slow enough to read and not fast enough to pull the
+     eye away from the page. */
+  animation: liveChainsScroll calc(var(--chains-count, 4) * 2s) linear infinite;
 }
 
-/* Exactly one copy of the list. The rail holds the array twice, so -50% puts
-   the second copy where the first began and the loop has no seam. This only
-   holds while the two copies are identical in width — which is why the spacing
-   below is a margin on each item rather than a `gap` on the rail: a gap is not
-   part of an item, so the flex row would be (2 x copy) + (1 extra gap) wide
-   and -50% would land slightly off, drifting a few pixels every lap. */
+/* Right to left by exactly one set, then it starts over. Because every set is
+   identical, the frame after the reset is pixel-identical to the frame before
+   it — there is no jump to see.
+
+   Translating by a set width rather than the more common -50% is what lets
+   RAIL_SETS change without touching this: -50% only lands correctly when the
+   rail holds exactly two copies, and it silently mis-lands (drifting a little
+   further out of register every lap) at any other count. It also depends on
+   the spacing being a margin on each item rather than a `gap` on the rail — a
+   gap is not part of an item, so the row would carry one extra gap that the
+   translate does not account for. */
 @keyframes liveChainsScroll {
+  from {
+    transform: translateX(0);
+  }
   to {
-    transform: translateX(-50%);
+    transform: translateX(calc(var(--chains-set) * -1));
   }
 }
 
 .liveChainsChain {
   width: var(--chains-tile);
   height: var(--chains-tile);
-  margin-right: 1.2rem;
+  /* Margin, not a rail `gap` — see the note on the keyframes above. */
+  margin-right: var(--chains-gap);
   flex: none;
   display: block;
 }

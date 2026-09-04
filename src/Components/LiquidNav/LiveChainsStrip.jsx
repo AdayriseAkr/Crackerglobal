@@ -47,13 +47,25 @@ export function useLiveChainsCycle() {
   return onDuty;
 }
 
+/* How many times the chain list is repeated along the rail.
+
+   The rail scrolls left by exactly ONE set and then starts over, so the loop is
+   seamless as long as what is on screen at that moment is indistinguishable
+   from what was on screen at the start. That needs the rendered rail to be
+   wider than the visible window by at least one set — otherwise the tail runs
+   out mid-scroll and a blank gap crosses the strip before it resets, which
+   reads as the loop breaking rather than repeating.
+
+   Four chains at 4.4rem of pitch is a 17.6rem set, against a window of roughly
+   28rem inside the 44rem dock. Two sets would technically cover it; six is
+   cheap insurance so the strip cannot develop a gap if the dock is ever
+   widened or a chain is removed from the list. The images are four unique URLs
+   however many times they appear, so the repeats cost DOM nodes and nothing
+   else. */
+const RAIL_SETS = 6;
+
 export default function LiveChainsStrip({ visible }) {
-  // The rail is the list twice over. The scroll animation translates it by
-  // exactly -50%, which lands the second copy precisely where the first
-  // started — that is what makes the loop seamless rather than snapping back.
-  // Anything that changes the count has to change both copies together, hence
-  // one array built from one source.
-  const rail = [...LIVE_CHAINS, ...LIVE_CHAINS];
+  const rail = Array.from({ length: RAIL_SETS }, () => LIVE_CHAINS).flat();
 
   return (
     <div
@@ -89,7 +101,15 @@ export default function LiveChainsStrip({ visible }) {
             they arrive and leave instead of being sliced off at a hard border
             — without it the loop reads as a filmstrip behind a window. */}
         <div className="liveChainsViewport" aria-hidden="true">
-          <div className="liveChainsRail">
+          {/* The CSS scrolls by one set, and one set is however many chains
+              the data file holds — so the length has to reach the stylesheet.
+              Passing it as a custom property keeps the distance derived from
+              the list instead of a number that goes stale the moment a chain
+              is added or dropped. */}
+          <div
+            className="liveChainsRail"
+            style={{ "--chains-count": LIVE_CHAINS.length }}
+          >
             {rail.map((chain, i) => (
               <span
                 className="liveChainsChain"
