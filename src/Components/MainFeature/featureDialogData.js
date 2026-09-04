@@ -124,11 +124,20 @@ const featureDialogData = {
       "At graduation the fee opens at 50% and falls to the normal 1.0% over ten minutes. Every buy in that window pays it, yours included. A sniper racing the first block gives up half its position, so the race stops being worth running.",
     ctaPrimary: "See the Fee Curve",
     ctaSecondary: "Read the Feature Doc",
+    // Written as claims, not as a spec sheet. The previous set read like
+    // release notes — every line opened with the mechanism ("Runs for", "Opens
+    // at", "Charged on") and made the reader assemble the benefit themselves.
+    // These lead with what it does to a sniper and what it costs you.
+    //
+    // The one thing that could not be marketed away is that the fee has no
+    // exemptions, so line three states it as the selling point it actually is:
+    // no allowlist is what makes the deterrent credible, and waiting is a lever
+    // every real buyer has and no sniper does.
     bullets: [
-      "Runs for ten minutes from graduation, not from launch",
-      "Opens at 50%, falls 4.9 points a minute, lands on the normal 1.0%",
-      "Charged on every buy in that window, yours included. Racing is the cost",
-      "Enforced on-chain, not optional and not creator-set",
+      "First block in, half of it goes to the fee",
+      "Ten minutes of cover from graduation, exactly when snipers strike",
+      "No allowlist, no exemptions. The only way to pay less is to wait",
+      "Written into the contract, not a setting anyone can switch off",
     ],
     stats: [
       { label: "Fee in the first block", value: 50, suffix: "%" },
