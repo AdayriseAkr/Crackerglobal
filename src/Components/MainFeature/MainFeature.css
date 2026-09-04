@@ -290,10 +290,30 @@
     .leftCards, .rightCards{
         width: 100%;
     }
+    /* Sized by ratio, not by viewport height — the same treatment the tablet
+       block already uses, and for the same reason.
+
+       The card was width:100% by height:50% of a 110vh column, so its shape
+       tracked the phone's height while the artwork inside did not. On a 390x844
+       that is a 0.82 box; on a 360x640 it is 1.00, near square. The art is 0.72,
+       and object-fit:cover trims the difference off the top and bottom — 12% on
+       one phone, 28% on the other. The subject only has about 8.5% of margin to
+       give, so on the short phone it was being cut into, and any --art-scale
+       tuned on a laptop made that worse.
+
+       3/4 pins it at 0.75 whatever the handset, which is 4% of trim and within
+       the margin. It also matches the tablet, so one tuned value now holds
+       across both. */
     .topLeftCard, .bottomLeftCard, .topRightCard, .bottomRightCard {
         width: 100%;
+        aspect-ratio: 3 / 4;
+        height: auto;
+        /* .topLeftCard and .bottomRightCard set min-height:100% for the grid
+           entrance animation, which is disabled. Left alone it wins over
+           aspect-ratio and the ratio never applies. */
+        min-height: 0;
     }
-    
+
 }
 
 
@@ -385,18 +405,51 @@
 
 /* 02 Snipers Pay the Most */
 .bottomLeftCard img{
-  --art-scale: 1.32;
-  --art-opacity: 0.8;
+  --art-scale: 1.23;
+  --art-opacity: 0.88;
 }
 
 /* 03 Zero Price Gap */
 .topRightCard img{
-  --art-scale: 1.01;
+  --art-opacity: 0.8;
 }
 
 /* 04 Earn Every Trade, Forever */
 .bottomRightCard img{
   --art-scale: 1.3;
   --art-opacity: 0.85;
-  --art-x: 57%;
+  --art-x: 45.5%;
+}
+
+/* ---- keeping the framing honest on desktop ----
+   Phone and tablet pin the card to a 3/4 box, so the framing above is exact
+   there. Desktop does not: the card is 55% of a column for width but 50% of a
+   110vh column for height, so its shape follows the WINDOW's shape. Measured,
+   that box runs from 0.48 on a tall 1920x1440 to 0.81 on a short 1440x700,
+   against artwork that is 0.72.
+
+   At 0.48 object-fit:cover trims a third off the sides, and the subject only
+   carries about 8.5% of margin — so it is already being cut before any zoom is
+   applied, and --art-scale then multiplies the loss.
+
+   Restructuring the desktop card heights is a bigger change than this warrants
+   and would move a composition that has been signed off, so this bounds the
+   zoom instead of the box. Viewport aspect ratio is a good stand-in for card
+   aspect ratio here — the card is about 0.4x the window's — so these fire
+   exactly where the box goes extreme.
+
+   min() keeps whatever is tuned when it is already modest, and only bites on
+   the cards zoomed past the cap. */
+@media (min-width: 1024px) and (max-aspect-ratio: 4 / 3) {
+  /* Tall window: sides are being trimmed hardest. */
+  .featureBlock img{
+    transform: scale(min(var(--art-scale, 1), 1.08));
+  }
+}
+
+@media (min-width: 1024px) and (min-aspect-ratio: 2 / 1) {
+  /* Short, wide window: the trim flips to top and bottom. */
+  .featureBlock img{
+    transform: scale(min(var(--art-scale, 1), 1.12));
+  }
 }
