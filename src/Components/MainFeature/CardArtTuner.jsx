@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import "./CardArtTuner.css";
+import { CARD_SLOTS } from "./cardSlots.js";
+import featureDialogData from "./featureDialogData.js";
 
 /* A tuning panel for the four Main Feature card images: zoom, opacity, and
    where the crop sits on each axis.
@@ -16,12 +18,15 @@ import "./CardArtTuner.css";
    stylesheet with Copy CSS — this panel is not how the site ships, it is how
    you find the numbers that do. */
 
-const CARDS = [
-  { cls: "topLeftCard", label: "01 Liquidity Locked" },
-  { cls: "bottomLeftCard", label: "02 Zero Price Gap" },
-  { cls: "topRightCard", label: "03 Snipers Pay Most" },
-  { cls: "bottomRightCard", label: "04 Earn Every Trade" },
-];
+// Derived, never typed. This list used to be hand-written here and went stale
+// the moment cards 2 and 3 swapped: the panel kept calling the bottom-left slot
+// "Zero Price Gap" while it was showing Snipers Pay the Most, so tuning that tab
+// would have framed the wrong illustration. Now the order comes from
+// cardSlots.js and the names from the dialog data, so neither can drift.
+const CARDS = CARD_SLOTS.map(({ cls, key }, i) => ({
+  cls,
+  label: `${String(i + 1).padStart(2, "0")} ${featureDialogData[key].title}`,
+}));
 
 const DEFAULTS = { scale: 1, opacity: 1, x: 50, y: 50 };
 
@@ -32,7 +37,18 @@ const FIELDS = [
   { key: "y", label: "Position Y", min: 0, max: 100, step: 0.5, unit: "%" },
 ];
 
-const STORE_KEY = "crackerCardArtTuner";
+/* Versioned, and the version is part of the key rather than a field inside it,
+   so an old session is simply not found instead of being read and misapplied.
+
+   This is not housekeeping. Saved values are keyed by SLOT and applied as inline
+   styles, which beat the stylesheet — so after cards 2 and 3 swapped, a browser
+   still holding v1 would have kept pushing Zero Price Gap's framing onto the
+   Snipers Pay card and vice versa, quietly overriding the corrected CSS with the
+   pre-swap numbers. Nothing about that looks like an error; the cards just come
+   out subtly wrong, and only on machines that had used the tuner.
+
+   Bump this whenever the slot -> feature mapping changes. */
+const STORE_KEY = "crackerCardArtTuner:v2-slots-reordered";
 
 /* Dev by default, and on any build via ?tune in the URL.
 
@@ -190,12 +206,29 @@ export default function useCardArtTuner() {
 
           <div className="cardArtTunerActions">
             <button type="button" onClick={resetActive}>
-              Reset this card
+              Reset card
+            </button>
+            {/* The only way to see what the stylesheet actually ships. Anything
+                tuned here is written as an inline style, which outranks the
+                CSS — so a card left with saved values looks the same whether
+                the pasted rule is right or wrong. */}
+            <button type="button" onClick={() => setValues({})}>
+              Clear all
             </button>
             <button type="button" onClick={copy}>
               {copied ? "Copied" : "Copy CSS"}
             </button>
           </div>
+
+          {Object.keys(values).length > 0 && (
+            <p className="cardArtTunerWarn">
+              Overriding the stylesheet on{" "}
+              {Object.keys(values).length === 1
+                ? "1 card"
+                : `${Object.keys(values).length} cards`}
+              . Clear all to see what ships.
+            </p>
+          )}
 
           <textarea className="cardArtTunerOut" readOnly value={css} rows={6} />
         </div>

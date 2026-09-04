@@ -130,3 +130,16 @@
     width: min(268px, calc(100vw - 2.4rem));
   }
 }
+
+/* Says out loud that what is on screen is not what the stylesheet ships. That
+   distinction caused a real mix-up once: values saved against the old card
+   order kept overriding a corrected rule, and the only visible symptom was two
+   slightly wrongly framed illustrations. */
+.cardArtTunerWarn {
+  margin: 6px 0 0;
+  padding: 5px 6px;
+  border-radius: 4px;
+  background: #3a2c12;
+  border: 1px solid #6b5220;
+  color: #f0c674;
+}
