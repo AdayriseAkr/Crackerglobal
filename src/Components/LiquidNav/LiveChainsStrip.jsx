@@ -1,6 +1,5 @@
 import React from "react";
 import "./LiveChainsStrip.css";
-import rocketArt from "../../assets/navRocket.webp";
 import { LIVE_CHAINS } from "./liveChains.js";
 
 /* How long the strip waits before its first appearance, how long it stays, and
@@ -78,24 +77,20 @@ export default function LiveChainsStrip({ visible }) {
       inert={!visible}
     >
       <div className="liveChainsInner">
-        {/* One sentence for a screen reader, in place of a rocket, a dot and
-            eight logo images announcing themselves one at a time — twice,
-            because the rail is duplicated. Everything visual below is
-            aria-hidden so this is the only thing that reaches the buffer. */}
+        {/* One sentence for a screen reader, in place of a dot and twenty-four
+            logo images announcing themselves one at a time — the rail repeats
+            the list six times, so every chain would be read out six times over.
+            Everything visual below is aria-hidden so this is the only thing
+            that reaches the buffer. */}
         <p className="liveChainsSrOnly">
           Cracker Launchpad is live on{" "}
           {LIVE_CHAINS.map((c) => c.name).join(", ")}.
         </p>
 
-        <div className="liveChainsLead" aria-hidden="true">
-          <span className="liveChainsRocket">
-            <img src={rocketArt} alt="" />
-          </span>
-          <span className="liveChainsStatus">
-            <span className="liveChainsDot"></span>
-            <span className="liveChainsLive">Live on</span>
-          </span>
-        </div>
+        <span className="liveChainsStatus" aria-hidden="true">
+          <span className="liveChainsDot"></span>
+          <span className="liveChainsLive">Live on</span>
+        </span>
 
         {/* The clipper. It also carries the edge mask, so logos dissolve as
             they arrive and leave instead of being sliced off at a hard border

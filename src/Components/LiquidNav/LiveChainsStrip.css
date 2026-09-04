@@ -25,6 +25,19 @@
   --chains-gap: 1.2rem;
 
   position: absolute;
+  /* Above the glass, not under it. The dock paints in layers —
+     .liquidGlass-effect (0), .liquidGlass-tint (1), .liquidGlass-shine (2),
+     .liquidGlass-text (3) — and this element is a sibling of all four. With no
+     z-index it sat at the bottom of that stack, so the tint's
+     rgba(255,255,255,0.72) and the shine's inset highlights were painting over
+     the top of it. Nothing here was ever transparent; it was being looked at
+     through three-quarters of a white sheet, which is what made the logos and
+     the Live on pill read as faded.
+
+     3 rather than 4: the same layer .liquidGlass-text uses. Both are content
+     over the glass, they never overlap each other, and giving this its own
+     higher layer would only invite the question of why. */
+  z-index: 3;
   left: var(--chains-inset);
   right: var(--chains-inset);
   /* Clear the dock row, then the same inset again. --dock-row-gap and
@@ -66,37 +79,19 @@
   gap: 1rem;
   padding-inline: 0.6rem;
   border-radius: var(--radius-lg);
-  background: rgba(255, 255, 255, 0.55);
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.6);
+  /* A plate to seat the row on, and nothing more. It was 0.55 white back when
+     this was being painted under the tint and needed the help; above the tint
+     that much white on white flattens the strip into the panel. This is just
+     enough to read as a recessed tray.
+
+     It sits BEHIND the logos and the pill either way — a background on the
+     container has no bearing on how solid its children are, which is why the
+     fix for those was the z-index above and not an opacity here. */
+  background: rgba(255, 255, 255, 0.28);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.55);
 }
 
-/* ---- the static left cluster ---- */
-
-.liveChainsLead {
-  display: flex;
-  align-items: center;
-  gap: 0.8rem;
-  flex: none;
-}
-
-.liveChainsRocket {
-  width: var(--chains-tile);
-  height: var(--chains-tile);
-  border-radius: var(--radius-md);
-  overflow: hidden;
-  display: block;
-  flex: none;
-}
-
-.liveChainsRocket img {
-  width: 100%;
-  height: 100%;
-  /* cover, not contain: the source is a full illustration with its own sky
-     behind the rocket, so contain would letterbox the artwork inside the tile
-     instead of filling it. */
-  object-fit: cover;
-  display: block;
-}
+/* ---- the "Live on" label ---- */
 
 .liveChainsStatus {
   display: flex;
