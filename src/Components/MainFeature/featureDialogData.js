@@ -115,8 +115,13 @@ const featureDialogData = {
     //   card 04  1.0%   the standing swap fee from then on
     // This decay lands exactly on card 04's 1.0%, which is what makes the
     // window read as temporary rather than as a different product.
+    // Three things have to survive any trim here: that the window starts at
+    // graduation, that everyone pays it, and why that stops a sniper. The
+    // explanations around them do not — what graduation is, the per-minute
+    // rate, and the fact that 1.0% is the standing fee are all carried by the
+    // bullets and the stats directly underneath.
     description:
-      "Graduation is the block snipers are waiting for: the moment a token lands in the CrackerSwap pool and can be bought at size. So that is where the fee opens at 50%, falling 4.9 points a minute until it meets the normal 1.0% swap fee ten minutes later. It is charged on every buy in that window, including yours — that is the part that makes it work. A bot racing for the first block hands over half its position, so the trade it was going to make stops being worth making.",
+      "At graduation the fee opens at 50% and falls to the normal 1.0% over ten minutes. Every buy in that window pays it, yours included. A sniper racing the first block gives up half its position, so the race stops being worth running.",
     ctaPrimary: "See the Fee Curve",
     ctaSecondary: "Read the Feature Doc",
     bullets: [
