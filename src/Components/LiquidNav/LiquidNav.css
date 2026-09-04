@@ -146,17 +146,20 @@ z-index: var(--z-tagline);
   border-radius: 2.5rem;
 }
 
-.dock img {
-  width: 75px;
-  padding: 0;
-  transition: all 0.4s var(--ease-spring-extreme);
-  cursor: pointer;
-  opacity: 0}
+/* Removed: `.dock img { width: 75px; cursor: pointer; opacity: 0 }` and its
+   :hover partner.
 
-.dock img:hover {
-  transform: scale(0.95);
-  transform-origin: center center;
-}
+   They were left over from a version of this dock that held icon images.
+   There has been no <img> in LiquidNav.jsx for some time, so the pair matched
+   nothing — but `.dock` is on the outer wrapper, so the rules were still armed
+   for anything placed inside it later, and `opacity: 0` is a silent failure:
+   the element lays out at full size and paints nothing, which looks like a
+   broken image path rather than a style. The live-chains strip walked straight
+   into it.
+
+   Deleted rather than out-specified. A dead rule that blanks any image added
+   to this component is a trap, and beating it from the other stylesheet would
+   have left it waiting for the next one. */
 
 /* Optional helper to center in a parent container
 .wrapper {
