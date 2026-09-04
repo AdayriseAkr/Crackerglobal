@@ -238,7 +238,11 @@ export default function HeroSection({ loadProp }) {
             >
               trade it
             </a>{" "}
-            the moment it goes live, across HOOD, Base, Ink, and Monad. No
+            {/* Robinhood, not HOOD. HOOD is the stock ticker, and the chain is
+                named for the company — the same name the live-chains strip in
+                the nav uses, so the two agree. One word, which is how the
+                company writes it. */}
+            the moment it goes live, across Robinhood, Base, Ink, and Monad. No
             gatekeepers, no borders, no permission.
           </p>
           <p onClick={toggleBrief}>{expend ? "Close" : "Read more"}</p>

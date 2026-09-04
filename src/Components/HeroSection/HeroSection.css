@@ -237,14 +237,30 @@
        text's own reveal is timed to start only once this finishes. */
     transition: width var(--duration-medium) var(--ease-spring), height var(--duration-medium) var(--ease-spring), background var(--duration-medium) ease-in-out;
 }
-/* 26x29rem was cut to the old, shorter blurb. The current one is about 30
-   characters longer and runs a line further, and with overflow:hidden on the
-   box that came off the bottom — the 'Close' line was the first thing to go.
-   Wider before taller: the extra 3rem of measure absorbs most of a line on its
-   own, so the height only has to cover what is left plus a line of slack. */
+/* The height is hand-fitted to the copy, and drifts every time the copy
+   changes — 33rem was sized for a longer draft and left about 50px of empty
+   card under the text once the current one replaced it. Since 'Close' is
+   pinned to the bottom, that slack shows up as a visible band in the middle.
+
+   Re-derive it rather than guessing. At 29rem wide the text column is 260px,
+   and the paragraph wraps to 7 lines of 19.8px:
+
+     10  padding-top
+     70  logo (40% of 290, capped at max-width 7rem; the file is square)
+     16  gap
+    139  7 lines x 19.8
+     16  gap
+     17  'Close'
+     10  padding-bottom
+   = 278px
+
+   30rem, not 28. The line count above is arithmetic, not a measurement, and
+   an eighth line would come to 298px — so this is the smallest round height
+   that still holds if the estimate is one line light. Clipping the last line
+   of the paragraph is a worse failure than a small gap under it. */
 .heroBreifBox.is-expanded{
     width: 29rem;
-    height: 33rem;
+    height: 30rem;
     /* A warm gradient instead of the flat collapsed tint — the box reads as
        "activated" once opened rather than just bigger. */
     background: linear-gradient(150deg, rgba(255,238,229,0.92) 0%, rgba(255,200,168,0.6) 100%);
@@ -283,6 +299,11 @@
     z-index: 2;
     width: 40%;
     max-width: 7rem;
+    /* The file is square, and saying so means the browser reserves the right
+       70px before the image has loaded. Without it this box is 0px tall until
+       then, so the height arithmetic above is briefly wrong and the contents
+       jump down as the logo arrives. */
+    aspect-ratio: 1;
     opacity: 0.7;
     border-radius: 50%;
 }
