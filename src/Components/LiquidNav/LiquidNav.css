@@ -673,6 +673,41 @@ border-bottom-right-radius: 0;
     border-radius: var(--radius-2xl);
   }
 
+  /* The live-chains state. It borrows the SAME morph the open state uses —
+     width only, rows left collapsed — so the tab grows sideways out of the
+     circle into a pill and the chain rail rides inside it. Nothing new
+     animates; the one transition already declared on .mobileNavToggle carries
+     it, which is why this arrives on the same spring the menu does.
+
+     border-radius stays var(--radius-pill), unlike the open state's
+     --radius-2xl. That is the difference between the two shapes: the menu is a
+     sheet, so it squares off; this is still the tab, just longer, so it keeps
+     fully round ends. --radius-pill is 999px and clamps to half the height on
+     its own, so the ends stay exactly as round as the 5rem circle they grew
+     from and the left cap matches the right — the balance in the wireframe.
+
+     :not(.is-open) so the menu always wins if both are somehow set. In
+     practice showMobileChains already excludes menuOpen, but the two states
+     want different widths and radii, and leaving that to source order would be
+     the kind of thing that breaks the first time someone reorders this file. */
+  .mobileNavToggle.is-chains:not(.is-open) {
+    width: 100%;
+    /* The same no-repeat constraint the gap is tuned to, expressed as a width
+       instead. One pass of the list is 33.6rem, and the rail window is roughly
+       this width less the 5rem hamburger and about 3.2rem of padding, dot and
+       gap. Let the tab reach the full 576px it can at the top of this
+       breakpoint and the window opens to 49rem — wider than a pass, so the
+       same logo shows up twice again, which is exactly what the gap was
+       widened to prevent.
+
+       41rem holds the window at about 32.8rem, just inside one pass. It only
+       binds above roughly a 460px viewport; every ordinary phone is narrower
+       than that and takes the full 100% above. The menu's own open state is
+       deliberately not capped — it is a sheet and wants the room. */
+    max-width: 41rem;
+    border-radius: var(--radius-pill);
+  }
+
   .hamburgerToggleBtn {
     position: relative;
     z-index: 3;

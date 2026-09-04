@@ -49,6 +49,19 @@ const chainsOnDuty = useLiveChainsCycle();
 // why the timer deliberately keeps running underneath.
 const showChains = chainsOnDuty && !hovered && !quickNavOpen && !contactOpen;
 
+// The phone runs the same cycle off the same hook — one timer for both, so the
+// two navs can never drift out of step — but it yields to a different set of
+// things, because the mobile tab has its own panels:
+//   menuOpen    — the hamburger sheet, which widens this very tab
+//   contactOpen — as on desktop
+// The products pop-up is not listed because it cannot outlive the menu:
+// productsPopOpen is (menuOpen && mobileProductsOpen), so !menuOpen already
+// covers it. It is also declared further down this component, and naming it
+// here would be a use-before-declaration.
+// footerInView is not listed either: it hides the whole shell, so there is
+// nothing left here to suppress.
+const showMobileChains = chainsOnDuty && !menuOpen && !contactOpen;
+
 // Every path that shuts the mobile menu goes through here. The products
 // pop-up is a SIBLING of the panel, not a child of it, so closing the panel
 // does not take it with them: clicking Contact while the products sheet was
@@ -396,10 +409,17 @@ const goToSection = (id) => {
         </div>
       </div>
 
-    <div className={`liquidGlass-wrapper mobileNavToggle ${menuOpen ? "is-open" : ""}`}>
+    <div className={`liquidGlass-wrapper mobileNavToggle ${menuOpen ? "is-open" : ""}${showMobileChains ? " is-chains" : ""}`}>
       <div className="liquidGlass-effect"></div>
       <div className="liquidGlass-tint"></div>
       <div className="liquidGlass-shine"></div>
+
+      {/* Same strip as the desktop dock, compact. It rides inside the toggle
+          rather than beside it so the tab itself is what widens — the existing
+          circle-to-pill morph the open state already uses, driven to a
+          different width. One element growing, not a second one appearing next
+          to the first. */}
+      <LiveChainsStrip visible={showMobileChains} compact />
 
       <div className="mobileNavOptionsRow">
         <div className="mobileNavOptionsInner">

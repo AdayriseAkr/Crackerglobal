@@ -279,3 +279,46 @@
     transform: none;
   }
 }
+
+/* ---- compact variant: inside the phone's hamburger tab ----
+   The desktop strip is a panel that unfolds ABOVE the dock row. This one lives
+   INSIDE the tab, filling the band to the left of the hamburger while the tab
+   itself widens from a 5rem circle into a pill (.mobileNavToggle.is-chains in
+   LiquidNav.css). So the positioning is a different problem: not "sit above the
+   row", but "fill the element, stopping short of the button".
+
+   Only the placement changes. The rail, the spacing, the mask, the loop maths
+   and the timing are all inherited from the rules above, which is the point of
+   doing this as a modifier rather than a second component — the two cannot
+   drift apart. */
+.liveChains--compact {
+  /* Overrides the desktop block's bottom-anchored geometry outright rather than
+     adjusting it: none of those offsets mean anything here. */
+  inset: 0;
+  /* Clear of the 5rem hamburger, which is justify-self:end inside the same
+     wrapper. The logos stop before it instead of sliding underneath: the button
+     is opaque, so anything running behind it is simply gone, and the rail would
+     look like it was being eaten rather than scrolling past. */
+  right: 5rem;
+  height: auto;
+  /* The tab's own rounded ends already clip this (overflow:hidden on
+     .mobileNavToggle), so the strip does not paint its own plate — a second
+     rounded rectangle inside the first is what would make the pill read as two
+     stacked shapes instead of one. */
+  padding-block: 0.9rem;
+  padding-left: 1.4rem;
+}
+
+.liveChains--compact .liveChainsInner {
+  background: none;
+  box-shadow: none;
+  padding-inline: 0;
+  gap: 0.9rem;
+}
+
+/* Just the dot, so the pill it sat in is not needed. */
+.liveChains--compact .liveChainsStatus {
+  background: none;
+  padding-inline: 0;
+  height: auto;
+}

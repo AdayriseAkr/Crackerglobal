@@ -10,7 +10,11 @@ import { LIVE_CHAINS } from "./liveChains.js";
    so it should read as something the dock surfaces periodically rather than
    something nagging for attention. Long enough on screen to actually be read
    at a glance and then looked at properly. */
-const FIRST_APPEARANCE_MS = 5000;
+/* 2.5s, down from 5s: it should read as something the visitor arrives to, not
+   something that turns up later. Not zero — the nav plays its own spring
+   entrance on load, and opening the strip through that animation makes both
+   look like a glitch rather than a sequence. */
+const FIRST_APPEARANCE_MS = 2500;
 /* 40s, up from 30s, which was going away too soon to actually be looked at.
    It also has to be read against the rail underneath it: one full pass of the
    chain list now takes 16s, so 30s did not quite leave time for two complete
@@ -69,12 +73,14 @@ export function useLiveChainsCycle() {
    else. */
 const RAIL_SETS = 6;
 
-export default function LiveChainsStrip({ visible }) {
+export default function LiveChainsStrip({ visible, compact = false }) {
   const rail = Array.from({ length: RAIL_SETS }, () => LIVE_CHAINS).flat();
 
   return (
     <div
-      className={`liveChains${visible ? " is-visible" : ""}`}
+      className={`liveChains${compact ? " liveChains--compact" : ""}${
+        visible ? " is-visible" : ""
+      }`}
       // Hidden from the accessibility tree AND from the tab order while it is
       // away, so the sentence below is not read out to a screen reader during
       // the 15 seconds the strip is resting. Boolean rather than the old
@@ -93,9 +99,16 @@ export default function LiveChainsStrip({ visible }) {
           {LIVE_CHAINS.map((c) => c.name).join(", ")}.
         </p>
 
+        {/* Compact drops the words and keeps the dot. A phone tab is about
+            300px of usable rail once the hamburger has its 5rem, and "Live on"
+            would take a quarter of that — but something still has to say the
+            list means "live", or it is four logos with no claim attached. The
+            dot is the smallest thing that does. The screen-reader sentence
+            above is unchanged either way, so nothing is lost by dropping the
+            visible text. */}
         <span className="liveChainsStatus" aria-hidden="true">
           <span className="liveChainsDot"></span>
-          <span className="liveChainsLive">Live on</span>
+          {!compact && <span className="liveChainsLive">Live on</span>}
         </span>
 
         {/* The clipper. It also carries the edge mask, so logos dissolve as
