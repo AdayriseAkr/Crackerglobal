@@ -112,11 +112,24 @@ transform: translateX(-50%);
 
 }
 
-.legalBox p{
+/* The two legal links became <button> elements so they are reachable by
+   keyboard; these reset the UA button styling back to the text they were. */
+.legalBox p,
+.legalBox button{
     font-size: 1.2rem;
      color: var(--color-text-muted-legal);
      cursor: pointer;
      transition: var(--duration-micro) ease-in-out;
+     border: none;
+     background: none;
+     padding: 0;
+     font-family: inherit;
+}
+
+.legalBox button:focus-visible{
+    outline: 2px solid var(--color-brand);
+    outline-offset: 3px;
+    border-radius: var(--radius-xs);
 }
 
 .legalBox p:hover{
@@ -148,45 +161,13 @@ transform: translateX(-50%);
    color: var(--color-text-primary);
 }
 
-.emailCollector{
-    position: absolute;
-    top: 48%;
-    width: auto;
-    height: auto;
-    /* background-color: pink; */
-    left: 5%;
-    z-index: var(--z-sticky) !important;
-    pointer-events: all;
-    overflow: hidden;
-    display: flex;
-    gap: 5px;
-}
 
-.emailCollector > input{
-    width: max(20rem,17vw);
-    height: 4rem;
-    outline: none;
-    border: none;
-border-bottom: 2px solid #f7580e2e;
-background-color: transparent;
-padding-inline: 5px;
-}
-
-.sendEmailButton{
-    width: 4rem;
-    height: 4rem;
-    background: var(--gradient-email-cta);
-    border-radius: var(--radius-pill);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
 
 #git{
     position: absolute;
     right: 15%;
     top: 18%;
-    font-size: max(1.2rem,1vw);
+    font-size: max(1.4rem,1.1vw);
     width: 15%;
     display: flex;
     flex-direction: column;
@@ -195,9 +176,18 @@ padding-inline: 5px;
     
 }
 
+/* The label over the block, not body copy. It was inheriting the default
+   weight and sitting at almost the same size as the line beneath it, so the
+   two read as one paragraph rather than a heading and its description. */
+#git > p{
+    font-weight: 700;
+}
+
 #git > span{
+    /* Contrast left at the value it was judged at on a desktop screen; only
+       the size comes up here. The phone block below is where it darkens. */
     color: rgba(0, 0, 0, 0.483);
-    font-size: max(1rem,0.8vw);
+    font-size: max(1.2rem,0.92vw);
     
 }
 
@@ -210,19 +200,155 @@ padding-inline: 5px;
 }
 
 @media (max-width:500px) {
+    /* A full viewport of footer is a desktop proportion. Here the gradient
+       plate covers the bottom 70% and the robot is not rendered, so the top
+       30% was 253px of empty canvas on an 844px phone before anything began.
+
+       Shrinking the parent rather than the plate: every child inside is
+       positioned in percentages, so the whole block scales together and keeps
+       its proportions. Raising the plate instead would eat the strip the top
+       curve is drawn in, and the curve would flatten out. */
+    .footerParent{
+        height: 76vh;
+    }
+
     .footerLeftOption p:last-child{
         font-size: 6rem;
     }
+
+    /* Everything moves up. With the robot gone there is a band of empty
+       canvas under the curve at the top of the footer, and the content was
+       sitting below it rather than in it. (This was two .footerLeftOption
+       rules, 16% then 12%, with the second silently winning — merged.) */
     .footerLeftOption{
-        top: 16%;
+        top: 8%;
     }
-    .emailCollector{
-        top: 43%;
-        width: 90%;
-        gap: 10px;
-    }
+    /* The vw half of the max() up top never wins on a phone, so this block
+       was falling back to 12px for the label and 10px for the line under it.
+       That reads as fine print next to a 60px wordmark. Fixed rem sizes here
+       instead, since there is no viewport range left for vw to scale across. */
     #git {
         width: 79%;
-        top: 63%;
+        top: 58%;
+        font-size: 1.7rem;
+        gap: 7px;
     }
+    #git > span{
+        font-size: 1.35rem;
+        line-height: 135%;
+        /* Same reasoning as the section subheads: 0.483 holds on a laptop and
+           washes out on a phone against the gradient plate. */
+        color: rgba(0, 0, 0, 0.62);
+    }
+    #mailHref{
+        font-size: 2.4rem;
+    }
+
+    /* The copyright and the legal links share one row at this width. Matching
+       the links' size keeps the row on one line and reads as a set; the gap
+       stops them meeting in the middle on a narrow screen, which
+       space-between alone does not prevent. */
+    .footerBottomOption{
+        /* wrap, and centred rather than space-between. On a 320px screen the
+           copyright plus both links come to about 355px, so space-between had
+           nowhere to give and Privacy Policy was cut off at the edge. */
+        flex-wrap: wrap;
+        justify-content: center;
+        row-gap: 6px;
+        column-gap: 14px;
+
+        /* Once it wraps, the two lines have to be treated as one block.
+
+           align-items only aligns items inside a line; what places the lines
+           themselves is align-content, and its default is stretch. So the band
+           was pulling the copyright to its top edge, hard against the divider,
+           and the legal links to its bottom, hard against the end of the page.
+           Centring the lines is what gives the row equal air above and below. */
+        align-content: center;
+
+        /* Room to be centred in. Two lines plus the gap come to about 29px, and
+           the 10% band is roughly 45px on a tall phone, so there was nothing
+           left to balance with. This is the only number here that changes how
+           much space the row gets; .footerMainContent gives up the same 4% so
+           the two still add to the full height. The blocks above are
+           positioned absolutely and do not move. */
+        height: 14%;
+
+        /* Was 2%, to lift the row off the bottom edge. With the lines centred
+           in a band that fits them the lift is what breaks the symmetry: it
+           takes from the top and gives to the bottom. */
+        bottom: auto;
+    }
+
+    /* Full height of the band, on a line that is only as tall as its text. On a
+       screen where the row wraps that made the second line 45px tall against
+       the first line's 13px, and the pair overflowed the band before
+       align-content ever got a say. */
+    .legalBox{
+        height: auto;
+    }
+
+    .footerMainContent{
+        height: 86%;
+    }
+    /* 10.5px was small enough to disappear against the gradient. The row
+       already wraps and centres, so the extra width this costs has somewhere
+       to go. */
+    .footerBottomOption > p{
+        font-size: 1.25rem;
+        white-space: nowrap;
+    }
+    .legalBox p,
+    .legalBox button{
+        font-size: 1.25rem;
+    }
+}
+
+/* Short phones: an SE is 667px tall, and this footer is 76vh of that, so
+   about 507px to hold a three-line wordmark, the contact block and the
+   bottom row.
+
+   Both blocks are absolutely positioned by percentage, so they scale with the
+   footer while the wordmark does not: it is a fixed 6rem, three lines, about
+   190px whatever the screen. On a tall phone that clears the contact block at
+   58%; on a short one the two land on top of each other, which is what the
+   screenshot shows.
+
+   Height query rather than width, because height is the axis that runs out. */
+@media (max-width: 500px) and (max-height: 720px) {
+    .footerLeftOption p:last-child{
+        font-size: 4.2rem;
+    }
+    .footerLeftOption{
+        top: 6%;
+    }
+    /* The contact block is taller here than it was, so it gives back a little
+       of the size the wider phone query added rather than growing into the
+       bottom row. */
+    #git{
+        top: 54%;
+        font-size: 1.5rem;
+    }
+    #git > span{
+        font-size: 1.25rem;
+    }
+    #mailHref{
+        font-size: 2.1rem;
+    }
+
+    /* 'Terms & Conditions' and 'Privacy Policy' were wrapping onto two lines
+       each and stacking into a block. Smaller type and nowrap keeps them on
+       one line apiece; the gap comes in to match. */
+    .legalBox{
+        gap: 12px;
+    }
+    .legalBox p,
+    .legalBox button{
+        font-size: 1.15rem;
+        white-space: nowrap;
+    }
+    .footerBottomOption > p{
+        font-size: 1.15rem;
+    }
+
 }

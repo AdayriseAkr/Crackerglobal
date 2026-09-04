@@ -1,19 +1,31 @@
 import "./MainFeature.css";
-import FeatureGradient from "../../assets/FeatureGradient.png";
+import FeatureGradient from "../../assets/FeatureGradient.webp";
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useRef, useState, useMemo } from "react";
 import useInView from "../CustomHook/useInView.jsx";
-import topLeft from "../../assets/topLeft.png";
-import bottomLeft from "../../assets/bottomLeft.png";
-import topRight from "../../assets/topRight.png";
-import bottomRight from "../../assets/bottomRight.png";
+// Placeholder art. Named for the feature, not the file, so the new
+// illustrations drop in here one line at a time.
+import liquidityLockArt from "../../assets/topLeft.webp";
+import zeroPriceArt from "../../assets/bottomLeft.webp";
+import botsPayArt from "../../assets/topRight.webp";
+import creatorFeesArt from "../../assets/bottomRight.webp";
 import useTextSplitAnim from "../CustomHook/useTextSplitAnim.jsx";
 import FeatureDialog from "./FeatureDialog.jsx";
 import featureDialogData from "./featureDialogData.js";
 
 function ExpandButton({ onClick, label }) {
   return (
-    <button className="cardExpandBtn" onClick={onClick} aria-label={label}>
+    <button
+      className="cardExpandBtn"
+      // The card itself is now also a click target for the same action —
+      // without stopPropagation this click would bubble up and fire the
+      // card's own onClick right after this one, calling openCard twice.
+      onClick={(e) => {
+        e.stopPropagation();
+        onClick(e);
+      }}
+      aria-label={label}
+    >
       <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
         <path
           d="M5.5 1H1V5.5M8.5 13H13V8.5M13 1L8 6M1 13L6 8"
@@ -38,8 +50,12 @@ export default function MainFeature() {
 
   // Captures the clicked card's on-screen rect so the dialog can grow out of
   // that exact spot (Dock/genie-style expand) instead of just fading in.
-  const openCard = (key, event) => {
-    const cardEl = event.currentTarget.parentElement;
+  // Takes the card element directly (not an event) since it now opens from
+  // two different triggers — clicking the card itself (where
+  // e.currentTarget already *is* the card) and clicking the small expand
+  // button nested inside it (where it's e.currentTarget.parentElement) —
+  // and both need to resolve to the same card rect.
+  const openCard = (key, cardEl) => {
     const rect = cardEl.getBoundingClientRect();
     setDialogOrigin({
       x: rect.left + rect.width / 2,
@@ -70,15 +86,18 @@ export default function MainFeature() {
   const gridAnimateStyle = useMemo(
     () =>
       playedOnce
-        ? { animation: "gridAnimate 3s cubic-bezier(0.34, 1.56, 0.64, 1) 1s forwards" }
+        ? { animation: "gridAnimate var(--mf-grid-dur) cubic-bezier(0.34, 1.56, 0.64, 1) var(--mf-grid-delay) forwards" }
         : undefined,
     [playedOnce]
   );
 
-  const topLeftImgStyle = useMemo(() => (playedOnce ? { opacity: 1, transition: "all 1.5s ease-in-out 3.3s" } : undefined), [playedOnce]);
-  const bottomLeftImgStyle = useMemo(() => (playedOnce ? { opacity: 1, transition: "all 1.5s ease-in-out 3.6s" } : undefined), [playedOnce]);
-  const topRightImgStyle = useMemo(() => (playedOnce ? { opacity: 1, transition: "all 1.5s ease-in-out 3.5s" } : undefined), [playedOnce]);
-  const bottomRightImgStyle = useMemo(() => (playedOnce ? { opacity: 1, transition: "all 1.5s ease-in-out 3.8s" } : undefined), [playedOnce]);
+  // Durations and delays come from CSS variables (MainFeature.css) rather
+  // than literals: an inline style is unreachable from a media query, and the
+  // phone needs this sequence to run in about half the time.
+  const topLeftImgStyle = useMemo(() => (playedOnce ? { opacity: 1, transition: "all var(--mf-img-dur) ease-in-out var(--mf-img-d1)" } : undefined), [playedOnce]);
+  const bottomLeftImgStyle = useMemo(() => (playedOnce ? { opacity: 1, transition: "all var(--mf-img-dur) ease-in-out var(--mf-img-d3)" } : undefined), [playedOnce]);
+  const topRightImgStyle = useMemo(() => (playedOnce ? { opacity: 1, transition: "all var(--mf-img-dur) ease-in-out var(--mf-img-d2)" } : undefined), [playedOnce]);
+  const bottomRightImgStyle = useMemo(() => (playedOnce ? { opacity: 1, transition: "all var(--mf-img-dur) ease-in-out var(--mf-img-d4)" } : undefined), [playedOnce]);
 
   /* useEffect(() => {
   if (!animRef.current) return;
@@ -117,7 +136,7 @@ char.style.filter="blur(0px)"
   useTextSplitAnim(pRef, { stagger: 20, startDelay: 20 });
 
   return (
-    <div ref={sectionRef} className="mainFeatureParent">
+    <div id="main-feature" ref={sectionRef} className="mainFeatureParent">
     
       <motion.img
         style={gradientStyle}
@@ -140,50 +159,57 @@ char.style.filter="blur(0px)"
           <div
             style={gridAnimateStyle}
             className="topLeftCard"
+            onClick={(e) => openCard("lockedLiquidity", e.currentTarget)}
           >
             <img
               style={topLeftImgStyle}
-              src={topLeft}
+              src={liquidityLockArt}
               alt=""
               srcset=""
             />
             <ExpandButton
-              label="Expand Verified Founders"
-              onClick={(e) => openCard("verifiedFounders", e)}
+              label="Expand Liquidity Locked Forever"
+              onClick={(e) => openCard("lockedLiquidity", e.currentTarget.parentElement)}
             />
             <div className="blTag">
-              <p>Verified Founders</p>
+              <p>Liquidity Locked Forever</p>
             </div>
             {/* .bl */}
           </div>
-          <div className="bottomLeftCard">
+          <div
+            className="bottomLeftCard"
+            onClick={(e) => openCard("zeroPriceGap", e.currentTarget)}
+          >
             <img
               style={bottomLeftImgStyle}
-              src={bottomLeft}
+              src={zeroPriceArt}
               alt=""
               srcset=""
             />
             <ExpandButton
-              label="Expand Permanently Locked Liquidity"
-              onClick={(e) => openCard("lockedLiquidity", e)}
+              label="Expand Zero Price Gap"
+              onClick={(e) => openCard("zeroPriceGap", e.currentTarget.parentElement)}
             />
             <div className="blTag">
-              <p>Permanently Locked Liquidity</p>
+              <p>Zero Price Gap</p>
             </div>
           </div>
         </div>
         <div className="rightCards">
-          <div className="topRightCard">
+          <div
+            className="topRightCard"
+            onClick={(e) => openCard("botsPay", e.currentTarget)}
+          >
             <ExpandButton
-              label="Expand Auction Based Launch Access"
-              onClick={(e) => openCard("auctionAccess", e)}
+              label="Expand Bots Pay, You Don't"
+              onClick={(e) => openCard("botsPay", e.currentTarget.parentElement)}
             />
             <div className="blTag">
-              <p>Auction Based Launch Access</p>
+              <p>Bots Pay, You Don&apos;t</p>
             </div>
             <img
               style={topRightImgStyle}
-              src={topRight}
+              src={botsPayArt}
               alt=""
               srcset=""
             />
@@ -191,17 +217,18 @@ char.style.filter="blur(0px)"
           <div
             style={gridAnimateStyle}
             className="bottomRightCard"
+            onClick={(e) => openCard("creatorFees", e.currentTarget)}
           >
             <ExpandButton
-              label="Expand Built In Stability Reserve"
-              onClick={(e) => openCard("stabilityReserve", e)}
+              label="Expand Earn Every Trade, Forever"
+              onClick={(e) => openCard("creatorFees", e.currentTarget.parentElement)}
             />
             <div className="blTag">
-              <p>Built In Stability Reserve</p>
+              <p>Earn Every Trade, Forever</p>
             </div>
             <img
               style={bottomRightImgStyle}
-              src={bottomRight}
+              src={creatorFeesArt}
               alt=""
               srcset=""
             />

@@ -42,6 +42,8 @@
   /* Four near-identical black mutes living on #F8F8FB; kept distinct so this
      refactor doesn't silently change any section's contrast. */
   --color-text-muted-hero: rgba(0, 0, 0, 0.466);
+  /* Phones override this to 0.62 at the bottom of the file — see the note
+     there. On a laptop it stays as judged. */
   --color-text-muted-section: rgba(0, 0, 0, 0.351);
   --color-text-muted-community: rgba(0, 0, 0, 0.467);
   --color-text-muted-legal: rgba(0, 0, 0, 0.495);
@@ -119,4 +121,21 @@
   --z-topnav: 99999;
   --z-dialog: 100000;
   --z-loading: 999999;
+}
+
+/* ---- Phone-only contrast ----
+   The section subheads (Why Cracker, What You Get, and the card bodies that
+   share the token) are 0.351 black on #F8F8FB. That holds up on a laptop, where
+   the type is larger and the screen is usually indoors and stationary; on a
+   phone the same value goes to near-invisible. Raised here rather than in
+   :root so the desktop reading, which was judged on its own screen, is left
+   exactly as it was.
+
+   599px rather than the 500px used elsewhere: SpotlightBento switches to its
+   single-column phone layout at 599px, and the contrast should change with the
+   layout it belongs to. */
+@media (max-width: 599px) {
+  :root {
+    --color-text-muted-section: rgba(0, 0, 0, 0.62);
+  }
 }

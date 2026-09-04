@@ -653,7 +653,121 @@
   }
 }
 
-@media (max-width: 500px) {
+/* Below the 1024px breakpoint where .bentoCard--feature .bentoCardMedia
+   switches to position:absolute beside the text (see that rule above) —
+   covers both the single-column phone layout and the 600-1023px 2-column
+   tablet layout, since neither gets that treatment or its tall explicit
+   grid row.
+
+   .bentoCardImageWrap is absolutely positioned inside .bentoCardMedia (see
+   the comment above .bentoCardImageWrap) specifically so scaling the art up
+   or down on desktop can never feed back into card/grid layout — each
+   card's --img-size intentionally runs past 100% there so the artwork
+   bleeds to the card's own edge. Because it's absolute, none of that
+   height counts toward .bentoCardMedia's own box, which desktop covers
+   with a tall explicit grid row. Cards here have no such row —
+   .bentoCardMedia was resting on min-height:8rem — so the same oversized,
+   unaccounted-for art just grew upward out of that 8rem floor and
+   collided with the text above it (worst on the feature cards, whose
+   longer copy left even less room before the art started). Giving the
+   slot a real height and bounding the image to fit inside it — both width
+   AND height, since width alone still let a tall enough aspect ratio push
+   through — fixes the cause instead of just hiding the symptom. */
+@media (max-width: 1023px) {
+  .bentoCardMedia {
+    flex: none;
+    height: 15rem;
+    width: 100%;
+  }
+  .bentoCardImageWrap {
+    width: auto;
+    max-width: min(var(--img-size, 100%), 78%);
+    height: 100%;
+    max-height: 100%;
+  }
+  .bentoCardImage {
+    width: auto;
+    height: 100%;
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    margin-inline: auto;
+  }
+}
+
+@media (max-width: 599px) {
+  /* Every card and its copy, at roughly half the desktop pace. The six cards
+     stack into one column here, so the last one used to arrive more than four
+     seconds after the first with a lot of scrolling in between. Ratios between
+     the cards are preserved, so the order still reads. */
+  .bentoGrid .bentoCard:nth-child(1) { --card-delay: 0.15s; --card-dur: 1s; --text-delay: 1.3s; --text-dur: 0.5s; }
+  .bentoGrid .bentoCard:nth-child(2) { --card-delay: 0.35s; --card-dur: 1.05s; --text-delay: 1.5s; --text-dur: 0.55s; }
+  .bentoGrid .bentoCard:nth-child(3) { --card-delay: 0s;    --card-dur: 0.98s; --text-delay: 1.18s; --text-dur: 0.5s; }
+  .bentoGrid .bentoCard:nth-child(4) { --card-delay: 0.25s; --card-dur: 1.08s; --text-delay: 1.43s; --text-dur: 0.55s; }
+  .bentoGrid .bentoCard:nth-child(5) { --card-delay: 0.45s; --card-dur: 0.95s; --text-delay: 1.58s; --text-dur: 0.5s; }
+  .bentoGrid .bentoCard:nth-child(6) { --card-delay: 0.1s;  --card-dur: 1.03s; --text-delay: 1.25s; --text-dur: 0.5s; }
+
+  /* --img-size drives the artwork here, which it did not before.
+
+     The max-width:1023px block above rewrites the image to `width: auto;
+     height: 100%` with `object-fit: contain`, so below 1024px the size is set
+     by the 15rem height of .bentoCardMedia and nothing else. --img-size
+     survives only as `max-width: min(var(--img-size), 78%)` on the wrapper —
+     a cap, not a size, and one already clamped at 78%. That is why the size
+     slider did nothing on a phone while the offsets worked: the offsets are
+     applied through transform, which that block never touches.
+
+     Note this changes what the number means at this breakpoint: it is a
+     percentage of the media box height, not of the card width. 100% fills the
+     15rem box; above that the artwork bleeds past it, which is the same
+     behaviour the desktop values are written for. */
+  .bentoCardImageWrap {
+    width: auto;
+    max-width: none;
+  }
+  .bentoCardImage {
+    height: var(--img-size, 100%);
+    width: auto;
+    max-width: none;
+    max-height: none;
+  }
+
+  /* Per-card artwork, tuned on the device. These are phone-only on purpose:
+     the desktop values in .bentoCardArt--* above are percentages of the card
+     width, while at this breakpoint the same property is a percentage of the
+     15rem media box height (see the note above), so the two sets are not
+     interchangeable and neither should be derived from the other. */
+  .bentoCardArt--entity {
+    --img-size: 134%;
+    --img-x: 39%;
+    --img-y: 3%;
+  }
+  .bentoCardArt--security {
+    --img-size: 152%;
+    --img-x: 46%;
+    --img-y: 5%;
+  }
+  .bentoCardArt--liquidity {
+    --img-size: 216%;
+    --img-x: 59%;
+    --img-y: -34%;
+  }
+  .bentoCardArt--tokenomics {
+    --img-size: 138%;
+    --img-x: 38%;
+    --img-y: -3%;
+  }
+  .bentoCardArt--fees {
+    --img-size: 101%;
+    --img-x: 0%;
+    --img-y: 23%;
+  }
+  .bentoCardArt--funding {
+    --img-size: 122%;
+    --img-x: 0%;
+    --img-y: 3%;
+  }
+
   .bentoSectionParent {
     padding-block: 8rem 9rem;
     gap: 4rem;
@@ -664,7 +778,13 @@
   }
   .bentoCard {
     padding: 1.8rem;
-    min-height: 18rem;
+    min-height: 0;
+  }
+  .bentoCard--feature .bentoCardTitle {
+    font-size: max(2.4rem, 1.8vw);
+  }
+  .bentoCard--feature .bentoCardText {
+    font-size: 1.4rem;
   }
 }
 

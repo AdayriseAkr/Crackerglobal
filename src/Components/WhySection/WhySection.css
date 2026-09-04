@@ -282,3 +282,37 @@ bottom: 2rem;
     line-height: 155%;
     }
 }
+/* ---- Tablet ----
+   The two side cards are 26.5% wide and 78.5% tall, which on a 912x1368
+   portrait tablet is 242 x 1074 — a pair of columns four times taller than
+   they are wide, with the whole middle of the screen empty between them.
+
+   The absolute positioning and the 100vh stay exactly as they are: the
+   section is pinned by ScrollTrigger (WhySection.jsx, gated at min-width 768
+   so it IS running here) and the cards are animated in with y:"150%". A pin
+   needs a stable section height, and a percentage y needs the element to keep
+   its own box, so this changes only how big the cards are and where their
+   edges sit — not how they are laid out. */
+@media (min-width: 501px) and (max-width: 1023px) {
+  .leftCardWhy, .rightCardWhy{
+    width: 40%;
+    height: 56%;
+    left: 4%;
+  }
+  .rightCardWhy{
+    left: unset;
+    right: 4%;
+  }
+
+  /* min-width: 70rem is 700px of headline on a screen that may only be 768
+     wide, and the 28px stroke is drawn for 5rem type. Both scale down
+     together — the stroke is what makes this read as one solid mass rather
+     than outlined letters, so it has to come down with the size or it eats
+     the counters. */
+  .whyTagLine{
+    min-width: 0;
+    width: 84%;
+    font-size: 3.4rem;
+    -webkit-text-stroke-width: 18px;
+  }
+}

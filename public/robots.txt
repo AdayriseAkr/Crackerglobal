@@ -1,0 +1,13 @@
+# Cracker landing page.
+#
+# Everything here is public marketing copy, so there is nothing to hold back.
+# The one line that earns its place is Sitemap: crawlers look for it here
+# before they look anywhere else.
+#
+# CONFIRM BEFORE LAUNCH: the Sitemap URL has to be the real domain. A sitemap
+# on the wrong host is ignored, silently.
+
+User-agent: *
+Allow: /
+
+Sitemap: https://cracker.global/sitemap.xml

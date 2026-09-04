@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import "./CrackerMark.css";
-import MainLogo from "../../assets/MainLogo.png";
+import MainLogo from "../../assets/MainLogo.webp";
 
 // Nine letterform paths from the "Cracker" wordmark SVG, reordered
 // left-to-right by each path's actual x-extent in the 85x19 viewBox — the

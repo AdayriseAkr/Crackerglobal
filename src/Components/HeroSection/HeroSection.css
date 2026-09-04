@@ -47,14 +47,41 @@
     font-family: Arial, Helvetica, sans-serif;
     color: var(--color-text-primary);
     font-weight: bold;
+    /* Was left at `normal` (~1.15 for Arial) and then clawed back with negative
+       margins below. Setting it explicitly is what lets those margins go. */
+    line-height: 1.06;
+    /* Tuned on screen, not calculated: -0.035em. Tighter than the -0.015em I
+       started from, which is what heavy uppercase at this size wants. */
+    letter-spacing: -0.035em;
 }
+
+/* Space between the two display lines, tuned on screen to -0.2em.
+
+   Still negative, like the -3.9% it replaced, but for a different reason. That
+   old value was a percentage, and percentage margins resolve against the
+   containing block WIDTH: .heroTagLine is absolutely positioned and shrink-to-
+   fit, so it was a slice of the widest line and meant something different at
+   every viewport. This is em, so it holds its proportion to the type at any
+   width. Line-height 1.06 minus 0.2em puts the baselines 0.86em apart, which
+   only works because both lines are uppercase: with no descenders, the visible
+   gap is baseline to cap-height, about 0.14em, tight rather than overlapping. */
 .tag2nd{
-    margin-top: -3.9%;
+    margin-top: -0.2em;
 }
 
 .heroTagLine p:last-child{
     font-size: max(1.5rem,1vw);
-    margin-top: -0.8%;
+    /* Zero: the line-height of the display line above already leaves enough
+       air, and anything added on top of it read as a gap. (The -0.8% this
+       replaced was a percentage of the block WIDTH, same bug as .tag2nd had.) */
+    margin-top: 0rem;
+    /* 1.2, matching the phone value that was tuned on the device. It had no
+       line-height at all before and was inheriting Arial's `normal` (~1.15),
+       so this is only a shade looser than it originally looked. Tighter than
+       the 1.4-1.6 usually recommended for body copy, but this is two short
+       lines under a headline, not a paragraph, and both breakpoints were judged
+       on screen. */
+    line-height: 1.2;
     color: var(--color-text-muted-hero);
     width: 72%;
     font-weight: normal;
@@ -71,19 +98,100 @@
 }
 
 .ctaBtn{
+    /* Styled as a button, but it is an <a> now: an anchor is underlined and
+       inherits link colour unless told otherwise. */
+    text-decoration: none;
+    position: relative;
     height: 5rem;
     width: auto;
-    background-color: var(--color-brand-cta);
+    background: linear-gradient(135deg, var(--color-brand-cta) 0%, var(--color-brand-gradient-end) 100%);
+    isolation: isolate;
+    overflow: hidden;
 
     border-radius: var(--radius-pill);
     border: none;
     cursor: pointer;
     outline: none;
-    box-shadow: var(--shadow-inset-glow-strong);
-    color: rgba(255, 255, 255, 0.847);
+    box-shadow: var(--shadow-inset-glow-strong), 0 10px 28px -8px rgba(var(--color-brand-rgb), 0.55);
+    color: rgba(255, 255, 255, 0.93);
     font-weight: bold;
-    padding-inline: 20px;
+    padding-inline: 24px;
     font-size: 1.5rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.7rem;
+    transition: transform var(--duration-medium) var(--ease-spring),
+      box-shadow var(--duration-medium) var(--ease-spring);
+}
+
+.ctaBtn:hover{
+    transform: translateY(-3px) scale(1.03);
+    box-shadow: var(--shadow-inset-glow-strong), 0 16px 34px -8px rgba(var(--color-brand-rgb), 0.7);
+}
+
+.ctaBtn:active{
+    transform: translateY(-1px) scale(0.99);
+}
+
+/* Diagonal light sweep — loops occasionally at rest (an "engaging" idle
+   cue, not a constant distraction) and again, faster, on hover. A pseudo
+   element rather than an extra DOM node since it's purely decorative. */
+.ctaBtn::before{
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(115deg, transparent 40%, rgba(255,255,255,0.55) 50%, transparent 60%);
+    transform: translateX(-140%);
+    animation: ctaShineIdle 4.5s ease-in-out infinite;
+    pointer-events: none;
+}
+
+.ctaBtn:hover::before{
+    animation: ctaShineHover 1.1s ease-in-out infinite;
+}
+
+@keyframes ctaShineIdle{
+    0%, 55% { transform: translateX(-140%); }
+    72% { transform: translateX(140%); }
+    100% { transform: translateX(140%); }
+}
+
+@keyframes ctaShineHover{
+    0% { transform: translateX(-140%); }
+    100% { transform: translateX(140%); }
+}
+
+.ctaBtn__label{
+    position: relative;
+    z-index: 1;
+}
+
+.ctaBtn__arrow{
+    position: relative;
+    z-index: 1;
+    width: 1.3rem;
+    height: 1.3rem;
+    flex-shrink: 0;
+    transition: transform var(--duration-medium) var(--ease-spring);
+}
+
+.ctaBtn:hover .ctaBtn__arrow{
+    transform: translateX(5px);
+}
+
+@media (prefers-reduced-motion: reduce){
+    .ctaBtn,
+    .ctaBtn__arrow{
+        transition: none;
+    }
+    .ctaBtn::before,
+    .ctaBtn:hover::before{
+        animation: none;
+        display: none;
+    }
+    .ctaBtn:hover{
+        transform: none;
+    }
 }
 
 .walletBtn{
@@ -122,62 +230,301 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    transition: var(--duration-medium) var(--ease-spring);
+    overflow: hidden;
+    /* Scoped to width/height/background specifically (not a blanket "all"
+       transition) so the width/height duration is the one exact number the
+       JS timeline in HeroSection.jsx keys off (BRIEF_BOX_RESIZE_MS) — the
+       text's own reveal is timed to start only once this finishes. */
+    transition: width var(--duration-medium) var(--ease-spring), height var(--duration-medium) var(--ease-spring), background var(--duration-medium) ease-in-out;
+}
+/* 26x29rem was cut to the old, shorter blurb. The current one is about 30
+   characters longer and runs a line further, and with overflow:hidden on the
+   box that came off the bottom — the 'Close' line was the first thing to go.
+   Wider before taller: the extra 3rem of measure absorbs most of a line on its
+   own, so the height only has to cover what is left plus a line of slack. */
+.heroBreifBox.is-expanded{
+    width: 29rem;
+    height: 33rem;
+    /* A warm gradient instead of the flat collapsed tint — the box reads as
+       "activated" once opened rather than just bigger. */
+    background: linear-gradient(150deg, rgba(255,238,229,0.92) 0%, rgba(255,200,168,0.6) 100%);
+    /* space-between (the collapsed default) put nearly all the leftover
+       room in the first gap (logo -> text) and almost none in the second
+       (text -> Close), since the text block is tall enough to leave little
+       slack there. An explicit gap plus flex-start gives every child the
+       same breathing room regardless of how tall the text ends up — the
+       extra height above makes room for it without cramming things. */
+    justify-content: flex-start;
+    gap: 1.6rem;
+}
+/* One sweep of light across the box, timed to start right as it finishes
+   resizing (matching BRIEF_BOX_RESIZE_MS) — a single reveal flourish, not a
+   loop like the CTA button's idle shine. overflow:hidden on the box above
+   keeps it clipped to the rounded corners. */
+.heroBreifBox::before{
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    background: linear-gradient(115deg, transparent 42%, rgba(255,255,255,0.65) 50%, transparent 58%);
+    transform: translateX(-140%);
+    opacity: 0;
+}
+.heroBreifBox.is-expanded::before{
+    animation: heroBriefShine 0.9s ease-out 0.5s 1;
+}
+@keyframes heroBriefShine{
+    0%   { transform: translateX(-140%); opacity: 1; }
+    100% { transform: translateX(140%); opacity: 1; }
 }
 .heroBreifBox > img{
+    position: relative;
+    z-index: 2;
     width: 40%;
     max-width: 7rem;
     opacity: 0.7;
+    border-radius: 50%;
+}
+/* A ripple ring off the icon once the box has finished expanding — reads
+   as the logo "activating" the reveal rather than just sitting there
+   doing nothing while everything else changes around it. animation-delay
+   matches the box's own resize duration, and a bare (non-infinite) count
+   means it plays once and stops, not a repeating pulse. */
+.heroBreifBox.is-expanded > img{
+    animation: heroBriefIconPulse 0.8s ease-out var(--duration-medium) 1;
+}
+@keyframes heroBriefIconPulse{
+    0%   { box-shadow: 0 0 0 0 rgba(var(--color-brand-rgb), 0.55); }
+    70%  { box-shadow: 0 0 0 22px rgba(var(--color-brand-rgb), 0); }
+    100% { box-shadow: 0 0 0 22px rgba(var(--color-brand-rgb), 0); }
 }
 .heroBreifBox > p {
+  position: relative;
+  z-index: 2;
   font-size: 1.3rem;
-  display: -webkit-box;
-  -webkit-line-clamp: 4;   
-  -webkit-box-orient: vertical;
-opacity: 0.8;
-  overflow: hidden;
   line-height: 132%;
+}
+
+/* The paragraph's own phase (collapsed/hidden/expanded), driven by
+   HeroSection.jsx's textPhase state rather than tied directly to the box's
+   expand/collapse — see the comment above toggleBrief() there for why:
+   without this middle "hidden" step, the line-clamp <-> full-text layout
+   swap happens at the same instant as the box resize, which reads as the
+   text visibly jittering while the box is still moving. */
+.heroBreifBoxText{
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  opacity: 0.8;
+  transition: opacity var(--duration-micro) ease-in-out;
+}
+.heroBreifBoxText.is-expanded{
+  /* display:-webkit-box (the line-clamp mechanism) collapses the
+     whitespace between the inline links and the surrounding words —
+     "Launchpad" ran straight into "lets" with no space. Switching to
+     normal block flow once the clamp is no longer needed fixes that. */
+  display: block;
+  -webkit-line-clamp: unset;
+  font-size: 1.5rem;
+  opacity: 1;
+}
+/* Comes after .is-expanded on purpose — both classes can be present at
+   once now (fading out while still in the expanded layout, or fading in
+   already switched to the new one), and opacity:0 has to win that fight
+   every time regardless of which layout is currently applied. */
+.heroBreifBoxText.is-hidden{
+  opacity: 0;
+}
+
+.heroBreifBoxLink{
+  color: var(--color-brand-link);
+  font-weight: 600;
+  text-decoration: none;
+  transition: color var(--duration-micro) ease-in-out;
+}
+.heroBreifBoxLink:hover,
+.heroBreifBoxLink:focus-visible{
+  color: var(--color-brand-cta);
 }
 
 .heroBreifBox p:last-child{
 color: var(--color-brand-link);
 cursor: pointer;
+/* Same weight as .heroBreifBoxLink — plain-weight orange text next to two
+   bold orange links inside the paragraph above it was reading as the
+   fainter, less clickable-looking element of the three. */
+font-weight: 600;
+transition: color var(--duration-micro) ease-in-out;
+}
+/* flex-start on the expanded box packs the logo and the paragraph to the top
+   with an even gap, which is what that copy wants — but it dragged 'Close' up
+   with them, so it ended up floating in the middle of the card instead of
+   sitting where 'Read more' had been. The auto margin swallows the leftover
+   room instead of splitting it, putting 'Close' back on the bottom padding
+   edge. The box is anchored bottom:3% and grows upward, so that edge does not
+   move when it opens: the two words land on the same point on screen and the
+   only thing that changes is the word. */
+.heroBreifBox.is-expanded p:last-child{
+    margin-top: auto;
+}
+.heroBreifBox p:last-child:hover,
+.heroBreifBox p:last-child:focus-visible{
+color: var(--color-brand-cta);
 }
 
+/* ---- Mobile hero ----
+   The headline and the button row used to be two independently positioned
+   layers (top:9% and top:27%), each measured off viewport HEIGHT. That is what
+   made the layout feel unstructured: the gap between them was a different size
+   on every device — tight enough to crowd on a 667px phone, a dead void on a
+   932px one — because nothing tied the two blocks to each other. Here they are
+   put back into normal flow, so the distance between them is one fixed value
+   that holds on every screen, and the whole stack keeps its shape. */
 @media (max-width:500px) {
+    /* relative, NOT static: both carry a z-index (--z-tagline / --z-sticky) to
+       sit above the background <video>, and z-index is ignored on a static
+       element. Going static dropped them behind the video, which paints later
+       in the DOM — the hero rendered as bare video with no text or buttons at
+       all. relative keeps them in flow (the point of the change) while keeping
+       z-index live. The inset values are reset to auto because the desktop rules
+       set top/bottom/left for absolute positioning, and under relative those
+       same values would shift both blocks off their flow position instead. */
+    .heroTagLine,
+    .heroCtaRow{
+        position: relative;
+        top: auto;
+        right: auto;
+        bottom: auto;
+        left: auto;
+    }
+
     .heroTagLine{
-        top: 9%;
+        /* Was 9% of viewport height. Clamped rem keeps the headline off the
+           status bar on a short phone without dropping it into the middle of a
+           tall one. */
+        padding-top: clamp(7rem, 12vh, 11rem);
     }
+
+    /* Rule between the copy and the buttons. Phone only: the desktop hero puts
+       its buttons at the bottom of the viewport, far from the text, so it has no
+       join that needs marking. Here they sit right underneath it.
+
+       A hairline, and it fades out to the right instead of stopping. A rule
+       that runs edge to edge and ends abruptly draws a hard boundary across the
+       hero and boxes the copy in; fading it into the background lets it mark
+       where the text ends without cutting the section in two. Solid at the left
+       gutter, gone by the right edge.
+
+       0.5px, not 1px: on a 2x or 3x phone screen that is one device pixel, so
+       it renders as the finest line the display can draw. The opacity is raised
+       from the previous 0.1 because at this thickness a tenth would disappear.
+
+       A pseudo element on .heroTagLine rather than on .heroCtaRow, because that
+       row is a flex container and a ::before there would become a flex item and
+       sit beside the buttons instead of above them. */
+    .heroTagLine::after{
+        content: "";
+        display: block;
+        height: 0.05rem;
+        margin-top: 0.7rem;
+        /* The middle stop is deliberately 44% of the first rather than half:
+           alpha fades read faster than they measure, so an even split makes the
+           tail vanish too early. */
+        background: linear-gradient(
+            to right,
+            rgba(11, 11, 11, 0.32) 0%,
+            rgba(11, 11, 11, 0.14) 45%,
+            rgba(11, 11, 11, 0) 100%
+        );
+    }
+
     .heroTagLine p{
-        font-size: 3.5rem;
-        line-height: 105%;
+        /* Flat 30px, tuned on the device. This was clamp(3rem, 9vw, 4.2rem) and
+           30px is that clamp's own floor, so making it fluid again could only
+           push it larger than the size that was actually chosen. Flat is also
+           safe at the narrow end: "FOR GLOBAL IDEAS" at 30px is about 278px
+           wide, inside the ~290px a 320px screen leaves after the gutters. */
+        font-size: 3rem;
+        /* Tuned on a real phone, and it landed a hair looser than the desktop
+           -0.035em, which is the direction the type scales in both Apple's HIG
+           and Material: smaller type wants slightly more tracking, larger type
+           less. Line-height is not repeated here, only tracking and size — the
+           base 1.06 is unitless and already scales with this font-size. */
+        letter-spacing: -0.03em;
     }
-    .heroTagLine p:last-child{
-        font-size: 1.2rem;
-    }
-    .HeroSectionParent > video{
-        height: 120%;
-    }
+
     .heroBreifBox{
         display: none;
     }
+
+    /* Visible on phones again. It was hidden back when three display lines
+       carried the message on their own; now that the headline is two lines, this
+       is the only place a phone visitor is told what Cracker actually is. */
+    .heroTagLine p:last-child{
+        /* 12.5px, tuned on the device. Below the 16px usually recommended for
+           body text on a phone — a deliberate choice, judged on screen, on a
+           line that is two short sentences rather than something to read at
+           length. */
+        font-size: 1.25rem;
+        /* Tuned on the device at 1.2. Tighter than the 1.4-1.6 usually
+           recommended for body copy, but this is two short lines under a
+           headline rather than a paragraph to read, and it was judged on a
+           real phone. */
+        line-height: 1.2;
+        /* Pulled in from the full width. Shortening the measure gives the line
+           a ragged right edge that echoes the rule fading out beneath it,
+           instead of both running hard to the same margin. */
+        width: 88%;
+        /* Zero, same as desktop: the sub line's own leading turned out to be
+           all the separation it needed. */
+        margin-top: 0rem;
+    }
+
+    /* Its own value rather than inheriting the desktop -0.2em. The difference is
+       tiny, but the two breakpoints were judged separately on their own screens
+       and each keeps what it was tuned to. */
+    .tag2nd{
+        margin-top: -0.21em;
+    }
+
+    .HeroSectionParent > video{
+        height: 120%;
+    }
+
     .heroCtaRow{
-        bottom: unset;
-        top: 27%;
-        left: var(--gutter-page);
-        gap: 0.6rem;
+        /* 16px below the rule above. The rule now carries the separation, so
+           this only has to clear it, not stand in for it. */
+        margin-top: 0.9rem;
+        gap: 1.2rem;
     }
+
+    /* 48px tall, not 33px. Apple HIG asks for a minimum 44x44pt hit target and
+       Material for 48x48dp; the old buttons met neither, which is a real
+       mis-tap problem on the page's primary action, not a cosmetic one. 14px
+       label matches Material's button type size — 10px was below the floor for
+       legible UI text. */
+    /* One value drives the whole button: the label and the side padding are
+       expressed as fractions of the height, so a single slider scales it without
+       the proportions drifting. The multipliers reproduce the previous 4.8rem /
+       1.4rem / 22px exactly. */
     .ctaBtn{
-        font-size: 1rem;
-        height: 3.3rem;
-        padding-inline: 10px;
+        --btn-h: 4rem;
+        height: var(--btn-h);
+        font-size: calc(var(--btn-h) * 0.29);
+        padding-inline: calc(var(--btn-h) * 0.46);
     }
+
+    /* Currently hidden (SHOW_WALLET_BUTTON in HeroSection.jsx) but kept on the
+       same variable, so it still matches the CTA whenever it comes back. */
     .walletBtn{
-        height: 3.3rem;
-        width: 3.3rem;
+        height: 4rem;
+        width: 4rem;
     }
+
     .walletBtn svg{
-        width: 1.3rem;
-        height: 1.3rem;
+        width: 1.9rem;
+        height: 1.9rem;
     }
 }

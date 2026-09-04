@@ -1,0 +1,298 @@
+/* Bottom sheet for the Terms and the Privacy Policy. Rises from the bottom
+   edge of the viewport, the way the Main Feature dialog grows out of its card,
+   rather than appearing in the middle of the screen. */
+
+.legalSheet__overlay {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-modal, 10000);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  background: rgba(11, 11, 11, 0.42);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+.legalSheet {
+  position: relative;
+  /* 90% of the viewport, but capped. Past about 1500px a single document
+     cannot fill the width no matter how the columns are arranged — a
+     readable line is roughly 90 characters, and everything beyond that is
+     gutter. Capping the sheet is what removes the empty space; widening the
+     text to chase it would just make it unreadable. */
+  width: min(90%, 150rem);
+  /* Never the full height: leaving the top strip of the page visible is what
+     says this is a sheet over the site rather than a new page. */
+  height: min(95vh, 98rem);
+  display: flex;
+  flex-direction: column;
+  background: var(--color-surface-white, #ffffff);
+  border-radius: var(--radius-2xl) var(--radius-2xl) 0 0;
+  box-shadow: 0 -24px 60px -20px rgba(11, 11, 11, 0.45);
+  outline: none;
+  overflow: hidden;
+}
+
+.legalSheet__head {
+  flex-shrink: 0;
+  padding: 1.2rem clamp(2rem, 5vw, 4rem) 1.6rem;
+  border-bottom: 1px solid rgba(11, 11, 11, 0.09);
+  background: inherit;
+}
+
+/* The short bar at the top edge. It is the convention for a sheet you can
+   dismiss, and it reads as a handle even though this one closes by button,
+   backdrop or Escape rather than by dragging. */
+.legalSheet__grip {
+  display: block;
+  width: 4.4rem;
+  height: 0.4rem;
+  margin: 0 auto 1.4rem;
+  border-radius: var(--radius-pill);
+  background-color: rgba(11, 11, 11, 0.16);
+}
+
+.legalSheet__titleRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 2rem;
+}
+
+.legalSheet__title {
+  font-size: clamp(2.2rem, 3vw, 3rem);
+  font-weight: 700;
+  line-height: 1.15;
+  color: var(--color-text-primary, #0b0b0b);
+}
+
+.legalSheet__updated {
+  margin-top: 0.4rem;
+  font-size: 1.2rem;
+  color: rgba(11, 11, 11, 0.6);
+}
+
+.legalSheet__close {
+  flex-shrink: 0;
+  width: 3.8rem;
+  height: 3.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(11, 11, 11, 0.12);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--color-text-primary, #0b0b0b);
+  cursor: pointer;
+  transition: background-color var(--duration-micro) ease-in-out,
+    border-color var(--duration-micro) ease-in-out;
+}
+
+.legalSheet__close:hover {
+  background-color: rgba(var(--color-brand-rgb), 0.1);
+  border-color: var(--color-brand);
+  color: var(--color-brand);
+}
+
+/* The only scroller in the sheet. overscroll-behavior stops a flick at the end
+   of the document carrying on into the page behind it. */
+.legalSheet__body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  padding: 3rem clamp(2rem, 4vw, 5rem) 5rem;
+  /* Contents column, then the document. The pair is centred rather than
+     left-aligned so whatever width is left over sits evenly on both sides
+     instead of pooling as a void down the right. */
+  display: grid;
+  grid-template-columns: minmax(20rem, 30rem) minmax(0, 92ch);
+  justify-content: center;
+  align-items: start;
+  gap: clamp(3rem, 4vw, 6rem);
+}
+
+/* Sticky inside the scroller, so the section list stays put while the
+   document moves past it. */
+.legalSheet__toc {
+  position: sticky;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.2rem;
+  /* Seventeen sections do not fit in the height a sticky column gets, and a
+     sticky box does not scroll on its own — the overflowing entries were
+     simply unreachable. Its own scroller, bounded well inside the sheet. */
+  max-height: 66vh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding-right: 0.6rem;
+  scrollbar-width: thin;
+}
+
+.legalSheet__toc::-webkit-scrollbar {
+  width: 4px;
+}
+
+.legalSheet__toc::-webkit-scrollbar-thumb {
+  border-radius: var(--radius-pill);
+  background-color: rgba(11, 11, 11, 0.18);
+}
+
+.legalSheet__tocTitle {
+  margin-bottom: 1rem;
+  font-size: 1.2rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-brand);
+}
+
+.legalSheet__tocLink {
+  width: 100%;
+  padding: 0.6rem 0.8rem;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: none;
+  font-family: inherit;
+  font-size: 1.4rem;
+  line-height: 1.35;
+  text-align: left;
+  color: rgba(11, 11, 11, 0.62);
+  cursor: pointer;
+  transition: background-color var(--duration-micro) ease-in-out,
+    color var(--duration-micro) ease-in-out;
+}
+
+.legalSheet__tocLink:hover {
+  background-color: rgba(var(--color-brand-rgb), 0.1);
+  color: var(--color-brand);
+}
+
+.legalSheet__tocLink:focus-visible {
+  outline: 2px solid var(--color-brand);
+  outline-offset: 2px;
+}
+
+/* No max-width here any more: the grid column above already bounds the
+   measure at 78ch, so capping it twice only reintroduced the empty gutter. */
+.legalSheet__section {
+  scroll-margin-top: 1rem;
+}
+
+.legalSheet__section + .legalSheet__section {
+  margin-top: 3.2rem;
+}
+
+.legalSheet__heading {
+  margin-bottom: 1.2rem;
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: var(--color-text-primary, #0b0b0b);
+}
+
+.legalSheet__subheading {
+  margin: 2.2rem 0 0.9rem;
+  font-size: 1.7rem;
+  font-weight: 600;
+  color: var(--color-text-primary, #0b0b0b);
+}
+
+/* Not --color-text-muted-section. That token is rgba(0,0,0,0.351), which on
+   white is roughly a 2.2:1 contrast ratio — under half the 4.5:1 WCAG asks
+   for body text, and why this read as greyed out. It is fine for a caption
+   the eye skims past; it is the wrong choice for the one document on the site
+   that exists to be read and relied on. 0.86 black lands near 15:1. */
+.legalSheet__paragraph {
+  font-size: 1.8rem;
+  line-height: 1.65;
+  color: rgba(11, 11, 11, 0.86);
+}
+
+.legalSheet__paragraph + .legalSheet__paragraph {
+  margin-top: 1.2rem;
+}
+
+.legalSheet__list {
+  margin: 1rem 0 0;
+  padding-left: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  font-size: 1.8rem;
+  line-height: 1.6;
+  color: rgba(11, 11, 11, 0.86);
+}
+
+.legalSheet__list li {
+  list-style: disc;
+}
+
+.legalSheet__address {
+  margin-top: 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  font-size: 1.8rem;
+  line-height: 1.6;
+  font-style: normal;
+  color: rgba(11, 11, 11, 0.86);
+}
+
+.legalSheet__address a {
+  margin-top: 0.6rem;
+  color: var(--color-brand);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.legalSheet__address a:hover {
+  text-decoration: underline;
+}
+
+/* One column once there is no width to spare for the contents list. */
+@media (max-width: 900px) {
+  .legalSheet__body {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .legalSheet__toc {
+    display: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .legalSheet {
+    /* Taller on a phone: there is no value in showing a sliver of the page
+       behind it when the document needs every line it can get. */
+    /* dvh, not vh. vh is the viewport with the browser chrome hidden, so with
+       the address bar showing the sheet is taller than the space it has and
+       its top, where the close button lives, is pushed off screen. dvh is the
+       height actually available right now. The vh line stays first as a
+       fallback for anything that does not know dvh. */
+    height: 92vh;
+    height: 92dvh;
+    /* Edge to edge on a phone: the 90% inset that frames it on a desktop just
+       costs reading width here. */
+    width: 100%;
+    border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+  }
+
+  .legalSheet__paragraph,
+  .legalSheet__list,
+  .legalSheet__address {
+    font-size: 1.55rem;
+  }
+}
+
+/* The sheet still arrives and leaves, it just does not slide. Removing the
+   motion entirely would make it appear with no indication of where it came
+   from. */
+@media (prefers-reduced-motion: reduce) {
+  .legalSheet {
+    transition: none;
+  }
+}

@@ -61,3 +61,29 @@ z-index: var(--z-overlay-mixer);
 .char {
   display: inline-block;
 }
+
+
+/* Background videos (hero, community).
+
+   Leaving `controls` off is not the same as having no controls. Browsers add
+   their own start-playback button over a video they consider stalled or
+   blocked — that is the play button that shows up — and a right-click or long
+   press still offers a full player menu. These rules take the element out of
+   the interaction model entirely: nothing to click, nothing to hit, and no
+   shadow-DOM control left to paint. */
+.bgVideo {
+  pointer-events: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.bgVideo::-webkit-media-controls,
+.bgVideo::-webkit-media-controls-enclosure,
+.bgVideo::-webkit-media-controls-panel,
+.bgVideo::-webkit-media-controls-play-button,
+.bgVideo::-webkit-media-controls-start-playback-button {
+  display: none !important;
+  -webkit-appearance: none;
+  appearance: none;
+  opacity: 0;
+}

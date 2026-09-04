@@ -1,5 +1,5 @@
 import { useState , useRef, useEffect } from "react";
-import Logo from "../../assets/Logo.png"
+import Logo from "../../assets/Logo.webp"
 import "./CrackerLoading.css";
 export default function CrackerLoading() {
    
@@ -29,7 +29,7 @@ return () => clearInterval(interval);
     <div className="CrackerLoadingParent">
         <img src={Logo} alt="LogoLoader" />
 
-        <div style={loaderInterval === 100 ?{height:"100vh",borderRadius:"0px"} : {}} className="loader">
+        <div style={loaderInterval === 100 ?{height:"100%",borderRadius:"0px"} : {}} className="loader">
             <div style={{width:`${loaderInterval + 10}%` , backgroundColor:loaderInterval === 100 ?"#E8E7F2" : "" } } className="innerMover">
 
             </div>

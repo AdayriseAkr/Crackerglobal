@@ -1,14 +1,13 @@
 import "./WhySection.css";
-import backImg from "../../assets/TrustBack.png";
+import backImg from "../../assets/TrustBack.webp";
 import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import walletImg from "../../assets/walletImg.png";
-import EthIcon from "../../assets/EthIcon.png";
-import dollar from "../../assets/dollar.png";
-import devve from "../../assets/devve.png";
-import cardEgg from "../../assets/CardEgg.png";
-import RoboFix from "../Robo3d/RoboFix";
+import walletImg from "../../assets/walletImg.webp";
+import EthIcon from "../../assets/EthIcon.webp";
+import dollar from "../../assets/dollar.webp";
+import devve from "../../assets/devve.webp";
+import cardEgg from "../../assets/CardEgg.webp";
 
 gsap.registerPlugin(ScrollTrigger);
 

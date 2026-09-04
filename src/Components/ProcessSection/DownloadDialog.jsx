@@ -56,13 +56,50 @@ function AppleMark() {
   );
 }
 
+function XMark() {
+  return (
+    <svg className="dlBadge__mark" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+      <path
+        fill="currentColor"
+        d="M18.24 2.25h3.31l-7.23 8.26 8.5 11.24h-6.65l-5.22-6.82-5.96 6.82H1.68l7.73-8.84L1.25 2.25h6.82l4.71 6.23 5.46-6.23zm-1.16 17.52h1.83L7.01 4.13H5.05l12.03 15.64z"
+      />
+    </svg>
+  );
+}
+
+function TelegramMark() {
+  return (
+    <svg className="dlBadge__mark" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+      <circle cx="12" cy="12" r="12" fill="#2AABEE" />
+      <path
+        fill="#ffffff"
+        d="M5.49 11.86c3.53-1.54 5.88-2.55 7.06-3.04 3.36-1.4 4.06-1.64 4.52-1.65.1 0 .32.02.47.14.12.1.16.24.17.33.02.1.04.31.02.48-.18 1.94-.98 6.63-1.39 8.8-.17.92-.51 1.22-.84 1.26-.72.06-1.26-.48-1.95-.93-1.08-.71-1.69-1.15-2.74-1.84-1.21-.8-.43-1.24.27-1.96.18-.19 3.3-3.03 3.36-3.29.01-.03.01-.15-.06-.21s-.17-.04-.25-.02c-.11.02-1.82 1.16-5.15 3.4-.49.34-.93.5-1.32.49-.44-.01-1.28-.25-1.9-.45-.77-.25-1.38-.38-1.33-.81.03-.22.34-.45.93-.7z"
+      />
+    </svg>
+  );
+}
+
 const BADGES = {
   chrome: { Mark: ChromeMark, small: "Available in the", large: "Chrome Web Store" },
   play: { Mark: PlayMark, small: "Get it on", large: "Google Play" },
   appstore: { Mark: AppleMark, small: "Download on the", large: "App Store" },
+  // Used by the Join Us picker (see Components/Join). Same panel, same
+  // animation, different badges.
+  //
+  // The large line is the handle, not the platform name. Every other badge
+  // here names a store the mark cannot say on its own — but the X mark IS
+  // the word X, so "X" underneath it printed the same thing twice. The
+  // handle is the part someone actually wants: it tells them which account
+  // they are about to land on.
+  x: { Mark: XMark, small: "Updates on X", large: "@Cracker_Global" },
+  telegram: { Mark: TelegramMark, small: "Come talk to us on", large: "Telegram" },
 };
 
-export default function DownloadDialog({ open, title, subtitle, downloads, onClose }) {
+// `children` overrides the badge list, so a dialog that is not a set of store
+// badges — the Contact card — can reuse this panel rather than reimplementing
+// its overlay, entrance, focus handling and scroll lock and slowly drifting
+// away from it.
+export default function DownloadDialog({ open, title, subtitle, downloads, children, onClose }) {
   const [mounted, setMounted] = useState(false);
   const panelRef = useRef(null);
   const restoreFocusRef = useRef(null);
@@ -146,8 +183,14 @@ export default function DownloadDialog({ open, title, subtitle, downloads, onClo
         </h2>
         {subtitle && <p className="dlSubtitle">{subtitle}</p>}
 
-        <div className="dlOptions">
-          {downloads.map((item) => {
+        {/* data-lenis-prevent: this scrolls on its own now, and Lenis
+            swallows wheel and touch events site-wide. lenis.stop() above
+            halts its animation but does not stop it preventing those
+            events, so without this the card would not scroll. */}
+        <div className="dlOptions" data-lenis-prevent>
+          {children}
+          {!children &&
+            (downloads ?? []).map((item) => {
             const badge = BADGES[item.id];
             if (!badge) return null;
             const { Mark, small, large } = badge;
@@ -163,8 +206,8 @@ export default function DownloadDialog({ open, title, subtitle, downloads, onClo
                   <span className="dlBadge__large">{large}</span>
                 </span>
               </a>
-            );
-          })}
+              );
+            })}
         </div>
       </div>
     </div>,

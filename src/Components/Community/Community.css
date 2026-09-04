@@ -1,7 +1,7 @@
 .communityParent{
     width: 100%;
     height: 100vh;
-    /* background-color: red; */
+   
     display: flex;
     justify-content: center;
     align-items: center;
@@ -19,6 +19,7 @@
     align-items: center;
     border-radius: var(--radius-4xl);
     overflow: hidden;
+    background: white;
 
 }
 
@@ -117,5 +118,33 @@
 #CommunityLastChild {
     width: 90%;
     margin-top: -2%;
+}
+/* Square at this width. The rounding reads as a card floating on the page,
+   which is right on a desktop where the section is inset — on a phone it runs
+   edge to edge, and a rounded corner against the screen edge just looks like
+   a mistake. .contentParent is the one that actually carries the radius
+   (--radius-4xl, 50px); .communityParent had 10px of its own. Both go. */
+.communityParent,
+.contentParent{
+    border-radius: 0;
+}
+
+/* The section centres its card in 100vh, so a short card leaves half the
+   spare height above it as blank canvas. That band is what sits between the
+   end of What You Get and this. Shrinking this section is what closes it:
+   nothing in CardRotate moves, because the gap was never its space. */
+.communityParent{
+    height: 100vh;
+    /* Pulled up into the tail of What You Get. That tail is not wasted space
+       by accident: the cards end about 650px into a 1013px section and the
+       rest is the blurryBottom fade that dissolves them into this one. Sliding
+       up into it uses room that was already empty, and the fade now does its
+       job across a shorter distance instead of across a gap.
+
+       -9vh, not more: at 76px there is still around 280px of clearance below
+       the last card, so nothing overlaps the cards themselves. Everything after
+       this, the footer included, rises by the same amount, so the page gets
+       shorter rather than just rearranged. */
+    margin-top: -19vh;
 }
 }

@@ -1,8 +1,19 @@
+/* Three different full-height units were in play here — 100lvh on this
+   element, 100vh on the two panels inside it, and 100vh again on the inline
+   SVG in each panel — and on a phone they do not agree. lvh is the viewport
+   with the browser chrome retracted; vh is whatever the browser decided vh
+   means, which on mobile Safari is a third thing again. Wherever the shortest
+   of the three landed, the white page showed through under the orange.
+
+   inset:0 instead of any of them. A fixed element inset to zero fills the
+   initial containing block exactly, by definition, with no unit to disagree
+   about — and everything inside can then be a plain 100% of a parent that is
+   already the right height. */
 .CrackerLoadingParent,.CrackerLoadingParent2{
     position: fixed;
-    top: 0;
+    inset: 0;
     width: 100%;
-    height: 100lvh;
+    height: auto;
     background-color: var(--color-brand);
     display: flex;
     justify-content: center;
@@ -72,8 +83,10 @@ background: #ffeec3e4;
 }
 
 .leftSide,.rightSide{
-   width: 60%;  
-        height:100vh;   
+   width: 60%;
+        /* 100% of a parent that is now exactly the viewport, rather than a
+           second opinion about how tall the viewport is. */
+        height:100%;
         position: absolute;
         overflow: hidden;
         transition: 2s cubic-bezier(0.64, 0, 0.78, 0);

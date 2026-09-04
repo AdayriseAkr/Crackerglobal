@@ -1,9 +1,11 @@
 import { useEffect, useState, useRef } from "react";
 import "./TopNav.css";
 import CrackerMark from "./CrackerMark.jsx";
+import JoinDialog from "../Join/JoinDialog.jsx";
 
 export default function TopNav() {
   const [showNav, setShowNav] = useState(true);
+  const [joinOpen, setJoinOpen] = useState(false);
   const lastScrollY = useRef(0);
 
   useEffect(() => {
@@ -24,9 +26,14 @@ export default function TopNav() {
   }, []);
 
   return (
-    <div className={`topNavParent ${showNav ? "show" : "hide"}`}>
-      <CrackerMark />
-      <button>Join Us</button>
-    </div>
+    <>
+      <div className={`topNavParent ${showNav ? "show" : "hide"}`}>
+        <CrackerMark />
+        <button type="button" onClick={() => setJoinOpen(true)} aria-haspopup="dialog">
+          Join Us
+        </button>
+      </div>
+      <JoinDialog open={joinOpen} onClose={() => setJoinOpen(false)} />
+    </>
   );
 }

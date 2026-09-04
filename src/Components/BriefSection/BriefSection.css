@@ -102,17 +102,17 @@ font-weight:500;
 .coin1 , .coin2{
     position: absolute;
     opacity: 0.8;
-  width: 15vw;
+  width: 13vw;
 }
 .coin1{
     left: 2%;
-    top: 15%;
+    top: 22%;
     animation: coinFloat 20s ease-in-out infinite;
 }
 
 .coin2{
     right: 2%;
-    top: 32%;
+    top: 42%;
     transform: rotateX(180deg)  rotateZ(180deg);
 }
 
@@ -127,6 +127,7 @@ font-weight:500;
 
 
 .briefProductCard{
+    position: relative;
     width: 28%;
     height: 25vw;
     background-color: var(--color-surface);
@@ -137,12 +138,134 @@ font-weight:500;
     opacity: 0;
     transform: translateY(200%);
     filter: blur(200px);
+    overflow: hidden;
    
 }
+/* The source art (rocket/wallet/dex) is roughly square-to-portrait
+   (~0.8-1.0 aspect ratio). A box this much taller than it is wide forced
+   heavy vertical letterboxing under object-fit:contain — most of the box
+   stayed empty and the actual artwork floated small inside it, unevenly
+   depending on each image's exact ratio. Capping the height instead of
+   stretching it to the card's own full height keeps the box close to the
+   art's own proportions, so the image reads as filling its space
+   consistently card to card. */
+/* Only the transition is new here. The width/height are the originals: the
+   #Launchpadimg / #Deximg rules further down position those two absolutely
+   and size them themselves, and an id beats a class, so anything set here
+   never reached them. */
 .briefProductCard img:first-child{
     width: 60%;
-    height: 100%;
+    height: 68%;
     object-fit: contain;
+    transition: transform var(--duration-medium) var(--ease-quart-out);
+}
+
+/* The card carries an entrance animation that owns its transform, so hover
+   deliberately does not touch the card's own transform — it would fight
+   cardEntry. The zoom lives on the image instead. */
+.briefProductCard{
+    text-decoration: none;
+    transition: background-color var(--duration-medium) var(--ease-quart-out),
+      box-shadow var(--duration-medium) var(--ease-quart-out);
+}
+
+.briefProductCard:not(.is-soon){
+    cursor: pointer;
+}
+
+.briefProductCard:not(.is-soon):hover{
+    background-color: rgba(var(--color-brand-rgb), 0.08);
+}
+
+/* The ring is an overlay, not an inset box-shadow.
+
+   A box-shadow, inset or not, paints on the element's own background layer,
+   which is underneath every child. The artwork hangs off the bottom-right
+   corner of the card, so it covered the ring exactly where the two met and the
+   border appeared to break. A pseudo element sits above the children instead.
+
+   Still a border on an inset:0 overlay rather than one on the card itself: a
+   border there would change the card's box size and nudge the artwork on every
+   hover. Transparent by default so only the colour animates, which keeps the
+   ring from popping in at full width. */
+.briefProductCard::after{
+    content: "";
+    position: absolute;
+    inset: 0;
+    border: 2px solid transparent;
+    border-radius: inherit;
+    pointer-events: none;
+    z-index: 5;
+    transition: border-color var(--duration-medium) var(--ease-quart-out);
+}
+
+.briefProductCard:not(.is-soon):hover::after{
+    border-color: var(--color-brand);
+}
+
+.briefProductCard:not(.is-soon):hover img:first-child{
+    transform: scale(1.06);
+}
+
+/* Bottom right, so it lands where the cursor already is and never covers the
+   middle of the artwork. */
+.briefProductGo{
+    position: absolute;
+    right: 4%;
+    bottom: 4%;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.7rem 1.4rem;
+    border-radius: var(--radius-pill);
+    background-color: var(--color-brand);
+    color: #ffffff;
+    font-size: 1.3rem;
+    font-weight: 600;
+    opacity: 0;
+    transform: translateY(0.6rem);
+    pointer-events: none;
+    transition: opacity var(--duration-medium) var(--ease-quart-out),
+      transform var(--duration-medium) var(--ease-quart-out);
+}
+
+.briefProductGo svg{
+    width: 1.4rem;
+    height: 1.4rem;
+}
+
+.briefProductCard:hover .briefProductGo{
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Touch has no hover, so the cue would never appear at all — there it is
+   simply always visible. */
+@media (hover: none) {
+    .briefProductGo{
+        opacity: 1;
+        transform: none;
+    }
+}
+
+/* Wallet. Blurred past legibility on purpose: the image is standing in as
+   texture, not showing a product that is not built yet. */
+.briefProductCard.is-soon img:first-child{
+    filter: blur(10px) saturate(0.85);
+    opacity: 0.6;
+    transform: scale(1.06);
+}
+
+.briefProductSoon{
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    color: var(--color-brand-tag);
 }
 
 
@@ -177,9 +300,71 @@ font-weight:500;
     font-weight: 500;
 }
 
+/* Height as a percentage of the card, not a rem.
+
+   right/bottom were already percentages, so they track the card at any size.
+   height was not: the card is 25vw tall, so it grows with the window while a
+   45rem image stayed 450px. At 1440px wide that image was 125% of the card;
+   on a 2560px monitor the card is 640px and the same image is only 70% of it,
+   so it sat higher and smaller in the frame. As a percentage the whole
+   composition is identical at every width, 13 inch or 32.
+
+   125% is what 45rem worked out to at a 1440px window. If it was tuned at a
+   different width, this percentage is the one number to adjust. */
+#Launchpadimg , #Deximg{
+    position: absolute;
+    opacity: 1;
+    width: auto;
+    height: 125%;
+    border-radius:20px ;
+    right: -81%;
+    bottom: -40%;
+}
+#Deximg{
+    /* 38rem against the same 1440px reference. */
+    height: 105%;
+   right: -78%;
+    bottom: -22%;
+    opacity: 0.8;
+    border:solid rgba(255, 255, 255, 0.423);
+    
+}
+
+/* Same framing as the other two so the three cards read as a set — the only
+   difference on this one is the blur, which .is-soon applies. */
+#Walletimg{
+    position: absolute;
+    width: auto;
+    height: 125%;
+    border-radius: 20px;
+    right: -81%;
+    bottom: -40%;
+}
+
 @media (max-width:500px) {
+    /* Launchpad and Dex only, and only here. right is a percentage of the card,
+       and the card goes from 28% of the page on a desktop to the full width on a
+       phone, so the same -81% is a far bigger push in pixels and the artwork
+       ends up sitting off to the right. 20 points back brings it in.
+
+       Wallet is left alone: it is the blurred Coming Soon card, so where its
+       artwork sits barely reads. */
+    #Launchpadimg, #Deximg{
+        right: -61%;
+    }
+    #Deximg{
+        right: -58%;
+    }
+
+    /* The lower coin sits behind the stacked product cards on a phone, where
+       they are full width and there is no clear space for it to land in. It is
+       decoration, so it goes in front rather than being repositioned. */
+    .coin1, .coin2{
+        z-index: var(--z-sticky);
+    }
+
     .centerPara{
-        font-size: 2.45rem;
+        font-size: 2.9rem;
         width: 85%;
     }
     /* At 85% width there is no margin left of the copy to sit beside, and the
@@ -201,14 +386,65 @@ font-weight:500;
     .productBox{
         height: auto;
         flex-direction: column;
+        /* Was 20px (the desktop row gap) — too tight once the cards are
+           stacked full-width; each one now reads as its own distinct block
+           instead of a cramped list. */
+        gap: 2.4rem;
         padding-top: 100px;
+        
     }
     .briefProductCard {
     width: 100%;
-    height: 38rem;
+    /* Was 38rem, sized for the old height:100% image box. With the image
+       box no longer stretched to the card's full height (see
+       .briefProductCard img:first-child above), that much card height just
+       left extra empty space top and bottom of a now-smaller image —
+       shorter cards keep the artwork reading as filling its card, not
+       floating in it. */
+    height: 30rem;
     }
     .briefSectionParent{
         height: auto;
         padding-top: 205px;
+    }
+}
+/* ---- Tablet ----
+   The single worst offender for empty space on a portrait tablet. 177vh on a
+   1368px screen is a 2420px section, and 58vh of that — nearly 800px — is
+   top padding held open for the scroll cue.
+
+   That padding is sized in vh because the cue is sized in rem: on a short
+   laptop window the cue is about half the viewport height, so 58vh clears it.
+   On a tall tablet the cue is still ~352px but 58vh is 793px, so more than
+   400px of the band is holding nothing. Padding in rem here instead, matched
+   to the thing it actually has to clear.
+
+   height:auto for the same reason the phone block uses it — once the padding
+   is content-sized there is nothing left for a viewport height to do except
+   add space underneath. */
+@media (min-width: 501px) and (max-width: 1023px) {
+    .briefSectionParent{
+        height: auto;
+        padding-top: 44rem;
+        padding-bottom: 10rem;
+        gap: 8rem;
+    }
+
+    .centerPara{
+        width: 78%;
+    }
+
+    /* Two cards across rather than the desktop row: at this width the row was
+       giving each card about 230px, and the artwork inside is positioned in
+       percentages of the card, so it shrank with it. */
+    .productBox{
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 2rem;
+        height: auto;
+    }
+    .briefProductCard{
+        width: 46%;
+        height: 34rem;
     }
 }

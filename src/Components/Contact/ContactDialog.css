@@ -1,0 +1,135 @@
+/* Contents of the Contact card. The panel, overlay and entrance all come from
+   DownloadDialog.css — only what sits inside it is styled here. */
+
+.contactCard {
+  display: flex;
+  flex-direction: column;
+  gap: 2.2rem;
+  text-align: left;
+  /* .dlOptions centres its children as a column of badges; this is a block of
+     text and wants the full width. */
+  width: 100%;
+}
+
+/* Small caps label, reused for every group heading so the card reads as one
+   system rather than three unrelated blocks. */
+.contactCard__label {
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-brand);
+}
+
+.contactCard__address {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  font-style: normal;
+  font-size: 1.4rem;
+  line-height: 1.5;
+  color: rgba(11, 11, 11, 0.72);
+}
+
+.contactCard__address .contactCard__label {
+  margin-bottom: 0.5rem;
+}
+
+.contactCard__company {
+  font-size: 1.55rem;
+  font-weight: 600;
+  color: rgba(11, 11, 11, 0.92);
+}
+
+.contactCard__emails {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  margin: 0;
+  padding: 0;
+}
+
+/* Each address is its own card rather than a line in a list: these are three
+   different destinations, and a row you can see the edges of is easier to aim
+   at than a line of text, on a phone especially. */
+.contactCard__email {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 1.2rem 1.4rem;
+  border: 1px solid rgba(11, 11, 11, 0.1);
+  border-radius: var(--radius-sm);
+  background: rgba(11, 11, 11, 0.02);
+  text-decoration: none;
+  transition: border-color var(--duration-micro) ease-in-out,
+    background-color var(--duration-micro) ease-in-out;
+}
+
+.contactCard__email:hover {
+  border-color: var(--color-brand);
+  background: rgba(var(--color-brand-rgb), 0.06);
+}
+
+.contactCard__emailHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1.2rem;
+  flex-wrap: wrap;
+}
+
+.contactCard__address-line {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: rgba(11, 11, 11, 0.92);
+}
+
+.contactCard__detail {
+  font-size: 1.25rem;
+  line-height: 1.45;
+  color: rgba(11, 11, 11, 0.58);
+}
+
+.contactCard__social {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  padding-top: 1.6rem;
+  border-top: 1px solid rgba(11, 11, 11, 0.08);
+}
+
+.contactCard__socialRow {
+  display: flex;
+  gap: 0.8rem;
+}
+
+.contactCard__socialRow a {
+  padding: 0.7rem 1.6rem;
+  border: 1px solid rgba(11, 11, 11, 0.12);
+  border-radius: var(--radius-pill);
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: rgba(11, 11, 11, 0.82);
+  text-decoration: none;
+  transition: border-color var(--duration-micro) ease-in-out,
+    color var(--duration-micro) ease-in-out;
+}
+
+.contactCard__socialRow a:hover {
+  border-color: var(--color-brand);
+  color: var(--color-brand);
+}
+
+@media (max-width: 500px) {
+  .contactCard {
+    gap: 1.8rem;
+  }
+
+  /* The address and its label stack rather than sitting on one line, which
+     they cannot do at this width without wrapping mid-address. */
+  .contactCard__emailHead {
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+}

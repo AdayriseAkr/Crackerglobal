@@ -12,10 +12,22 @@
 
   position: fixed;
   inset: 0;
+
+  /* dvh, so the overlay is the height of what is actually on screen. With
+     inset alone it takes the layout viewport, which on a phone is taller
+     than the visible area by however much browser chrome is showing — and
+     a panel centred in it sits partly behind that chrome. */
+  height: 100vh;
+  height: 100dvh;
+
   z-index: 2147482000;
   display: flex;
   align-items: center;
   justify-content: center;
+
+  /* This padding is the band of blurred background around the panel, and
+     it only holds as long as the panel agrees to fit inside it — see
+     max-height on .dlPanel. */
   padding: 2.4rem;
   background: rgba(74, 50, 50, 0.52);
   backdrop-filter: blur(6px);
@@ -35,6 +47,23 @@
   padding: 4rem 3.6rem 3.6rem;
   /* Clips the blurred colour blobs to the rounded corners. */
   overflow: hidden;
+
+  /* A tall card — the Contact one — used to run past both ends of the
+     screen. A flex item that is taller than its container overflows
+     equally in both directions and ignores the container's padding on the
+     way out, so the panel met the top and bottom edges with no background
+     visible past it, and the part above the fold could not be reached.
+
+     Capping it at the overlay's content box is what keeps that 2.4rem band
+     of background showing all the way round. */
+  max-height: 100%;
+
+  /* Column, so the overflow is handed to .dlOptions rather than to the
+     panel itself. Scrolling the whole panel would carry the close button
+     off the top with it; this way the title and the close stay put and
+     only the content moves. */
+  display: flex;
+  flex-direction: column;
   box-shadow:
     0 40px 90px -24px rgba(74, 50, 50, 0.45),
     0 14px 32px -18px rgba(74, 50, 50, 0.3);
@@ -206,6 +235,16 @@
   display: flex;
   flex-direction: column;
   gap: 1.2rem;
+
+  /* The one part that scrolls when the card is taller than the screen.
+     min-height: 0 is what allows it: a flex item's floor is its content
+     size by default, so without this it refuses to shrink and pushes the
+     panel past its own max-height instead of scrolling. */
+  overflow-y: auto;
+  min-height: 0;
+
+  /* Stops the page behind from taking over once this reaches its end. */
+  overscroll-behavior: contain;
 }
 
 /* ---- badges ----
@@ -256,6 +295,21 @@
   font-size: 20px;
   font-weight: 600;
   letter-spacing: -0.01em;
+}
+
+/* A handle is not a wordmark. "Telegram" is eight characters with no ascender
+   above the cap line and nothing below the baseline, so it sits comfortably at
+   20px in the shared 2px gap. "@Cracker_Global" is fifteen characters, leads
+   with an @ that rides high, and carries an underscore that drops below the
+   baseline — at the same size and spacing it crowds the line above it and runs
+   long in the card. Smaller, with room to breathe, and normal tracking. */
+.dlBadge--x .dlBadge__large {
+  font-size: 16px;
+  letter-spacing: 0;
+  line-height: 1.25;
+}
+.dlBadge--x .dlBadge__text {
+  gap: 5px;
 }
 
 /* Chrome Web Store — Google's light surface: white card, #dadce0 hairline,
@@ -309,7 +363,60 @@
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.22);
 }
 
+/* X — black card, white mark, in the platform's own language like the three
+   above it. Without a rule of its own a badge falls through to the browser's
+   default anchor styling, which is why this and Telegram were arriving as blue
+   link text: the mark is fill="currentColor", so it took the link colour with
+   it. #2f3336 and #71767b are X's own hairline and secondary-text greys. */
+.dlBadge--x {
+  background: #000000;
+  border: 1px solid #2f3336;
+  color: #ffffff;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+.dlBadge--x .dlBadge__small {
+  /* X's own greys (#71767b, then #8b98a5) are tuned for dense timeline text
+     sitting among a lot of other type. On a single 11px line against pure
+     black they both read as disabled. This is off-white rather than grey:
+     around 13:1 against the card, so it is a label you read rather than one
+     you notice is there. */
+  color: #d9dde1;
+}
+.dlBadge--x .dlBadge__mark {
+  /* The wordmark is a glyph, not a logotype — it needs to sit slightly below
+     the cap height of the text beside it or it looks oversized. */
+  width: 26px;
+  height: 26px;
+  margin-inline: 4px;
+}
+.dlBadge--x:hover {
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.38);
+}
+
+/* Telegram — a light card, so the mark's own blue carries the colour rather
+   than the card competing with it. Same approach as the Chrome and App Store
+   badges, and it keeps the pair from being two dark slabs. */
+.dlBadge--telegram {
+  background: #ffffff;
+  border: 1px solid #d8e6f0;
+  color: #0f1419;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+.dlBadge--telegram .dlBadge__small {
+  color: #5b7083;
+}
+.dlBadge--telegram:hover {
+  box-shadow: 0 6px 18px rgba(34, 158, 217, 0.3);
+}
+
 @media (max-width: 500px) {
+  /* A wider band top and bottom than at the sides. The vertical gap is the
+     one doing the work here: it is what says the card is a sheet floating
+     over the page rather than a screen that replaced it. */
+  .dlOverlay {
+    padding: 3.2rem 2.4rem;
+  }
   .dlPanel {
     padding: 3.2rem 2.2rem 2.6rem;
     border-radius: var(--radius-lg);

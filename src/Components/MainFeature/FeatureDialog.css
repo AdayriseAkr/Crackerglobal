@@ -93,6 +93,7 @@
   grid-template-columns: 1.35fr 1fr;
   gap: clamp(2rem, 5vw, 4.5rem);
   padding-right: 3rem;
+  align-items: center;
 }
 
 .fd-eyebrow {
@@ -119,14 +120,17 @@
   line-height: 18px;
   color: var(--fd-text-soft);
   max-width: 46ch;
-  margin-bottom: 2rem;
 }
 
 /* ---- CTAs ---- */
+/* Gap above the row belongs to the row, not to .fd-description: the CTAs are
+   currently hidden (SHOW_DETAIL_CTAS in FeatureDialog.jsx) and a margin left on
+   the description would dangle under it with nothing to separate. */
 .fd-cta-row {
   display: flex;
   flex-wrap: wrap;
   gap: 1rem;
+  margin-top: 2rem;
 }
 
 .fd-cta {
@@ -228,19 +232,53 @@
   background: var(--fd-bg);
 }
 
+/* Ratio, not a fixed height.
+
+   The showcase spans the full panel width, so at clamp(300px, 38vw, 460px)
+   the box went from roughly 2.6:1 on a desktop to 1.1:1 on a phone — while
+   the artwork stayed between 1.8:1 and 2.8:1. With object-fit:cover that
+   meant a phone threw away about half the width of every image.
+
+   20/9 sits in the middle of the four: each is cropped a little, none is cut
+   in half, and the crop is the same at every screen size instead of getting
+   worse as the screen narrows. max-height stops it growing without limit on
+   a wide panel, where the ratio would otherwise make it 460px+ tall. */
 .fd-showcase__image-area {
   position: relative;
   width: 100%;
-  height: clamp(300px, 38vw, 460px);
+  aspect-ratio: 20 / 9;
+  height: auto;
+  max-height: 460px;
   overflow: hidden;
   background: var(--fd-surface);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  
 }
 
 .fd-showcase__image {
-  width: 100%;
-  height: 100%;
+  width: 90%;
+  height: 90%;
   object-fit: cover;
   display: block;
+  opacity: 0.7;
+}
+
+/* Earn Every Trade is the exception. Its artwork is 1672x941, so 1.78:1 against
+   a 2.22:1 frame, the widest gap of the four, and cover was taking roughly 20%
+   off its top and bottom.
+
+   Widening the frame just for it does not work: at 16/9 the box would want to
+   be 664px tall on a full-width panel and max-height would clamp it back to
+   460px, cropping it again. contain fits the whole image and leaves a narrow
+   band of panel surface at each side, which costs less than losing a fifth of
+   the picture.
+
+   .fd-panel--reserve is this card accent class, set as accent: "reserve" on
+   creatorFees in featureDialogData.js. */
+.fd-panel--reserve .fd-showcase__image {
+  object-fit: contain;
 }
 
 .fd-showcase__image-area::after {

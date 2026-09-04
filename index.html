@@ -2,9 +2,111 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>react-component</title>
+
+    <!-- CONFIRM BEFORE LAUNCH: every absolute URL below assumes this landing
+         page is served from https://cracker.global. If it is a different
+         domain, canonical, og:url and og:image all point at the wrong place,
+         and a wrong canonical is worse than none. -->
+    <link rel="canonical" href="https://cracker.global/" />
+
+    <title>Cracker · An American-built meme ecosystem</title>
+    <meta
+      name="description"
+      content="Launchpad, DEX and wallet in one place. Liquidity locked forever, zero price gap at graduation, and an opening fee that makes bots pay instead of your community."
+    />
+
+    <!-- Icons, rendered from src/assets/favicon.svg by scripts/generate-icons.mjs.
+
+         The .ico is the floor: Safari will not take an SVG favicon, and
+         crawlers, feed readers and unfurlers request /favicon.ico blind, which
+         on an SPA would otherwise be answered with index.html. Chrome and
+         Firefox take the SVG under it and stay sharp at any zoom or pixel
+         ratio. 192 and 512 are not linked here - they belong to the manifest,
+         which is where Android looks. -->
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <meta name="theme-color" content="#f8f8fb" />
+
+    <!-- Open Graph: Facebook, LinkedIn, Telegram, Discord, iMessage. -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Cracker" />
+    <meta property="og:url" content="https://cracker.global/" />
+    <meta property="og:title" content="Cracker · An American-built meme ecosystem" />
+    <meta
+      property="og:description"
+      content="Launchpad, DEX and wallet in one place. Liquidity locked forever, zero price gap at graduation, and an opening fee that makes bots pay instead of your community."
+    />
+    <!-- Absolute URL, not a path: crawlers do not resolve relative og:image.
+         The designed 1200x630 banner, which is the 1.91:1 ratio Facebook,
+         LinkedIn, Discord and Telegram all render at. -->
+    <meta property="og:image" content="https://cracker.global/og-banner.jpg" />
+    <meta property="og:image:type" content="image/jpeg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta
+      property="og:image:alt"
+      content="Cracker: an American-built meme ecosystem with a launchpad, DEX and wallet"
+    />
+
+    <!-- Square, for the messengers that crop to 1:1 rather than letterboxing a
+         wide banner. Listed second: a crawler that only understands one image
+         takes the first, and the wide one is right for most of them. -->
+    <meta property="og:image" content="https://cracker.global/og-banner-square.jpg" />
+    <meta property="og:image:type" content="image/jpeg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="1200" />
+    <meta property="og:locale" content="en_US" />
+
+    <!-- X. summary_large_image is what gets the full-width card. -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@Cracker_Global" />
+    <meta name="twitter:creator" content="@Cracker_Global" />
+    <meta name="twitter:title" content="Cracker · An American-built meme ecosystem" />
+    <meta
+      name="twitter:description"
+      content="Launchpad, DEX and wallet in one place. Liquidity locked forever, zero price gap at graduation, and an opening fee that makes bots pay instead of your community."
+    />
+    <!-- X's own 16:9 crop, so the card is not letterboxed the way a 1.91:1
+         image is inside a summary_large_image. -->
+    <meta name="twitter:image" content="https://cracker.global/og-banner-x.jpg" />
+    <meta
+      name="twitter:image:alt"
+      content="Cracker: an American-built meme ecosystem with a launchpad, DEX and wallet"
+    />
+
+    <meta name="robots" content="index, follow" />
+    <meta name="author" content="Cracker Limited Liability Co." />
+
+    <!-- Organisation schema. This is where the registered entity is stated in a
+         form search engines read, which is worth having for a project whose
+         pitch is that it is US-based and compliant. -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "Cracker",
+        "legalName": "Cracker Limited Liability Co.",
+        "url": "https://cracker.global/",
+        "logo": "https://cracker.global/favicon-512.png",
+        "description": "An American-built meme ecosystem. Launchpad, DEX and wallet in one place.",
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": "30 N Gould St, Ste N",
+          "addressLocality": "Sheridan",
+          "addressRegion": "WY",
+          "postalCode": "82801",
+          "addressCountry": "US"
+        },
+        "sameAs": [
+          "https://x.com/Cracker_Global",
+          "https://cracker.fun",
+          "https://crackerswap.com"
+        ]
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>

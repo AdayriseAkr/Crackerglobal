@@ -1,12 +1,12 @@
 import "./BriefSection.css"
-import crackerCoin from "../../assets/crackerCoin1.png"
+import crackerCoin from "../../assets/crackerCoin1.webp"
 import { useRef, useState , useEffect, useMemo } from "react"
 import useTextSplitAnim from "../CustomHook/useTextSplitAnim.jsx";
-import launchCard from "../../assets/LaunchCard.png"
-import walletCard from "../../assets/walletCard.png"
-import dexCard from "../../assets/dexCard.png"
+import launchpadArt from "../../assets/launchpadMain2.webp"
+import dexArt from "../../assets/dexmain.webp"
+import { LAUNCHPAD_URL, DEX_URL } from "../../siteLinks.js"
 import useInView  from "../CustomHook/useInView";
-import scrollCue from "../../assets/ScrollDown.png";
+import scrollCue from "../../assets/ScrollDown.webp";
 
 export default function BriefSection() {
     const cardRef = useRef(null);
@@ -32,7 +32,17 @@ export default function BriefSection() {
         if (cueInView) setCueShown(true);
       }, [cueInView]);
 
-      const products = ["Launchpad","Wallet", "Dex"];
+      // The wallet borrows the launchpad artwork: it sits blurred behind a
+      // Coming Soon label, so it reads as texture rather than as a screenshot
+      // of something that does not exist yet. Borrowed from Launchpad rather
+      // than Dex because Dex is the card right next to it, and the same shot
+      // twice in a row would be obvious even blurred. When the wallet ships it
+      // wants its own image and this flag removed, nothing else.
+      const products = [
+        { label: "Launchpad", art: launchpadArt, href: LAUNCHPAD_URL },
+        { label: "Dex", art: dexArt, href: DEX_URL },
+        { label: "Wallet", art: launchpadArt, comingSoon: true },
+      ];
 
       const cardStyles = useMemo(() => {
         return products.map((_, index) => ({
@@ -42,8 +52,11 @@ export default function BriefSection() {
       }, [playedOnce]);
 
 
+    // Not id="products" any more: that belongs to the section holding all four
+    // products with their copy and CTAs. Two elements sharing an id would also
+    // mean getElementById returns whichever comes first in the document.
     return(
-        <div className="briefSectionShell">
+        <div id="ecosystem" className="briefSectionShell">
         <div className="briefSectionParent">
             <svg className="svg1" width="819" height="819" viewBox="0 0 819 819" fill="none" xmlns="http://www.w3.org/2000/svg">
 <g filter="url(#filter0_f_3806_495)">
@@ -85,14 +98,56 @@ DEX, WALLET, AND <span style={{color:"#FE6C25"}}>LAUNCHPAD</span>. DESIGNED FOR 
 
            <div ref={cardRef} className="productBox">
             {
-              products.map((item,index) =>{
-                return(
-                  <div style={cardStyles[index]} className="briefProductCard" >
-                  
-                    <img src={index === 0 ? launchCard : index === 1 ? walletCard : dexCard} alt="" srcset="" />
-                    <div className="tagHeading">{item}</div>
+              products.map((product, index) => {
+                const face = (
+                  <>
+                    <img id={`${product.label}img`} src={product.art} alt="" />
+                    <div className="tagHeading">{product.label}</div>
+                    {product.comingSoon ? (
+                      <span className="briefProductSoon">Coming Soon</span>
+                    ) : (
+                      <span className="briefProductGo">
+                        Go
+                        <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+                          <path
+                            d="M3 8h9M8.5 4l4 4-4 4"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="1.8"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                      </span>
+                    )}
+                  </>
+                );
+
+                // A real anchor for the two that go somewhere, a plain div for the
+                // one that does not. An <a> with no href is not a link to the
+                // keyboard or a screen reader, and an <a> pointing nowhere is
+                // worse: it announces itself as clickable and then does nothing.
+                return product.comingSoon ? (
+                  <div
+                    key={product.label}
+                    style={cardStyles[index]}
+                    className="briefProductCard is-soon"
+                  >
+                    {face}
                   </div>
-                )
+                ) : (
+                  <a
+                    key={product.label}
+                    href={product.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={cardStyles[index]}
+                    className="briefProductCard"
+                    aria-label={`Open ${product.label}`}
+                  >
+                    {face}
+                  </a>
+                );
               })
             }
            </div>

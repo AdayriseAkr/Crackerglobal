@@ -1,4 +1,13 @@
+/* Entrance timings for the whole section. Declared here, used by the inline
+   styles in MainFeature.jsx, overridden for phones at the end of this file. */
 .mainFeatureParent{
+    --mf-grid-dur: 3s;
+    --mf-grid-delay: 1s;
+    --mf-img-dur: 1.5s;
+    --mf-img-d1: 3.3s;
+    --mf-img-d2: 3.5s;
+    --mf-img-d3: 3.6s;
+    --mf-img-d4: 3.8s;
     position: relative;
     width: 100%;
     height: auto;
@@ -94,12 +103,22 @@
     width: 55%;
     max-width: 38rem;
     height: 50%;
-    
+
     background-color: var(--color-surface);
     border-radius: var(--radius-lg);
     position: relative;
     overflow: hidden;
-    
+    cursor: pointer;
+    transition: box-shadow var(--duration-fast) var(--ease-quart-out);
+
+}
+
+/* The whole card is a click target now (opens the same dialog as the
+   corner expand button), so it gets its own — deliberately subtle —
+   hover cue rather than staying visually inert until the cursor happens
+   to land on the small icon. */
+.topLeftCard:hover ,.bottomLeftCard:hover,.topRightCard:hover,.bottomRightCard:hover{
+    box-shadow: 0 0 0 2px rgba(var(--color-brand-rgb), 0.18), var(--shadow-drop-sm);
 }
 
 .topLeftCard{
@@ -154,6 +173,7 @@
     border-radius: var(--radius-lg);
     left: 2%;
     bottom: 2%;
+    transition: background-color var(--duration-fast) var(--ease-quart-out);
 }
 
 .cardExpandBtn{
@@ -183,15 +203,56 @@
     color: var(--color-surface-white);
     transform: scale(1.08);
 }
+/* Hovering anywhere on the card lights up the button the same way hovering
+   the button directly does — otherwise the card itself would highlight
+   (the rule above) while its own expand button just sat there unlit,
+   which reads as two disconnected hover states instead of one. */
+.topLeftCard:hover .cardExpandBtn,
+.bottomLeftCard:hover .cardExpandBtn,
+.topRightCard:hover .cardExpandBtn,
+.bottomRightCard:hover .cardExpandBtn{
+    background-color: var(--color-brand);
+    color: var(--color-surface-white);
+    transform: scale(1.08);
+}
 .blTag > p{
     font-size: 1.2rem;
     font-weight: bolder;
     color: var(--color-brand-soft);
     font-weight: bolder;
+    transition: color var(--duration-fast) var(--ease-quart-out);
+}
+/* Same card-hover cascade as .cardExpandBtn above — the label pill joins
+   the rest of the card in reacting to the hover, instead of sitting there
+   unchanged while the border and button light up around it. */
+.topLeftCard:hover .blTag,
+.bottomLeftCard:hover .blTag,
+.topRightCard:hover .blTag,
+.bottomRightCard:hover .blTag{
+    background-color: var(--color-brand);
+}
+.topLeftCard:hover .blTag > p,
+.bottomLeftCard:hover .blTag > p,
+.topRightCard:hover .blTag > p,
+.bottomRightCard:hover .blTag > p{
+    color: var(--color-surface-white);
 }
 
 
 @media (max-width:500px){
+    /* Roughly half. A 4.8s sequence is a long time to watch on a phone, where
+       the section fills the screen and there is nothing else to look at while
+       it plays. The order is unchanged, only the pace. */
+    .mainFeatureParent{
+        --mf-grid-dur: 1.6s;
+        --mf-grid-delay: 0.35s;
+        --mf-img-dur: 0.8s;
+        --mf-img-d1: 1.4s;
+        --mf-img-d2: 1.55s;
+        --mf-img-d3: 1.65s;
+        --mf-img-d4: 1.8s;
+    }
+
     .featureHeading{
         width: 98%;
         gap: 0;
@@ -216,3 +277,74 @@
     
 }
 
+
+/* ---- Tablet ----
+   Everything above this file's phone block was written for a laptop, and the
+   phone block starts at 500px, so a 912px Surface Pro portrait was rendering
+   the DESKTOP layout at two-thirds the width it was drawn for. Two things go
+   wrong there, and they compound:
+
+   The cards are `width: 55%` of a column that is itself 49.3% of a
+   `width: 80%` block — 27% of the viewport, which is 246px on a 912px screen.
+   Their height is 50% of a column that is 110vh, so 752px on a 1368px-tall
+   one. A 246x752 card is the thin bar.
+
+   And the vh heights (110vh on the section, 150vh on the block) are sized for
+   a landscape window. On a portrait tablet they describe a section over two
+   and a half screens tall holding four cards, which is the empty space.
+
+   So: cards fill their column instead of taking a fraction of it, and the
+   heights come off the viewport entirely and onto the cards' own aspect
+   ratio, which is the thing that actually needs to be controlled. */
+@media (min-width: 501px) and (max-width: 1023px) {
+    .mainFeatureParent{
+        min-height: 0;
+        padding-block: 7rem;
+        gap: 2rem;
+    }
+
+    .featureHeading{
+        width: 88%;
+        height: auto;
+        padding-block: 2rem;
+    }
+    .featureHeading p{
+        width: 76%;
+    }
+
+    .featureBlock{
+        width: 92%;
+        min-height: 0;
+    }
+
+    /* height:auto, so the column is as tall as the two cards inside it rather
+       than a slice of the viewport. min-height has to go too — 100vh would
+       otherwise still be the floor and nothing would have changed. */
+    .leftCards, .rightCards{
+        width: 48.5%;
+        height: auto;
+        min-height: 0;
+        gap: 1.6rem;
+    }
+    /* The stagger between the columns is the whole composition here, and it
+       reads as accidental at 5% once the cards are this much wider. */
+    .rightCards{
+        margin-top: 9%;
+    }
+
+    .topLeftCard, .bottomLeftCard, .topRightCard, .bottomRightCard{
+        width: 100%;
+        /* The desktop cap is 38rem, which is narrower than the column is now,
+           so it would undo the line above. */
+        max-width: none;
+        height: auto;
+        /* Beats the `min-height: 100%` that .topLeftCard and .bottomRightCard
+           set for the (disabled) grid entrance animation. Left in place, it
+           makes those two resolve against a parent that no longer has a
+           height. */
+        min-height: 0;
+        /* What sizes the card now. Portrait, because the artwork inside is a
+           full-bleed cover image and these read as posters, not tiles. */
+        aspect-ratio: 3 / 4;
+    }
+}

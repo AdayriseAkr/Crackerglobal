@@ -1,4 +1,5 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+
 import "./SpotlightBento.css";
 import { bentoCards } from "./bentoData";
 import useTextSplitAnim from "../CustomHook/useTextSplitAnim.jsx";
@@ -373,12 +374,12 @@ export default function SpotlightBento() {
   };
 
   return (
-    <section className="bentoSectionParent" ref={sectionRef}>
+    <section id="why-cracker" className="bentoSectionParent" ref={sectionRef}>
       <div className="bentoHeading">
         <span className="bentoEyebrow">The Guarantees</span>
         <h1 ref={titleRef}>Why Cracker</h1>
         <p ref={leadRef}>
-          Six commitments written into the contracts rather than a roadmap — so
+          Six commitments written into the contracts rather than a roadmap, so
           nobody, us included, can quietly change them later.
         </p>
       </div>

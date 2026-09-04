@@ -43,6 +43,7 @@ function EntryAnimationController({
 ================================ */
 const Robot = memo(function Robot({ isHovering, progressRef }) {
   const { scene } = useGLTF(roboModel);
+
   const headRef = useRef(null);
   const rightArmRef = useRef(null);
   const leftArmRef = useRef(null);
@@ -54,7 +55,11 @@ const Robot = memo(function Robot({ isHovering, progressRef }) {
     rightTarget: new THREE.Quaternion(),
     leftTarget: new THREE.Quaternion(),
   });
- const visualXOffset = -1.4; // 👈 tweak once, done forever
+ /* -1.4 world units left of centre, which is the framing this was tuned to on
+    a wide canvas. It only ever needed to vary because tablets were rendering
+    the robot at all; they no longer do (Footer.jsx drops it below 1024px), so
+    a single value is correct again for every canvas that reaches this. */
+ const visualXOffset = -1.4;
   useLayoutEffect(() => {
   // 🔹 Always reset first (prevents refresh / hot-reload bugs)
   scene.position.set(0, 0, 0);

@@ -259,15 +259,31 @@
   max-width: 46ch;
 }
 
-.processTags {
+/* One pill per feature, wrapped in a row — the panel carries its headline and
+   a single intro line, and these stay labels rather than growing explanations
+   of their own. */
+.processFeatures {
   list-style: none;
   display: flex;
   flex-wrap: wrap;
+  /* Not the default `stretch`: these are flex items, so stretch makes every
+     pill in a row as tall as the tallest one in it. One long label taking two
+     lines would inflate its neighbours to match, turning a row of pills into a
+     row of blocks. flex-start lets each pill be exactly its own height. */
+  align-items: flex-start;
   gap: 0.8rem;
   margin-top: 0.6rem;
 }
 
-.processTag {
+.processFeature {
+  display: inline-flex;
+  align-items: center;
+  /* A label wraps to the next ROW, never inside its own pill — the shaded box
+     should be the size of the words in it, not of the space left on the line
+     where it happened to land. ("Cross-Chain Bridge Built In" was the one that
+     kept breaking across two lines and doubling its pill height.) */
+  white-space: nowrap;
+  gap: 0.8rem;
   padding-inline: 1.4rem;
   padding-block: 0.8rem;
   border-radius: var(--radius-pill);
@@ -275,6 +291,28 @@
   color: var(--color-accent-auction);
   font-size: 1.2rem;
   font-weight: 600;
+}
+
+.processFeatureSoon {
+  padding-inline: 0.8rem;
+  padding-block: 0.3rem;
+  border-radius: var(--radius-pill);
+  background-color: rgba(11, 11, 11, 0.08);
+  color: var(--text-soft);
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/* Disabled because the product is not out yet, not because of an error — so it
+   reads as muted and inert rather than broken, and drops the arrow entirely
+   since there is nowhere for it to point. */
+.processCta--soon,
+.processCta:disabled {
+  cursor: default;
+  opacity: 0.55;
+  filter: grayscale(0.35);
 }
 
 /* ---- CTA ----
@@ -452,6 +490,17 @@
       rgba(255, 214, 185, 0.3) 40%,
       rgba(255, 240, 230, 0) 72%
     );
+  /* The two diagonal streaks are full-bleed linear gradients — unlike the
+     radial bloom, they don't taper toward the section's own edges, so
+     whatever opacity they carry at 118deg keeps going right up to the
+     bottom edge. .processSection's overflow:hidden then hard-clips
+     whatever is still lit at that instant, and BriefSection right below
+     starts from flat, untinted canvas — the mismatch reads as a seam line
+     exactly at the section boundary. Masking the wash's own bottom slice
+     to transparent guarantees it has already faded out before it gets
+     anywhere near that edge, so there's nothing left to clip. */
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 82%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 0%, #000 82%, transparent 100%);
 }
 
 /* The hairline circle. It is white, which only reads because the bloom above
@@ -502,8 +551,8 @@
   display: block;
   width: clamp(9rem, 11vh, 14rem);
   aspect-ratio: 155 / 117;
-  -webkit-mask: url("../../assets/Logo.png") center / contain no-repeat;
-  mask: url("../../assets/Logo.png") center / contain no-repeat;
+  -webkit-mask: url("../../assets/Logo.webp") center / contain no-repeat;
+  mask: url("../../assets/Logo.webp") center / contain no-repeat;
   background-color: var(--brand);
   background-image: linear-gradient(
     112deg,
@@ -667,9 +716,37 @@
      arc peeking in from the left. Raised above .processStage (z-index 2)
      so it reads as a floating accent over the active panel's own text
      rather than sitting behind it. */
+  /* Lifts the phase copy off the bottom of the pinned viewport, clear of the
+     arc and its numbers.
+
+     Padding rather than a transform: GSAP writes an inline transform on these
+     panels for the y-slide between phases, so a transform declared here would
+     be overwritten the first time a phase changed and never come back.
+
+     vh rather than %: percentage padding resolves against the containing
+     block's WIDTH, so a % here would mean something different on every screen
+     and would not be a share of the height at all. The panel centres its
+     content, so bottom padding lifts it by half — 16vh of padding is an 8vh
+     shift up. */
+  .processPanel {
+    padding-bottom: 16vh;
+  }
+
   .processRing {
-    --ring-radius: clamp(9rem, 30vw, 12rem);
-    --ring-number: clamp(2.6rem, 7.5vw, 3.2rem);
+    /* Radius roughly one screen width, where it used to be a third of one.
+       The centre sits below the section and the apex is pinned 5.75rem above
+       its bottom edge (see `bottom` below), so a larger radius does not move
+       the top of the arc, it only flattens it: across a 390px screen the arc
+       now falls about 50px from the middle to the edges instead of about
+       200px, which is the shallow dome in the wireframe rather than a tight
+       bowl. It spaces the numbers out too — they sit radius * 18deg apart,
+       so this takes the gap from about 38px to about 128px and spreads the
+       four of them across the full width instead of bunching them. */
+    --ring-radius: clamp(32rem, 105vw, 46rem);
+    /* Bigger: about 43px on a 390px screen, up from about 29px. The numbers
+       sit radius * 18deg apart, roughly 128px, so there is room for this
+       without them crowding each other. */
+    --ring-number: clamp(3.6rem, 11vw, 4.6rem);
 
     top: auto;
     left: 50%;
@@ -677,30 +754,53 @@
     z-index: 3;
   }
 
-  /* A soft canvas-coloured halo behind the numbers, so wherever they cross
-     the active panel's own text it reads as a deliberate blend rather than
-     a hard collision. */
-  .processRing::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: calc(var(--ring-radius) * 2.2);
-    height: calc(var(--ring-radius) * 2.2);
-    margin: calc(var(--ring-radius) * -1.1);
-    border-radius: 50%;
-    background: radial-gradient(
-      circle,
-      var(--color-canvas) 0%,
-      var(--color-canvas) 42%,
-      transparent 70%
-    );
-    pointer-events: none;
+  .processRingStep {
+    font-size: 1.4rem;
+    transform: rotate(var(--angle)) translateY(calc(-1 * var(--ring-radius)));
   }
 
-  .processRingStep {
-    font-size: 1.1rem;
-    transform: rotate(var(--angle)) translateY(calc(-1 * var(--ring-radius)));
+  /* The arc dissolving into the page at both ends.
+
+     These have to be screen-fixed, which is why they live on .processBody and
+     not on the ring: .processRing carries the scroll-driven rotate(), so a
+     mask applied there would spin with it and a number would stay faded as it
+     travelled to the middle. Painted over the ring (z-index 4 against its 3).
+
+     The background gradient runs horizontally from the edge itself: solid
+     canvas at x=0, holding to 30%, gone by the inner end. The mask then
+     dissolves the whole strip upward, which is what keeps it off the panel
+     text — that runs the full width at this breakpoint, so a strip solid to
+     its top edge would wash out the ends of every line. Two axes, two
+     properties: horizontal fade in the paint, vertical fade in the mask. */
+  .processBody::before,
+  .processBody::after {
+    content: "";
+    position: absolute;
+    z-index: 4;
+    bottom: 0;
+    width: 46%;
+    height: 18rem;
+    pointer-events: none;
+    -webkit-mask-image: linear-gradient(to top, #000 55%, rgba(0, 0, 0, 0) 100%);
+    mask-image: linear-gradient(to top, #000 55%, rgba(0, 0, 0, 0) 100%);
+  }
+  .processBody::before {
+    left: 0;
+    background: linear-gradient(
+      to right,
+      var(--color-canvas) 0%,
+      var(--color-canvas) 30%,
+      transparent 100%
+    );
+  }
+  .processBody::after {
+    right: 0;
+    background: linear-gradient(
+      to left,
+      var(--color-canvas) 0%,
+      var(--color-canvas) 30%,
+      transparent 100%
+    );
   }
 }
 

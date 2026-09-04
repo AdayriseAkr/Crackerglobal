@@ -9,6 +9,15 @@ import { lenisRef } from "../Lenis.jsx";
 
 const GENIE_DURATION = 450;
 
+// The two detail CTAs ("Explore the Mechanics", "Read the Audit", and their
+// per-card equivalents) are hidden until the pages they point at exist —
+// shipping buttons that go nowhere is worse than not showing them at all.
+// Nothing has been deleted to do this: the markup below, the styles in
+// FeatureDialog.css and the ctaPrimary/ctaSecondary copy in featureDialogData.js
+// are all intact, so flipping this to true is the whole job of bringing them
+// back once the detail pages and audit link are ready.
+const SHOW_DETAIL_CTAS = false;
+
 const REVEAL_EASE = [0.2, 0, 0, 1];
 
 function formatValue(value, { prefix = "", suffix = "", decimals = 0 } = {}) {
@@ -31,16 +40,23 @@ function Stat({ stat, active }) {
   );
 }
 
-// Big showcase number that counts up once, then keeps ticking gently upward —
-// mirrors the "always-live" figures seen on the reference site.
-function useLiveValue(target, { active, decimals = 0, duration = 1600 }) {
+// Big showcase number that counts up once, and then — only for a card that asks
+// for it — keeps ticking gently upward, mirroring the "always-live" figures seen
+// on the reference site.
+//
+// The drift is opt-in (chart.live) rather than the default because most of these
+// figures are fixed protocol constants: a curve target, a fee percentage, a
+// creator share. Drifting those upward would not read as liveness, it would read
+// as the number being wrong — "0% gap" creeping to 0.05% claims the opposite of
+// what the card says. Only a genuinely cumulative figure should set the flag.
+function useLiveValue(target, { active, drift = false, decimals = 0, duration = 1600 }) {
   const counted = useCountUp(target, { start: active, decimals, duration });
   const [live, setLive] = useState(counted);
 
   useEffect(() => setLive(counted), [counted]);
 
   useEffect(() => {
-    if (!active) return;
+    if (!active || !drift) return;
     const interval = setInterval(() => {
       setLive((current) => {
         const bump = current * (0.0006 + Math.random() * 0.0012);
@@ -49,7 +65,7 @@ function useLiveValue(target, { active, decimals = 0, duration = 1600 }) {
       });
     }, 2600);
     return () => clearInterval(interval);
-  }, [active, decimals]);
+  }, [active, drift, decimals]);
 
   return live;
 }
@@ -57,6 +73,7 @@ function useLiveValue(target, { active, decimals = 0, duration = 1600 }) {
 function ShowcasePanel({ card, active }) {
   const liveValue = useLiveValue(card.chart.value, {
     active,
+    drift: Boolean(card.chart.live),
     decimals: card.chart.decimals || 0,
     duration: 1600,
   });
@@ -202,15 +219,17 @@ export default function FeatureDialog({ card, origin, onClose }) {
             <p className="fd-eyebrow">{card.eyebrow}</p>
             <h2 className="fd-title">{card.title}</h2>
             <p className="fd-description">{card.description}</p>
-            <div className="fd-cta-row">
-              <button className="fd-cta fd-cta--primary">
-                {card.ctaPrimary}
-                <svg width="14" height="10" viewBox="0 0 14 10" fill="none">
-                  <path d="M1 5H13M13 5L9 1M13 5L9 9" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-              </button>
-              <button className="fd-cta fd-cta--ghost">{card.ctaSecondary}</button>
-            </div>
+            {SHOW_DETAIL_CTAS && (
+              <div className="fd-cta-row">
+                <button className="fd-cta fd-cta--primary">
+                  {card.ctaPrimary}
+                  <svg width="14" height="10" viewBox="0 0 14 10" fill="none">
+                    <path d="M1 5H13M13 5L9 1M13 5L9 9" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </button>
+                <button className="fd-cta fd-cta--ghost">{card.ctaSecondary}</button>
+              </div>
+            )}
           </motion.div>
 
           <motion.ul className="fd-bullets" custom={0.12} variants={revealVariants} initial="hidden" animate="visible">

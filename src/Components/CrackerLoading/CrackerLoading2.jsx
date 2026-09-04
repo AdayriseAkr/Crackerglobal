@@ -1,5 +1,5 @@
 import "./CrackerLoading.css";
-import Logo from "../../assets/Logo.png"
+import Logo from "../../assets/Logo.webp"
 import { useState , useEffect, use } from "react";
 import { pre } from "framer-motion/m";
 export default function CrackerLoading2({loadingComplete = false , unmount} ) {
@@ -60,7 +60,7 @@ export default function CrackerLoading2({loadingComplete = false , unmount} ) {
         fill="none"
         style={{
           width: "100%",          // stretches horizontally
-          height: "100vh",        // always fills screen vertically
+          height: "100%",         // 100% of .leftSide, which is 100% of the overlay
           objectFit: "cover",     // ensures full coverage
           display: "block",
         }}
@@ -127,7 +127,7 @@ export default function CrackerLoading2({loadingComplete = false , unmount} ) {
         fill="none"
         style={{
           width: "100%",          // full width
-          height: "100vh",        // full height of screen
+          height: "100%",         // 100% of .rightSide, which is 100% of the overlay
           objectFit: "cover",     // ensures full coverage
           display: "block",
         }}

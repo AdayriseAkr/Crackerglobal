@@ -303,8 +303,12 @@ export default function ProcessSection() {
     event.currentTarget.style.setProperty("--shine", "0");
   };
 
+  // id="products" lives here, not on the Brief section. This is the one holding
+  // all four products with their copy and CTAs; the Brief section is a
+  // three-card teaser that leaves out Egg Bot entirely, and it was what the
+  // nav's Products link used to land on.
   return (
-    <section className="processSection" ref={sectionRef}>
+    <section id="products" className="processSection" ref={sectionRef}>
       {/* Dissolve the ring into the page at the edges, so the arc has no hard
           cut-off and never collides with the heading. Painted above the ring
           but below the text and visual, which keeps those crisp. */}
@@ -314,7 +318,9 @@ export default function ProcessSection() {
 
       <div className="processInner" ref={innerRef}>
         <header className="processIntro">
-          <span className="processEyebrow">The Process</span>
+          {/* Was "The Process", which framed four parallel products as stages
+              of one. */}
+          <span className="processEyebrow">What We&apos;ve Built</span>
           <h1 ref={titleRef}>Four products, one ecosystem</h1>
         </header>
 
@@ -349,14 +355,21 @@ export default function ProcessSection() {
                 aria-hidden={pinned && index !== active}
               >
                 <p className="processPhase">
-                  Phase {String(index + 1).padStart(2, "0")}
+                  {/* The number stays: in a pinned section it tells you where
+                      you are in the run of panels. It is the word "Phase" that
+                      claimed a timeline. Same shape the Main Feature dialogs
+                      already use ("01 — Liquidity & Security"). */}
+                  {String(index + 1).padStart(2, "0")}. {step.productLabel}
                 </p>
                 <h2 className="processTitle">{step.title}</h2>
                 <p className="processText">{step.description}</p>
-                <ul className="processTags">
-                  {step.tags.map((tag) => (
-                    <li key={tag} className="processTag">
-                      {tag}
+                <ul className="processFeatures">
+                  {step.features.map((feature) => (
+                    <li key={feature.label} className="processFeature">
+                      {feature.label}
+                      {feature.comingSoon && (
+                        <span className="processFeatureSoon">Coming soon</span>
+                      )}
                     </li>
                   ))}
                 </ul>
@@ -390,6 +403,24 @@ export default function ProcessSection() {
                     </>
                   );
 
+                  if (step.cta.comingSoon) {
+                    return (
+                      <button
+                        type="button"
+                        {...shared}
+                        className="processCta processCta--soon"
+                        disabled
+                      >
+                        <span>{step.cta.label}</span>
+                      </button>
+                    );
+                  }
+
+                  // Launchpad and Dex are separate products on their own
+                  // domains, so they open alongside rather than replacing
+                  // the page someone is still reading.
+                  const external = /^https?:/i.test(step.cta.href ?? "");
+
                   return step.cta.downloads ? (
                     <button
                       type="button"
@@ -400,7 +431,12 @@ export default function ProcessSection() {
                       {content}
                     </button>
                   ) : (
-                    <a {...shared} href={step.cta.href}>
+                    <a
+                      {...shared}
+                      href={step.cta.href}
+                      target={external ? "_blank" : undefined}
+                      rel={external ? "noopener noreferrer" : undefined}
+                    >
                       {content}
                     </a>
                   );

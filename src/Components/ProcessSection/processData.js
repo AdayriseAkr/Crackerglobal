@@ -1,11 +1,19 @@
-// Steps for the pinned process section.
+// Steps for the pinned process section — the four products, one panel each.
 //
-// `modifiers`-free by design: everything here is content. The phase number is
-// derived from array order by the component, so reordering renumbers itself.
+// `modifiers`-free by design: everything here is content. The index is derived
+// from array order by the component, so reordering renumbers itself;
+// `productLabel` is the product name that sits beside it ("01 — Launchpad")
+// and is separate from `title`, which is the headline for that product.
 //
-// Every `href` is a placeholder anchor, not a real destination. They are
-// written as fragments so a stray click can't navigate off the page before the
-// real URLs land.
+// These were `phaseLabel` and rendered as "Phase 01". They are not phases:
+// all four exist alongside each other, and two of them are Coming Soon, so a
+// numbered sequence read as a delivery roadmap that had reached step two.
+//
+// Launchpad and Dex point at the live products, through siteLinks.js so there
+// is one copy of each URL. Wallet and Egg Bot have not shipped: their CTAs are
+// `comingSoon`, which the section renders as a disabled button rather than a
+// link, and the fragments they still carry are placeholders for the day they
+// turn on.
 //
 // CTA labels carry no arrow glyph — the button renders its own arrow as an SVG
 // beside the label, so a "→" in the string would show up twice.
@@ -13,41 +21,61 @@
 // Grid placement and the ring are driven by array order, so the ORDER of this
 // array is load-bearing.
 
-import launchpadImage from "../../assets/launchpad.png";
-import dexImage from "../../assets/dexCard.png";
-import walletImage from "../../assets/wallet.png";
-import botImage from "../../assets/xbot.png";
+import { LAUNCHPAD_URL, DEX_URL } from "../../siteLinks.js";
+
+import launchpadImage from "../../assets/launchpad.webp";
+import dexImage from "../../assets/dexCard.webp";
+import walletImage from "../../assets/wallet.webp";
+import botImage from "../../assets/xbot.webp";
 
 export const processSteps = [
   {
     id: "launchpad",
-    title: "Launchpad",
+    productLabel: "Launchpad",
+    title: "Launch Your Token",
     description:
-      "Tokens go live with liquidity locked and supply distributed from block one. Every launch is bonded, auditable, and free of the insider allocation that quietly decides most of them.",
-    tags: ["Fair Launch", "Locked Liquidity", "Anti-Snipe"],
+      "Create a token in 60 seconds. Launch directly into permanently locked liquidity. No vesting, no unlocks, no exit scams.",
+    features: [
+      { label: "Liquidity Locked Forever" },
+      { label: "Zero Price Jump" },
+      { label: "Bots Pay, You Don't" },
+    ],
     image: launchpadImage,
-    cta: { label: "Launch a Token", href: "#launchpad" },
+    cta: { label: "Launch a Token", href: LAUNCHPAD_URL },
   },
   {
     id: "swap",
-    title: "CrackerSwap",
+    productLabel: "Dex",
+    title: "Trade with No Surprises",
     description:
-      "Find the cheapest, fastest route across chains before you commit. Bridge in from the major networks, with the total cost shown upfront so there's no surprise at signing.",
-    tags: ["Best Rate", "Cross-Chain Bridge", "No Hidden Fees"],
+      "Swap across five chains. See the best rate before you commit, bridge included, zero hidden fees.",
+    features: [
+      { label: "Best Route, Upfront" },
+      { label: "Cross-Chain Bridge Built In" },
+      { label: "No Hidden Fees" },
+    ],
     image: dexImage,
-    cta: { label: "Start Swapping", href: "#crackerswap" },
+    cta: { label: "Start Swapping", href: DEX_URL },
   },
   {
     id: "wallet",
-    title: "Crackerwallet",
+    productLabel: "Wallet",
+    title: "Self-Custody, Every Chain",
     description:
-      "A self-custody wallet with native BTC and SOL, not wrapped versions pretending to be them. Launch, swap, bridge, and chart from one app, with duplicate-ticker protection so scam clones can't pass as the real thing.",
-    tags: ["Self-Custody", "Native Assets", "Anti-Scam"],
+      "Native Bitcoin and Solana keys. No wrapped versions, no bridge risk. Launch, swap, send, all from one app.",
+    features: [
+      { label: "True Self-Custody" },
+      { label: "Native Assets, Real Security" },
+      { label: "One App, Every Network" },
+    ],
     image: walletImage,
-    // `downloads` instead of `href`: this CTA opens the platform picker rather
-    // than navigating. Each entry's `id` selects its badge styling.
+    // `comingSoon` short-circuits the CTA into a disabled button, so the
+    // platform picker below it is unreachable until the wallet actually ships.
+    // The `downloads` payload is deliberately left intact rather than deleted:
+    // removing this one flag is the whole job of turning the CTA back on.
     cta: {
-      label: "Get Early Access",
+      label: "Coming Soon",
+      comingSoon: true,
       dialogTitle: "Get Crackerwallet",
       dialogSubtitle:
         "Native BTC and SOL, self-custody, with duplicate-ticker protection built in. Choose your platform.",
@@ -60,11 +88,20 @@ export const processSteps = [
   },
   {
     id: "eggbot",
-    title: "Egg Bot",
+    productLabel: "Egg Bot",
+    title: "Deploy from X or Telegram",
     description:
-      "Deploy a token straight from a tweet or a Telegram thread, no browser tab required at the exact moment your idea is hot. Non-custodial by design, you sign every transaction, we never touch your keys.",
-    tags: ["Deploy from X", "Deploy from Telegram", "Non-Custodial"],
+      "Launch a token straight from a tweet or thread. No browser tab needed. Sign every transaction, we never touch your keys.",
+    features: [
+      { label: "Deploy from X", comingSoon: true },
+      { label: "Deploy from Telegram", comingSoon: true },
+      { label: "You Control Every Transaction" },
+    ],
     image: botImage,
-    cta: { label: "Try Egg Bot", href: "#egg-bot" },
+    // Both deploy channels are still unreleased, so the product CTA is
+    // disabled the same way the wallet's is. `href` is kept for the day it
+    // turns back on: deleting `comingSoon` and restoring the label is the
+    // whole change.
+    cta: { label: "Coming Soon", comingSoon: true, href: "#egg-bot" },
   },
 ];

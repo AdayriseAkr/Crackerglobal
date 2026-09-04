@@ -24,12 +24,15 @@
 // ORDER of this array is load-bearing — cards 3 and 4 are the wide ones, and
 // they hold the two longest pieces of copy for that reason.
 
-import entityImage from "../../assets/entity.png";
-import securityImage from "../../assets/security.png";
-import liquidityImage from "../../assets/liquidity.png";
+import entityImage from "../../assets/entity.webp";
+import securityImage from "../../assets/security.webp";
+import liquidityImage from "../../assets/liquidity.webp";
+// Stays PNG on purpose: this one is 267 KB as PNG and 335 KB as WebP even at
+// q60, so converting it would cost 68 KB rather than save any (scripts/optimize-images.mjs
+// measures every file and skips the ones WebP cannot beat).
 import tokenomicsImage from "../../assets/tokenomics.png";
-import feesImage from "../../assets/fees.png";
-import fundingImage from "../../assets/funding.png";
+import feesImage from "../../assets/fees.webp";
+import fundingImage from "../../assets/funding.webp";
 
 export const bentoCards = [
   {
@@ -58,7 +61,7 @@ export const bentoCards = [
     label: "Liquidity",
     title: "Liquidity Locked",
     description:
-      "At graduation, the LP moves straight into custody with no withdraw path anywhere in the contract. Not for the creator. Not for us. Nobody wakes up one day and pulls the rug, because the code simply doesn't allow it.",
+      "At graduation, the LP locks into custody with no way out. Not for the creator, not for us. The code simply won't allow a rug pull.",
     modifiers: ["feature", "brand"],
     image: liquidityImage,
     // Tallest slot of the six, so the longest travel and slowest settle.
@@ -69,7 +72,7 @@ export const bentoCards = [
     label: "Tokenomics",
     title: "No Token",
     description:
-      "No platform token, no airdrop farm, no emissions quietly diluting you in the background. It's not a launch promise, it's a permanent policy that stays true whether the platform has ten users or ten million.",
+      "No platform token, no airdrop farm, no emissions diluting you later. It's a permanent policy, true whether we're at ten users or ten million.",
     modifiers: ["feature", "tint"],
     image: tokenomicsImage,
     enter: "fade",
@@ -86,10 +89,10 @@ export const bentoCards = [
   },
   {
     id: "funding",
-    label: "Funding",
-    title: "Self-Funded",
+    label: "Compliance",
+    title: "AML Screening",
     description:
-      "No VC, no unlock cliff, no investor who needs an exit by Q3.",
+      "Every wallet is screened first. Sanctioned addresses and restricted jurisdictions never touch the contracts.",
     modifiers: [],
     image: fundingImage,
     enter: "right",

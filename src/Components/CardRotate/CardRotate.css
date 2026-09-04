@@ -119,7 +119,8 @@ will-change: transform;
     font-size: 1.5rem;
     width: 36%;
     color: var(--color-text-muted-section);
-    line-height: 110%;
+    /* Two short lines under a heading, not a paragraph to read. */
+    line-height: 1.15;
 }
 
 /* .WhyWe span{
@@ -127,6 +128,13 @@ will-change: transform;
 } */
   /* The Card Styling */
   .rCard {
+      /* Header icon size, shared by all five cards. They were sized two
+         different ways before: three as bare SVGs at 84-86px through HTML
+         attributes, two as 44px tinted badges — so the badge cards read at
+         about half the weight of the others. Worse on a phone, where the
+         badges scaled with vw and the attribute-sized SVGs could not scale
+         at all. One variable now drives both. */
+      --card-icon: 7.2rem;
       position: absolute;
       top: 32%;
       left: 50%;
@@ -257,11 +265,21 @@ will-change: transform;
     color: var(--color-brand);
   }
 
+  /* 0.86 of the icon size, not 1.0. A filled tile reads heavier than an open
+     line glyph at the same box, so matching the numbers would make these two
+     cards look the largest. Optically equal is the goal, not equal values. */
   .stockIconBadge {
-    width: 4.4rem;
-    height: 4.4rem;
+    width: calc(var(--card-icon) * 0.86);
+    height: calc(var(--card-icon) * 0.86);
     flex-shrink: 0;
-    margin-top: 0.8rem;
+    /* This card sets its own gap (1rem, in #rCard1 .commonCardContent above),
+       which is tighter than the shared one, so the badge carries its spacing
+       itself: down from the tags, and clear of the headline underneath.
+       min() rather than flat rem so both shrink on a phone along with
+       everything else on the card, instead of holding desktop spacing in a
+       card a third the height. */
+    margin-top: min(4.5vw, 2.4rem);
+    margin-bottom: min(2.6vw, 1.4rem);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -480,6 +498,155 @@ will-change: transform;
   .stockStat__change.is-up { color: #1a9c5c; }
   .stockStat__change.is-down { color: #d9432e; }
 
+    /* Same light-card treatment as #rCard1 ("quiet and orangish" — a warm
+     tint instead of a saturated fill), for the cross-chain bridge card. */
+  #rCard4 {
+    background: linear-gradient(165deg, #ffffff 0%, var(--color-surface-tint) 130%);
+    color: var(--color-text-strong);
+    justify-content: flex-start;
+    gap: 1.1rem;
+    padding-top: 2.6rem;
+  }
+  #rCard4 .commonCardContent {
+    position: relative;
+    height: auto;
+    padding-top: 0;
+    gap: 1rem;
+  }
+  #rCard4 .mainTagAndDesc h1 {
+    /* One word longer than its siblings ("Real Stocks", "Community") —
+       the shared default (max(4rem,3vw)) crowded/overflowed at this
+       length, so it's dialed down a notch, not all the way to body text. */
+    font-size: max(3.2rem, 2.4vw);
+    color: var(--color-text-strong);
+  }
+  #rCard4 .mainTagAndDesc p {
+    color: var(--color-text-muted-section);
+  }
+  .bridgeIconBadge {
+    width: calc(var(--card-icon) * 0.86);
+    height: calc(var(--card-icon) * 0.86);
+    flex-shrink: 0;
+    /* Tuned live via the dev-only bridge-card panel, then baked in here. */
+    margin-top: 33.5px;
+    margin-bottom: 12.8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-lg);
+    background: rgba(var(--color-brand-rgb), 0.12);
+    color: var(--color-brand);
+  }
+
+  /* The glyph inside a badge was a fixed 28px, so it stayed put while the
+     tile around it changed size. A share of the tile keeps the padding
+     looking the same at every breakpoint. */
+  .stockIconBadge svg,
+  .bridgeIconBadge svg {
+    width: 62%;
+    height: 62%;
+  }
+
+  /* Hub-and-spoke diagram: 5 nodes each side wired to a central hub. Laid
+     out in the client's own SVG (BridgeDiagram.jsx), reproduced at its
+     native 711x308 viewBox — width:100% with no preserveAspectRatio
+     override lets the browser scale it uniformly (no stretching the real
+     logos out of shape), and the container's aspect-ratio keeps the
+     layout from jumping while it loads. */
+  .bridgeDiagram {
+    width: 100%;
+    max-width: 46rem;
+    /* Auto top-margin soaks up all the card's leftover height, pushing the
+       diagram down against the card's own bottom padding (2rem, from the
+       shared .rCard rule) instead of sitting right underneath the subline
+       — the headline/subline get the freed-up space above instead. The
+       translateY is the final offset picked via the dev-only bridge-card
+       tuning panel, nudging it up off that padding edge. */
+    margin-top: auto;
+    margin-bottom: 0.5rem;
+    transform: translateY(-29px);
+  }
+  .bridgeDiagram__svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 711 / 380;
+  }
+  .bridgeLine {
+    fill: none;
+  }
+  /* pathLength="100" on these (see .jsx) fixes the path's length unit at
+     100 regardless of its real on-screen geometry. A dash 15 units long
+     needs its offset swept a full 230 units (+115 -> -115) to clear the
+     entire 100-unit path in both directions — from fully-before-the-start
+     to fully-past-the-end. The dash's LEADING edge only touches the far
+     endpoint once offset reaches -85, and isn't fully past it until -100;
+     stopping the sweep at -15 (an earlier, wrong build) only carried the
+     dash to about the 30-unit mark, i.e. the pulse died a third of the way
+     down the line and never actually reached the hub or the far node. */
+  .bridgeLine--pulse {
+    stroke-width: 3;
+    stroke-linecap: round;
+    stroke-dasharray: 15 400;
+    opacity: 0;
+  }
+  .bridgeLine--pulseLeft {
+    stroke: var(--color-accent-violet);
+    animation: bridgePulseLeft 6s ease-in-out infinite;
+  }
+  .bridgeLine--pulseRight {
+    stroke: var(--color-brand);
+    animation: bridgePulseRight 6s ease-in-out infinite;
+  }
+  /* One shared 6s loop, split into phases by percentage: left lines fire
+     first (pulse travels node -> hub), the hub glows once they've all
+     actually landed, then right lines fire (pulse travels hub -> node),
+     then a quiet tail before it repeats. Per-node animation-delay (see
+     .jsx, up to 0.2s across the 5 lines on a side) staggers them slightly
+     so they read as a cascade rather than one flash — the hub's own
+     animation carries no delay, so its 26% start is set comfortably after
+     22%+stagger (~25.3% at the latest), not right at the first line's own
+     arrival, so it never fires before every pulse has actually touched it. */
+  @keyframes bridgePulseLeft {
+    0%   { stroke-dashoffset: 115; opacity: 0; }
+    3%   { opacity: 1; }
+    22%  { stroke-dashoffset: -100; opacity: 1; }
+    25%  { stroke-dashoffset: -100; opacity: 0; }
+    100% { stroke-dashoffset: 115; opacity: 0; }
+  }
+  @keyframes bridgePulseRight {
+    0%, 50% { stroke-dashoffset: 115; opacity: 0; }
+    53%     { opacity: 1; }
+    72%     { stroke-dashoffset: -100; opacity: 1; }
+    75%     { stroke-dashoffset: -100; opacity: 0; }
+    100%    { stroke-dashoffset: 115; opacity: 0; }
+  }
+
+  /* Hub reacting only once every left pulse has arrived (26%), finishing
+     with room to spare before the right pulses depart (50%). An outer
+     blurred ring read as a drop shadow, not a glow, so this uses two
+     effects on the hub's own shape instead: the fill blinking between the
+     normal and a lighter orange, and a white duplicate of the same path
+     brightening on top of it (an inner "whiter" highlight, not an outside
+     blur). Both share one 3-peak rhythm for "glow 2-3 times". */
+  .bridgeHubFill {
+    animation: bridgeHubFillPulse 6s ease-in-out infinite;
+  }
+  @keyframes bridgeHubFillPulse {
+    0%, 26%, 47%, 100% { fill: #FE5800; }
+    31%, 38%, 44%      { fill: var(--color-brand-soft); }
+    34.5%, 41%         { fill: #FE5800; }
+  }
+  .bridgeHubShine {
+    opacity: 0;
+    animation: bridgeHubShinePulse 6s ease-in-out infinite;
+  }
+  @keyframes bridgeHubShinePulse {
+    0%, 26%, 47%, 100% { opacity: 0; }
+    31%, 38%, 44%      { opacity: 0.55; }
+    34.5%, 41%         { opacity: 0.15; }
+  }
+
   #rCard2 {
     background-color: var(--color-accent-orange);
   }
@@ -488,6 +655,14 @@ will-change: transform;
   }
   #rCard3 {
     background-color: var(--color-accent-black);
+  }
+  /* The 5rem base gap (shared by every card) was sized around the bigger
+     scaled icon — back at its true 84px size, that same gap on both sides
+     of it reads as too much empty space before the headline arrives.
+     Tightened just for this card so "Non-Custodial" and its paragraph sit
+     closer to the icon instead of floating further down the card. */
+  #rCard3 .commonCardContent {
+    gap: 2.6rem;
   }
 
   .commCardCircle{
@@ -522,13 +697,13 @@ will-change: transform;
     transform:translateX(-50%) rotateZ(-20deg);
   }
   #ci3{
-    
+
     left: 7%;
     top: 27%;
     transform: translateY(-50%) rotateZ(-45deg);
   }
   #ci4{
-    
+
     left: 0%;
     top: 50%;
     transform: translateY(-50%) rotateZ(-90deg);
@@ -541,7 +716,7 @@ will-change: transform;
 }
 #ci6{
   left: unset;
-  
+
    right: 7%;
     top: 27%;
     transform: translateY(-50%) rotateZ(45deg);
@@ -549,7 +724,7 @@ will-change: transform;
 #ci1{
   left: unset;
   right: 0%;
-  
+
    top: 50%;
     transform: translateY(-50%) rotateZ(90deg);
 }
@@ -559,24 +734,24 @@ will-change: transform;
     transform:translateX(-50%) rotateZ(-145deg);
 }
 #ci9{
-  
+
     left: 7%;
     bottom: 27%;
     transform: translateY(50%) rotateZ(242deg);
 }
 #ci10{
   top: unset;
-  
+
     left: 0%;
     bottom: 0%;
-    
+
 }
 #ci7{
   top: unset;
   left: 50%;
   bottom: 0%;
- 
- 
+
+
     bottom: 0%;
     transform: translateX(-50%) rotateZ(180deg);
 }
@@ -606,6 +781,9 @@ will-change: transform;
   font-size: 2.5rem;
   font-weight: 600;
 }
+/* 5rem put half a card between the icon and the headline on the two cards
+   that use this value, rCard2 and rCard6. Every other card had already
+   overridden it downward, which is the clearest sign it was too big. */
 .commonCardContent{
   width: 100%;
   /* background-color: pink; */
@@ -616,7 +794,7 @@ will-change: transform;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 5rem;
+  gap: 3.2rem;
 }
 .tagLines{
   width: 100%;
@@ -654,6 +832,7 @@ will-change: transform;
   width: 80%;
   font-size: max(1.5rem,1.3vw);
 }
+
 .imgSlideShow{
   position: absolute;
   width: 95%;
@@ -702,6 +881,26 @@ will-change: transform;
   100% { opacity: 0; }   /* fade out */
 }
 
+/* flex-shrink:0 alone (not a scale) — without it this card's flex column
+   squeezes the icon down to a sliver (measured 84x11 instead of the
+   declared 84x84), which is a separate bug from sizing: an icon that's
+   the wrong SHAPE (flattened) rather than the wrong SIZE. Scale back to
+   1 — the real 84px box, no extra multiplier. */
+/* height only, width auto. Every icon keeps its own aspect ratio — the teal
+   card's is 86x76, not square — and matching their heights is what makes
+   them read as the same size, which is not the same as giving them equal
+   numbers. */
+.cardIcon{
+  height: var(--card-icon);
+  width: auto;
+  flex-shrink: 0;
+}
+
+.nonCustodialIcon{
+  flex-shrink: 0;
+  transform: scale(1);
+}
+
 
 .blackCardGraphics{
   position: absolute;
@@ -721,6 +920,14 @@ will-change: transform;
   box-shadow: 1px 1px 15px rgba(0, 0, 0, 0.316);
   border-radius: var(--radius-sm);
   z-index: var(--z-footer-content);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.blackCardRect1 svg{
+  width: 44%;
+  height: auto;
+  opacity: 0.9;
 }
 #bcard2{
   left: 25%;
@@ -761,11 +968,170 @@ will-change: transform;
  */  z-index: var(--z-footer-content);
 }
 @media (max-width:500px) {
+  /* The white fade across the bottom of the section. It exists to dissolve the
+     cards into Community rather than have them cut off at the section edge,
+     which is worth it on a desktop where there is a long tail to fade across.
+     On a phone Community now sits up inside that tail (margin-top: -9vh in
+     Community.css), so the fade has almost nothing left to fade across and
+     just reads as a pale band over the cards.
+
+     Hidden, not deleted: the GSAP tween that grows it on scroll checks for the
+     element and simply animates something invisible, which costs nothing, and
+     the desktop behaviour is untouched. */
+  .blurryBottom{
+    display: none;
+  }
+
+  /* 36% of the width is about 140px on a phone, roughly four words a line,
+     which is what made this read as a squeezed column rather than a
+     paragraph. Near full width puts it back to a normal measure. */
+  .WhyWe p{
+    width: 84%;
+    font-size: 1.4rem;
+    line-height: 1.15;
+  }
+
   .commCardCircle{
     bottom: -58%;
   }
+}
+
+/* Matches the 800px cutoff the wheel geometry uses in CardRotate.jsx. The
+   card has to be narrower than the viewport or there is no room for the next
+   one to show at the edge, and that peek is the only thing telling a thumb
+   there is anything to swipe to.
+
+   min() on both axes so this stays sane up at the 800px end of the range,
+   where 72vw alone would be a 576px card. margin-left repeats the width
+   expression because it is what centres the element, and the base rule
+   derives it from the desktop width. */
+@media (max-width: 800px) {
+  /* 150vh was sized for the desktop layout, where the cards are much bigger
+     relative to the viewport. On a phone the card ends around 700px into a
+     1266px section, so more than 550px of it was empty before Community
+     started. 120vh with the cards sat slightly lower takes that dead run down
+     to about 360px, which is roughly what the bottom fade needs to dissolve
+     them into the next section. */
+  .cardRotateParent {
+    height: 120vh;
+  }
+
+  /* Shorter section, so the cards move down a little to keep their clearance
+     under the heading. */
+  .blurryBottom{
+    height: 28rem;
+  }
+
+  /* 82 x 112vw, about 320 x 437 on a 390px screen — a 1:1.37 card instead of
+     the 1:1.67 it was. The height is not only a look: it sets how much tilt
+     the wheel can carry before the bottom corners meet (see CardRotate.jsx). */
+  /* top is a percentage of the section, so shortening the section moved the
+     card UP into the heading. 40% of 120vh puts it back at the same 265px it
+     sat at under 150vh/32% — the card keeps its clearance under What You Get,
+     and the height change is spent entirely on the dead run at the bottom. */
   .rCard{
-    height: 58rem;
+    top: 40%;
+    width: min(82vw, 46rem);
+    height: min(112vw, 50rem);
+    min-width: 0;
+    min-height: 0;
+    margin-left: calc(min(82vw, 46rem) / -2);
+    padding: 1.6rem;
+  }
+
+  /* The card is sized in vw here, but its contents were not: every size below
+     was a max(Nrem, Nvw), and on a phone the rem half always won. So the type
+     stayed at its desktop size inside a card a third the width — which is what
+     made the card feel stuffed rather than small. Switching to min(Nvw, Nrem)
+     inverts that: the vw half drives on phones so the content scales with the
+     card, and the rem cap takes over at the top of the range where the card
+     itself stops growing. */
+  .commonCardContent{
+    gap: min(6vw, 3.2rem);
+  }
+  .tagDiv{
+    font-size: min(2.9vw, 1.5rem);
+    padding: min(1.6vw, 8px);
+    padding-inline: min(2.2vw, 10px);
+  }
+  .mainTagAndDesc{
+    gap: min(3vw, 15px);
+  }
+  .mainTagAndDesc h1{
+    font-size: min(7.6vw, 4rem);
+  }
+  .mainTagAndDesc p{
+    width: 88%;
+    font-size: min(3.6vw, 1.9rem);
+    line-height: 1.25;
+  }
+
+  /* The Bridge card's heading has its own smaller size on desktop because the
+     word is longer; it needs the same rem-floor removed as the shared one. */
+  #rCard4 .mainTagAndDesc h1 {
+    font-size: min(6.4vw, 3.2rem);
+  }
+  /* Both badges and all three bare glyphs come off this one value now, so
+     they shrink together instead of the badges alone getting smaller. */
+  .rCard {
+    --card-icon: min(12vw, 7.2rem);
+  }
+  .bridgeIconBadge {
+    margin-top: min(6vw, 33.5px);
+    margin-bottom: min(2.6vw, 12.8px);
+  }
+
+  /* The rotating avatar ring on the Community card.
+
+     Wider, and raised to -61% (tuned on the device). The ring is anchored by
+     its bottom edge, so what shows inside the card is the top cap of the
+     circle: at -61% of a 437px card, a 460px ring crests about 194px above
+     the card's bottom edge. The Join button spans roughly 52-87px, so the
+     avatars arc well over it instead of running through it, which is what
+     they did at the old -58% with the ring sized for desktop.
+
+     max(58rem, 40vw) meant a 580px ring inside a 320px card: sized for the
+     desktop card and never rescaled. */
+  .commCardCircle{
+    width: min(118vw, 58rem);
+    height: min(118vw, 58rem);
+    bottom: -61%;
+  }
+
+  /* 8rem was 80px of avatar on a 320px card. They are placed at fixed
+     percentages around the ring, so oversized ones overlap each other as well
+     as everything underneath. */
+  .commCardCircle img{
+    width: min(13vw, 8rem);
+  }
+
+  /* Scaled to the card like the rest of the content, and lifted clear of the
+     ring's lower arc. */
+  .commJoin{
+    width: min(24vw, 12rem);
+    height: min(9vw, 4.5rem);
+    font-size: min(5vw, 2.5rem);
+    bottom: 12%;
+  }
+
+  #rCard3 .commonCardContent {
+    gap: min(5vw, 2.6rem);
+  }
+
+  /* The Real Stocks orbit, scaled down as one piece.
+
+     --orbit-radius is deliberately left alone: changing it moves the logos
+     further in without making them any smaller, so the ring tightens around
+     the same size logos and the proportions stop being the ones that were
+     designed. Scaling the container takes the ring, the slots, the logos and
+     the spacing between them down together, so the orbit keeps its own
+     geometry and only the overall footprint changes. */
+  .stockOrbit {
+    transform: scale(0.86);
+    transform-origin: center center;
+  }
+  .blackCardRect1{
+    width: min(22vw, 11rem);
   }
 }
 
@@ -774,5 +1140,61 @@ will-change: transform;
   .stockOrbit__counterSpin,
   .stockStatsTrack {
     animation: none;
+  }
+  .bridgeLine--pulse,
+  .bridgeHubShine {
+    animation: none;
+    opacity: 0;
+  }
+  .bridgeHubFill {
+    animation: none;
+  }
+}
+/* ---- Tablet ----
+   801px up to the laptop breakpoint. Below 801 the block above already
+   handles this section, and it stops there because CardRotate.jsx switches
+   the wheel geometry at the same number — the two have to agree, so this
+   starts where that one ends rather than overlapping it.
+
+   Up here the desktop rules apply, and the problem is not the card, it is the
+   room around it: 150vh on a 1368px-tall portrait tablet is a 2050px section
+   holding a 370x490 card. Most of a screen and a half of it is empty.
+
+   The card keeps the desktop wheel geometry (which is what the JS above 800px
+   expects) and only grows a little; the section stops being sized in
+   viewport heights it does not need. */
+@media (min-width: 801px) and (max-width: 1023px) {
+  .cardRotateParent{
+    height: 115vh;
+  }
+
+  /* top is a percentage of the section, so shortening the section pulls the
+     card up into the heading. 38% of 115vh lands it back where 32% of 150vh
+     did, and the height comes off the dead run underneath. */
+  /* Sized against the wheel, not just the screen. CardRotate.jsx switches to
+     a 180vw radius and a 21 degree gap in this band, and those three numbers
+     have to be chosen together: the bottom corners of two neighbours clear
+     each other by 2*(radius - height)*sin(gap/2) - width, so the height works
+     directly against the clearance. At 42 x 55vw capped at 40 x 52rem that
+     comes to roughly 30px of daylight across the whole 801-1023 range. */
+  .rCard{
+    top: 38%;
+    width: min(42vw, 40rem);
+    height: min(55vw, 52rem);
+    min-width: 0;
+    min-height: 0;
+    margin-left: calc(min(42vw, 40rem) / -2);
+  }
+
+  /* 36% of the width is a four-word column at this size. The measure comes up
+     to something readable without running the full width of the section. */
+  .WhyWe p{
+    width: 62%;
+  }
+
+  /* Sized to fade a 150vh section into Community. Over a shorter one it was
+     covering the cards rather than dissolving them. */
+  .blurryBottom{
+    height: 30rem;
   }
 }

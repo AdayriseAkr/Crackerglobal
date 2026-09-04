@@ -1,15 +1,46 @@
-import { useEffect, useLayoutEffect, useRef } from "react";
+import { lazy, Suspense, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import RoboFix from "../Robo3d/RoboFix";
+// Lazy, so three.js and @react-three become their own chunk rather than part
+// of the bundle every visitor waits for. The robot already only renders on a
+// desktop that has scrolled to the footer, but a static import is resolved at
+// load time whether the component is used or not - so phones were downloading
+// a 3D engine to run a section that deliberately does not show it.
+const RoboFix = lazy(() => import("../Robo3d/RoboFix"));
 import "./Footer.css";
 import useInView from "../CustomHook/useInView"; // adjust path if needed
+import { AnimatePresence } from "framer-motion";
+import LegalSheet from "../Legal/LegalSheet.jsx";
 
 gsap.registerPlugin(ScrollTrigger);
 
 export default function Footer() {
   const footerRef = useRef(null);
   const curveRef = useRef(null);
+  // null when closed, otherwise the id of the document being shown.
+  const [openDoc, setOpenDoc] = useState(null);
+
+  // The 3D robot is desktop only. Not hidden with CSS: RoboFix is a WebGL
+  // canvas, and display:none still leaves it compiling shaders and running a
+  // render loop on the device least able to afford it. Not rendering it means
+  // it costs nothing.
+  //
+  // The cutoff was 640px, which left tablets rendering it. It never fit there:
+  // the camera holds a fixed vertical fov, so a narrower canvas keeps the
+  // robot's height and takes away the room beside it, and it read as oversized
+  // however it was scaled. 1024 matches the breakpoint the CSS uses for the
+  // same boundary everywhere else in the site.
+  const ROBOT_HIDDEN_BELOW = "(max-width: 1023px)";
+  const [isSmallScreen, setIsSmallScreen] = useState(
+    () => typeof window !== "undefined" && window.matchMedia(ROBOT_HIDDEN_BELOW).matches
+  );
+
+  useEffect(() => {
+    const mq = window.matchMedia(ROBOT_HIDDEN_BELOW);
+    const onChange = (e) => setIsSmallScreen(e.matches);
+    mq.addEventListener("change", onChange);
+    return () => mq.removeEventListener("change", onChange);
+  }, []);
   let xWidth = 1000;
 
   // The footer's top edge bends from flat to curved as you scroll into it.
@@ -67,30 +98,29 @@ export default function Footer() {
   return (
     <div ref={footerRef} className="footerParent">
         {/* ✅ Robo loads ONLY when footer is in viewport */}
-      {inView && <RoboFix/>}
+      {/* No fallback: the robot is decoration, and a spinner in its place
+          would draw more attention to the gap than the gap does. */}
+      {inView && !isSmallScreen && (
+        <Suspense fallback={null}>
+          <RoboFix />
+        </Suspense>
+      )}
         <div ref={curveRef} className="footerCurve"></div>
       <div className="FooterGradient"></div>
       <div className="footerContent">
         <div className="footerMainContent"></div>
         <div className="footerLeftOption">
-          <p> Stay Up to date</p>
-          <p>get our <br></br>
-              newsletter</p>
-        </div>
-
-        <div className="emailCollector">
-          <input type="email" placeholder="Your Email" />
-          <div className="sendEmailButton">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="15" viewBox="0 0 27 15" fill="none">
-  <path d="M26.7071 8.07136C27.0976 7.68084 27.0976 7.04768 26.7071 6.65715L20.3431 0.29319C19.9526 -0.0973344 19.3195 -0.0973344 18.9289 0.29319C18.5384 0.683714 18.5384 1.31688 18.9289 1.7074L24.5858 7.36426L18.9289 13.0211C18.5384 13.4116 18.5384 14.0448 18.9289 14.4353C19.3195 14.8259 19.9526 14.8259 20.3431 14.4353L26.7071 8.07136ZM0 7.36426V8.36426H26V7.36426V6.36426H0V7.36426Z" fill="white"/>
-</svg>
-          </div>
+          <p>All of Cracker</p>
+          <p>one complete <br></br>
+              ecosystem</p>
         </div>
 
 
-<div id="git"><p>Get in touch</p> <span >Lorem ipsum dolor sit amet consectetur adipisicing elit. Non cum voluptatem veritatis quos magnam rem!</span>
-<a id="mailHref" href="mailto:support@yourdomain.com" target="_blank" rel="noopener noreferrer">
-  support@yourdomain.com
+
+
+<div id="git"><p>Get in touch</p> <span>Questions about the products, partnerships, or anything else.</span>
+<a id="mailHref" href="mailto:support@crackerglobal.com">
+  support@crackerglobal.com
 </a>
 </div>
 
@@ -100,13 +130,33 @@ export default function Footer() {
 <div className="footerBottomOption">
     <p>© 2025 Cracker. All rights reserved.</p>
     <div className="legalBox">
-        <p>Terms & Conditions</p>
-       <p>Privacy Policy</p>
+        {/* Buttons, not <p>. These open a dialog, and a paragraph with an
+            onClick is invisible to the keyboard and announces nothing to a
+            screen reader. */}
+        <button
+          type="button"
+          onClick={() => setOpenDoc("terms")}
+          aria-haspopup="dialog"
+        >
+          Terms &amp; Conditions
+        </button>
+        <button
+          type="button"
+          onClick={() => setOpenDoc("privacy")}
+          aria-haspopup="dialog"
+        >
+          Privacy Policy
+        </button>
     </div>
 </div>
       </div>
 
       
+      <AnimatePresence>
+        {openDoc && (
+          <LegalSheet docId={openDoc} onClose={() => setOpenDoc(null)} />
+        )}
+      </AnimatePresence>
     </div>
   );
 }
