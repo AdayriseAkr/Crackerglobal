@@ -23,19 +23,19 @@
      item spacing cannot drift apart — the marquee maths in the keyframes below
      reads this exact value.
 
-     6rem is not a taste call, it is the smallest round number that keeps the
-     same logo from appearing twice in one frame. The scroll window inside the
-     44rem dock is about 32.4rem once the "Live on" pill has taken its share.
-     At the old 1.2rem gap each logo occupied 4.4rem of pitch, so 7.4 of them
-     fitted across that window — against a list of four. Base was on screen
-     twice at once, which is what made the rail read as a repeating pattern
-     rather than a set of chains.
+     This has a hard floor, and it is close. The scroll window inside the 44rem
+     dock is about 32.4rem once the "Live on" pill has taken its share, and one
+     full pass of the list has to be WIDER than that window or the same logo
+     shows up twice in one frame — which is what the original 1.2rem gap did,
+     fitting 7.4 logos across a list of four. Solving 4 x (3.2 + gap) > 32.4
+     puts the floor at 4.90rem.
 
-     One set has to be wider than the window for that to be impossible:
-     4 x (3.2 + gap) > 32.4 puts the floor at 4.9rem. 6rem clears it with room
-     to spare (a 36.8rem set), leaves 3.5 logos in frame, and holds even if the
-     dock is widened to about 48rem before a repeat could creep back in. */
-  --chains-gap: 6rem;
+     5.2rem: tighter than the 6rem it replaces, still clear of the floor by
+     1.2rem, and 3.9 logos in frame. Below about 4.9 the duplicates come
+     straight back, so this is not a free dial — it is roughly the tightest
+     setting the layout allows while the list is four chains long. A fifth
+     chain would lower the floor and buy room to close it further. */
+  --chains-gap: 5.2rem;
 
   position: absolute;
   /* Above the glass, not under it. The dock paints in layers —
@@ -198,12 +198,14 @@
   /* Timed off the distance rather than fixed, so the logos always drift past at
      the same speed no matter how many there are.
 
-     The multiplier is per-chain seconds, and it went 2s -> 4s along with the
-     gap above: widening the pitch lengthened the lap, and holding the old 2s
-     would have doubled the speed to keep up. 4s x 4 chains = 16s for a 36.8rem
-     set, which is about 23px a second — the same drift as before, slow enough
-     to read and not fast enough to pull the eye off the page. */
-  animation: liveChainsScroll calc(var(--chains-count, 4) * 4s) linear infinite;
+     The multiplier is per-chain seconds and it tracks the gap above: the lap is
+     one set long, so narrowing the pitch shortens the distance, and leaving the
+     duration alone would quietly slow the drift down. 3.65s x 4 chains = 14.6s
+     for a 33.6rem set, which holds it at about 23px a second — slow enough to
+     read, not fast enough to pull the eye off the page. Re-derive this if the
+     gap changes again. */
+  animation: liveChainsScroll calc(var(--chains-count, 4) * 3.65s) linear
+    infinite;
 }
 
 /* Right to left by exactly one set, then it starts over. Because every set is
