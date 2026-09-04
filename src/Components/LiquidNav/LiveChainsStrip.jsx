@@ -11,7 +11,13 @@ import { LIVE_CHAINS } from "./liveChains.js";
    something nagging for attention. Long enough on screen to actually be read
    at a glance and then looked at properly. */
 const FIRST_APPEARANCE_MS = 5000;
-const VISIBLE_MS = 30000;
+/* 40s, up from 30s, which was going away too soon to actually be looked at.
+   It also has to be read against the rail underneath it: one full pass of the
+   chain list now takes 16s, so 30s did not quite leave time for two complete
+   laps and the strip could vanish mid-cycle with a chain half in frame. 40s
+   gives two and a half passes, so whatever a visitor glances up at, the whole
+   list has gone by at least twice before it folds away. */
+const VISIBLE_MS = 40000;
 const RESTING_MS = 15000;
 
 /* Drives the show/hide cycle. Lives here rather than in LiquidNav so the

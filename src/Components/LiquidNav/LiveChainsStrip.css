@@ -21,8 +21,21 @@
   --chains-tile: 3.2rem;
   /* Space after each logo. Declared here so the rail's scroll distance and the
      item spacing cannot drift apart — the marquee maths in the keyframes below
-     reads this exact value. */
-  --chains-gap: 1.2rem;
+     reads this exact value.
+
+     6rem is not a taste call, it is the smallest round number that keeps the
+     same logo from appearing twice in one frame. The scroll window inside the
+     44rem dock is about 32.4rem once the "Live on" pill has taken its share.
+     At the old 1.2rem gap each logo occupied 4.4rem of pitch, so 7.4 of them
+     fitted across that window — against a list of four. Base was on screen
+     twice at once, which is what made the rail read as a repeating pattern
+     rather than a set of chains.
+
+     One set has to be wider than the window for that to be impossible:
+     4 x (3.2 + gap) > 32.4 puts the floor at 4.9rem. 6rem clears it with room
+     to spare (a 36.8rem set), leaves 3.5 logos in frame, and holds even if the
+     dock is widened to about 48rem before a repeat could creep back in. */
+  --chains-gap: 6rem;
 
   position: absolute;
   /* Above the glass, not under it. The dock paints in layers —
@@ -183,10 +196,14 @@
     (var(--chains-tile) + var(--chains-gap)) * var(--chains-count, 4)
   );
   /* Timed off the distance rather than fixed, so the logos always drift past at
-     the same speed no matter how many there are — 8s for a 17.6rem set is
-     about 22px a second, slow enough to read and not fast enough to pull the
-     eye away from the page. */
-  animation: liveChainsScroll calc(var(--chains-count, 4) * 2s) linear infinite;
+     the same speed no matter how many there are.
+
+     The multiplier is per-chain seconds, and it went 2s -> 4s along with the
+     gap above: widening the pitch lengthened the lap, and holding the old 2s
+     would have doubled the speed to keep up. 4s x 4 chains = 16s for a 36.8rem
+     set, which is about 23px a second — the same drift as before, slow enough
+     to read and not fast enough to pull the eye off the page. */
+  animation: liveChainsScroll calc(var(--chains-count, 4) * 4s) linear infinite;
 }
 
 /* Right to left by exactly one set, then it starts over. Because every set is
