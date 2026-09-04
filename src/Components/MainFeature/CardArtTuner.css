@@ -1,0 +1,132 @@
+/* Tuning panel for the Main Feature card art. Development furniture, not part
+   of the design system — so it deliberately does not use the site's tokens or
+   fonts. It should never be mistaken for the page while it is over the top of
+   it, and it should stay legible whatever the section behind it is doing. */
+
+.cardArtTuner {
+  position: fixed;
+  top: 1.2rem;
+  right: 1.2rem;
+  /* Above every layer the site defines, including the loading overlay, so it
+     is reachable whenever it is switched on. */
+  z-index: 2147483000;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 12px;
+  color: #e7e7ea;
+}
+
+.cardArtTunerToggle {
+  border: 1px solid #4a4a55;
+  background: #16161c;
+  color: #e7e7ea;
+  border-radius: 6px;
+  padding: 6px 10px;
+  cursor: pointer;
+  font: inherit;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+}
+
+.cardArtTunerToggle:hover {
+  border-color: #7a7a88;
+}
+
+.cardArtTunerBody {
+  margin-top: 8px;
+  width: 268px;
+  padding: 10px;
+  background: #16161c;
+  border: 1px solid #33333d;
+  border-radius: 8px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45);
+}
+
+.cardArtTunerTabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+
+.cardArtTunerTabs button {
+  flex: 1;
+  padding: 5px 0;
+  border: 1px solid #33333d;
+  background: #1e1e26;
+  color: #9a9aa8;
+  border-radius: 5px;
+  cursor: pointer;
+  font: inherit;
+}
+
+.cardArtTunerTabs button.is-active {
+  background: #2f6df6;
+  border-color: #2f6df6;
+  color: #fff;
+}
+
+.cardArtTunerName {
+  margin: 0 0 8px;
+  color: #9a9aa8;
+}
+
+.cardArtTunerRow {
+  display: grid;
+  /* Fixed label and output columns so the slider starts and ends at the same x
+     on every row — ragged track ends make small differences hard to read. */
+  grid-template-columns: 62px 1fr 48px;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
+.cardArtTunerRow input {
+  width: 100%;
+  accent-color: #2f6df6;
+}
+
+.cardArtTunerRow output {
+  text-align: right;
+  color: #cfcfda;
+}
+
+.cardArtTunerActions {
+  display: flex;
+  gap: 6px;
+  margin: 8px 0 6px;
+}
+
+.cardArtTunerActions button {
+  flex: 1;
+  padding: 6px 0;
+  border: 1px solid #33333d;
+  background: #1e1e26;
+  color: #e7e7ea;
+  border-radius: 5px;
+  cursor: pointer;
+  font: inherit;
+}
+
+.cardArtTunerActions button:hover {
+  border-color: #7a7a88;
+}
+
+.cardArtTunerOut {
+  width: 100%;
+  resize: vertical;
+  background: #0f0f14;
+  color: #9fd0a0;
+  border: 1px solid #33333d;
+  border-radius: 5px;
+  padding: 6px;
+  font: inherit;
+  /* Selectable by hand, because navigator.clipboard needs a secure context and
+     this panel is meant to work on a plain-http preview too. */
+  white-space: pre;
+}
+
+@media (max-width: 500px) {
+  /* On the phone the panel would cover most of the card it is tuning. Narrower,
+     and parked at the top where the cards are not. */
+  .cardArtTunerBody {
+    width: min(268px, calc(100vw - 2.4rem));
+  }
+}

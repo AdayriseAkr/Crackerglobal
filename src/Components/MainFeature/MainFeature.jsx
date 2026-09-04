@@ -3,23 +3,27 @@ import FeatureGradient from "../../assets/FeatureGradient.webp";
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useRef, useState, useMemo } from "react";
 import useInView from "../CustomHook/useInView.jsx";
-// Card face art, named for the feature rather than the file. Three are the real
-// illustrations now; liquidityLock is still on its 400x529 placeholder because
-// no artwork has been supplied for it yet.
+// Card face art, named for the feature rather than the file. All four are the
+// real illustrations now; the topLeft/bottomLeft/topRight/bottomRight
+// placeholders they replaced are gone.
 //
-// The three real ones were cropped to their subject before export, not just
-// resized. Each render arrived on a big soft vignette with a different amount
-// of dead space around it — one had 31% empty above and below, another 20% —
-// so resizing alone would have shown the same robot at three noticeably
-// different sizes across the four cards. They are framed to a common 83% fill
-// instead, which is what makes the set read as one family.
-import liquidityLockArt from "../../assets/topLeft.webp";
+// Each was cropped to its subject before export, not just resized. The renders
+// arrived on a big soft vignette with a different amount of dead space around
+// each one — sniperPayMost had 31% empty above and below, nogap 21% and 16% —
+// so resizing alone would have shown the same robot at four noticeably
+// different sizes across one row of cards. They are framed to a common 83%
+// width fill instead, which is what makes the set read as one family.
+//
+// Where the crop then SITS inside each card is a separate question, and one
+// that only answers itself on screen: see CardArtTuner.jsx.
+import liquidityLockArt from "../../assets/liquidityLockCard.webp";
 import zeroPriceArt from "../../assets/zeroPriceGapCard.webp";
 import botsPayArt from "../../assets/snipersPayCard.webp";
 import creatorFeesArt from "../../assets/earnEveryTradeCard.webp";
 import useTextSplitAnim from "../CustomHook/useTextSplitAnim.jsx";
 import FeatureDialog from "./FeatureDialog.jsx";
 import featureDialogData from "./featureDialogData.js";
+import useCardArtTuner from "./CardArtTuner.jsx";
 
 function ExpandButton({ onClick, label }) {
   return (
@@ -102,10 +106,18 @@ export default function MainFeature() {
   // Durations and delays come from CSS variables (MainFeature.css) rather
   // than literals: an inline style is unreachable from a media query, and the
   // phone needs this sequence to run in about half the time.
-  const topLeftImgStyle = useMemo(() => (playedOnce ? { opacity: 1, transition: "all var(--mf-img-dur) ease-in-out var(--mf-img-d1)" } : undefined), [playedOnce]);
-  const bottomLeftImgStyle = useMemo(() => (playedOnce ? { opacity: 1, transition: "all var(--mf-img-dur) ease-in-out var(--mf-img-d3)" } : undefined), [playedOnce]);
-  const topRightImgStyle = useMemo(() => (playedOnce ? { opacity: 1, transition: "all var(--mf-img-dur) ease-in-out var(--mf-img-d2)" } : undefined), [playedOnce]);
-  const bottomRightImgStyle = useMemo(() => (playedOnce ? { opacity: 1, transition: "all var(--mf-img-dur) ease-in-out var(--mf-img-d4)" } : undefined), [playedOnce]);
+  // Framing controls for the four card images. Renders nothing and writes no
+  // inline styles unless it is switched on (dev, or ?tune in the URL).
+  const { styleFor, panel } = useCardArtTuner();
+
+  // The fade-in lands on var(--art-opacity) rather than a literal 1, so a card
+  // tuned below full opacity keeps that value instead of the entrance animation
+  // overriding it on arrival. Untuned it resolves to 1, exactly as before.
+  const ART_IN = "var(--art-opacity, 1)";
+  const topLeftImgStyle = useMemo(() => (playedOnce ? { opacity: ART_IN, transition: "all var(--mf-img-dur) ease-in-out var(--mf-img-d1)" } : undefined), [playedOnce]);
+  const bottomLeftImgStyle = useMemo(() => (playedOnce ? { opacity: ART_IN, transition: "all var(--mf-img-dur) ease-in-out var(--mf-img-d3)" } : undefined), [playedOnce]);
+  const topRightImgStyle = useMemo(() => (playedOnce ? { opacity: ART_IN, transition: "all var(--mf-img-dur) ease-in-out var(--mf-img-d2)" } : undefined), [playedOnce]);
+  const bottomRightImgStyle = useMemo(() => (playedOnce ? { opacity: ART_IN, transition: "all var(--mf-img-dur) ease-in-out var(--mf-img-d4)" } : undefined), [playedOnce]);
 
   /* useEffect(() => {
   if (!animRef.current) return;
@@ -170,7 +182,7 @@ char.style.filter="blur(0px)"
             onClick={(e) => openCard("lockedLiquidity", e.currentTarget)}
           >
             <img
-              style={topLeftImgStyle}
+              style={{ ...topLeftImgStyle, ...styleFor("topLeftCard") }}
               src={liquidityLockArt}
               alt=""
               srcset=""
@@ -189,7 +201,7 @@ char.style.filter="blur(0px)"
             onClick={(e) => openCard("zeroPriceGap", e.currentTarget)}
           >
             <img
-              style={bottomLeftImgStyle}
+              style={{ ...bottomLeftImgStyle, ...styleFor("bottomLeftCard") }}
               src={zeroPriceArt}
               alt=""
               srcset=""
@@ -216,7 +228,7 @@ char.style.filter="blur(0px)"
               <p>Snipers Pay the Most</p>
             </div>
             <img
-              style={topRightImgStyle}
+              style={{ ...topRightImgStyle, ...styleFor("topRightCard") }}
               src={botsPayArt}
               alt=""
               srcset=""
@@ -235,7 +247,7 @@ char.style.filter="blur(0px)"
               <p>Earn Every Trade, Forever</p>
             </div>
             <img
-              style={bottomRightImgStyle}
+              style={{ ...bottomRightImgStyle, ...styleFor("bottomRightCard") }}
               src={creatorFeesArt}
               alt=""
               srcset=""
@@ -254,6 +266,9 @@ char.style.filter="blur(0px)"
           />
         )}
       </AnimatePresence>
+
+      {/* null unless the tuner is switched on. */}
+      {panel}
     </div>
   );
 }

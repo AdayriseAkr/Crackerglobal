@@ -160,6 +160,23 @@
     height: 100%;
     object-fit: cover;
     opacity: 0;
+
+    /* Framing controls, defaulted to "untouched" so this behaves exactly as it
+       did before unless something sets them. CardArtTuner writes them live
+       while you drag a slider; the values you settle on get pasted back into
+       this file as a `.topLeftCard img{ --art-x: ... }` block, which is what
+       actually ships. The tuner is not in the production path.
+
+       object-position is the right control for the crop rather than a
+       translate: the image is object-fit:cover, so it is already overflowing
+       its box on one axis, and object-position chooses which part of that
+       overflow you keep. A transform would move the whole (already cropped)
+       box and pull empty space in at the edge.
+
+       scale IS a transform, because it has to enlarge past the box. The card
+       clips its own overflow, so scaling up reads as a zoom into the artwork. */
+    object-position: var(--art-x, 50%) var(--art-y, 50%);
+    transform: scale(var(--art-scale, 1));
 }
 
 
