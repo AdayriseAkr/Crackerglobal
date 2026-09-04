@@ -765,7 +765,7 @@ will-change: transform;
   left: unset;
    right: 7%;
     bottom: 27%;
-    transform: translateY(50%) rotateZ(-45deg);
+    transform: translateY(50%) rotateZ(120deg);
 }
 .commJoin{
   width: 12rem;
