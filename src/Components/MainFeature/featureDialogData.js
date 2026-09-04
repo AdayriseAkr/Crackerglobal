@@ -29,7 +29,11 @@ const featureDialogData = {
       "Curve fills at 4.2 ETH, then graduates automatically",
       "4.15 ETH flows straight into the pool as permanent liquidity",
       "Admin multisig + timelock governs upgrades only, never fees, never LP",
-      "20+ contracts independently audited by QuillAudits, re-audited monthly",
+      // Was "20+ contracts", which overstated a count the protocol does not
+      // have. Coverage is the stronger claim anyway: a number invites the
+      // question of which ones were left out, and "every" answers it. It also
+      // stays true as contracts are added, where any figure goes stale.
+      "Every contract independently audited by QuillAudits, re-audited monthly",
     ],
     stats: [
       { label: "Curve target", value: 4.2, suffix: " ETH", decimals: 1 },

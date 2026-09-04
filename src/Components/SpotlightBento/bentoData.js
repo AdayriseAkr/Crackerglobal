@@ -51,7 +51,10 @@ export const bentoCards = [
     label: "Security",
     title: "Publicly Audited",
     description:
-      "Twenty-plus contracts under independent review, published in full before mainnet.",
+      // Same correction as the audit bullet in featureDialogData.js: the count
+      // was wrong, and coverage is the claim worth making. These two are the
+      // only places the site says anything about how many contracts there are.
+      "Every contract under independent review, published in full before mainnet.",
     modifiers: [],
     image: securityImage,
     enter: "fade",

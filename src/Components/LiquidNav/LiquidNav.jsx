@@ -4,6 +4,7 @@ import {motion} from "framer-motion"
 import { NavLink, useLocation } from "react-router-dom";
 import ContactDialog from "../Contact/ContactDialog.jsx";
 import { LAUNCHPAD_URL, DEX_URL } from "../../siteLinks.js";
+import LiveChainsStrip, { useLiveChainsCycle } from "./LiveChainsStrip.jsx";
 const links = [
   { to: "/", label: "Home", end: true },
   { label: "Products", isStatic: true },
@@ -33,6 +34,20 @@ let [mobileProductsOpen, setMobileProductsOpen] = React.useState(false);
 let [quickNavOpen, setQuickNavOpen] = React.useState(false);
 let [contactOpen, setContactOpen] = React.useState(false);
 const location = useLocation();
+
+// The "live on <chains>" strip that unfolds out of the top of the dock on a
+// timer. The hook owns the schedule; everything below decides whether the dock
+// is free to show it right now.
+const chainsOnDuty = useLiveChainsCycle();
+
+// The dock only has room for one thing above the row, so the strip yields to
+// anything the visitor actually asked for:
+//   hovered      — the Products flyout, which occupies that exact space
+//   quickNavOpen — the hamburger panel, which grows the dock to 16rem
+//   contactOpen  — the contact dialog; the dock should not animate behind it
+// Suppressing rather than cancelling: see the note on useLiveChainsCycle for
+// why the timer deliberately keeps running underneath.
+const showChains = chainsOnDuty && !hovered && !quickNavOpen && !contactOpen;
 
 // Every path that shuts the mobile menu goes through here. The products
 // pop-up is a SIBLING of the panel, not a child of it, so closing the panel
@@ -139,10 +154,16 @@ const goToSection = (id) => {
 
       }}
        ref={desktopNavRef}
-       className={`liquidGlass-wrapper dock desktopDock${quickNavOpen ? " isQuickNavOpen" : ""}`}>
+       className={`liquidGlass-wrapper dock desktopDock${quickNavOpen ? " isQuickNavOpen" : ""}${showChains ? " isChainsOpen" : ""}`}>
       <div className="liquidGlass-effect"></div>
       <div className="liquidGlass-tint"></div>
       <div className="liquidGlass-shine"></div>
+
+      {/* Sibling of .liquidGlass-text, not a child of it: that element is the
+          bottom-aligned flex column holding the dock row, and anything placed
+          inside it joins that column. This is positioned off the wrapper
+          instead, the same way .quickNavGrid is. */}
+      <LiveChainsStrip visible={showChains} />
 
       <div className="liquidGlass-text">
         <div style={hovered ? {height:"12rem" } : {height:0 }} onMouseEnter={() => { if (!quickNavOpen) setHovered(true); }} onMouseLeave={() => {setHovered(false)}}   className="productsOption">

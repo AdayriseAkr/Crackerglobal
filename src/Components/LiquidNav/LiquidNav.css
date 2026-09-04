@@ -319,6 +319,33 @@ border-bottom-right-radius: 0;
 .liquidGlass-wrapper.desktopDock.isQuickNavOpen > div{
   border-radius: var(--radius-2xl);
 }
+
+/* ---- open state for the live-chains strip ----
+   Same trick as .isQuickNavOpen above, at a smaller size: grow the wrapper and
+   the bottom-anchored dock row stays exactly where it is while the new room
+   appears above it.
+
+   The height is derived rather than measured. Reading it outward from the
+   floor: the gap under the row, the row, the strip's own inset, the strip, and
+   the same inset again over it — so the space above the strip and the space
+   below it are equal by construction, and all of it still tracks the row if
+   the row is ever resized. The two values that are not already wrapper
+   variables are repeated from LiveChainsStrip.css, which is the one seam here;
+   they are declared on .liveChains (a descendant), so they cannot be read from
+   this element.
+
+   Declared AFTER the .isQuickNavOpen rule so that if both classes were ever
+   set at once the taller quick-nav panel wins — it should, since it is the one
+   the visitor actually opened. In practice showChains already excludes it. */
+.liquidGlass-wrapper.desktopDock.isChainsOpen:not(.isQuickNavOpen){
+  height: calc(
+    var(--dock-row-gap) + var(--dock-row-height) + 0.8rem + 4.4rem + 0.8rem
+  );
+  border-radius: var(--radius-2xl);
+}
+.liquidGlass-wrapper.desktopDock.isChainsOpen:not(.isQuickNavOpen) > div{
+  border-radius: var(--radius-2xl);
+}
 /* .liquidGlass-wrapper's base rule transitions "all" with the bouncy
    spring-extreme ease (deliberate overshoot) — right for opening, but on
    close that overshoot reads as an unwanted bounce. A transition always
