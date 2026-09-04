@@ -366,37 +366,6 @@ useTextSplitAnim(animRef2, { stagger: 40, startDelay: 300 });
 
       {/* INDIVIDUAL CARDS (NO MAP) */}
 
-      <div id="rCard2" className="rCard">
-        {/* <h2>Design 1</h2>
-        <p>This is the first card.</p> */}
-        <div className="commonCardContent">
-          <div className="tagLines">
-          <div style={{backgroundColor:"#DB6E00"}} className="tagDiv">ZERO SLIPPAGE</div>
-          <div style={{backgroundColor:"#DB6E00"}} className="tagDiv">ZERO BOT</div>
-          </div>
-          <svg className="cardIcon" width="84" height="84" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M44.6723 26.855H20.0762C18.1356 26.855 16.5625 28.4281 16.5625 30.3687V40.9099C16.5625 42.8505 18.1356 44.4236 20.0762 44.4236H44.6723C46.6129 44.4236 48.186 42.8505 48.186 40.9099V30.3687C48.186 28.4281 46.6129 26.855 44.6723 26.855Z" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M32.377 19.8273C34.3176 19.8273 35.8907 18.2541 35.8907 16.3135C35.8907 14.373 34.3176 12.7998 32.377 12.7998C30.4364 12.7998 28.8633 14.373 28.8633 16.3135C28.8633 18.2541 30.4364 19.8273 32.377 19.8273Z" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M32.375 19.8271V26.8546" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-<circle cx="25.3467" cy="35.6392" r="1.75686" fill="white"/>
-<circle cx="39.4014" cy="35.6392" r="1.75686" fill="white"/>
-<circle cx="32" cy="32" r="30" stroke="white" stroke-width="4"/>
-<line x1="11.033" y1="52.4441" x2="53.1977" y2="10.2794" stroke="white" stroke-width="5"/>
-</svg>
-
-<div className="mainTagAndDesc">
-  <h1>Fair Execution</h1>
-  <p>Fixed pricing and bot-free execution ensure transparent, secure trades.</p>
-</div>
-        </div>
-
-<div className="imgSlideShow">
-  <img id="roboFair1" src={roboFair1} alt="" srcset="" />
-  <img id="roboFair2" src={roboFair2} alt="" srcset="" />
-</div>
-
-      </div>
-
       <div id="rCard1" className="rCard stocks">
          <div className="commonCardContent">
           <div className="tagLines">
@@ -475,6 +444,52 @@ useTextSplitAnim(animRef2, { stagger: 40, startDelay: 300 });
             })}
           </div>
         </div>
+      </div>
+
+      <div id="rCard2" className="rCard">
+        {/* <h2>Design 1</h2>
+        <p>This is the first card.</p> */}
+        <div className="commonCardContent">
+          {/* Was "ZERO SLIPPAGE" and "ZERO BOT". Neither was true, and the
+              second one contradicted our own anti-bot card outright: that card
+              explains that bots cannot be told apart on-chain, which is exactly
+              why the defence is a fee rather than a filter. Claiming zero bots
+              here and "snipers pay the most" there cannot both be right.
+
+              Slippage is the same kind of overclaim. An AMM prices each trade
+              against the pool, so size always moves the price. What Cracker
+              actually removes is the PRICE GAP at graduation — the curve hands
+              off to the pool at the same price — and that is a specific,
+              checkable claim rather than a blanket one. */}
+          <div className="tagLines">
+          <div style={{backgroundColor:"#DB6E00"}} className="tagDiv">NO PRICE GAP</div>
+          <div style={{backgroundColor:"#DB6E00"}} className="tagDiv">BOTS PAY MORE</div>
+          </div>
+          <svg className="cardIcon" width="84" height="84" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M44.6723 26.855H20.0762C18.1356 26.855 16.5625 28.4281 16.5625 30.3687V40.9099C16.5625 42.8505 18.1356 44.4236 20.0762 44.4236H44.6723C46.6129 44.4236 48.186 42.8505 48.186 40.9099V30.3687C48.186 28.4281 46.6129 26.855 44.6723 26.855Z" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M32.377 19.8273C34.3176 19.8273 35.8907 18.2541 35.8907 16.3135C35.8907 14.373 34.3176 12.7998 32.377 12.7998C30.4364 12.7998 28.8633 14.373 28.8633 16.3135C28.8633 18.2541 30.4364 19.8273 32.377 19.8273Z" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M32.375 19.8271V26.8546" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="25.3467" cy="35.6392" r="1.75686" fill="white"/>
+<circle cx="39.4014" cy="35.6392" r="1.75686" fill="white"/>
+<circle cx="32" cy="32" r="30" stroke="white" stroke-width="4"/>
+<line x1="11.033" y1="52.4441" x2="53.1977" y2="10.2794" stroke="white" stroke-width="5"/>
+</svg>
+
+<div className="mainTagAndDesc">
+  <h1>Fair Execution</h1>
+  {/* "Fixed pricing and bot-free execution" promised two things the
+      protocol does not do. This says what it does instead: the handoff
+      is gapless, and the opening fee makes racing expensive rather than
+      impossible. */}
+  <p>Same price from curve to pool, and an opening fee that makes sniping expensive.</p>
+</div>
+        </div>
+
+<div className="imgSlideShow">
+  <img id="roboFair1" src={roboFair1} alt="" srcset="" />
+  <img id="roboFair2" src={roboFair2} alt="" srcset="" />
+</div>
+
       </div>
 
       <div id="rCard3" className="rCard">
@@ -572,7 +587,10 @@ useTextSplitAnim(animRef2, { stagger: 40, startDelay: 300 });
 </svg>
 <div className="mainTagAndDesc">
   <h1>Community</h1>
-  <p>Fixed pricing and bot-free execution ensure transparent, secure trades.</p>
+  {/* This card was carrying the Fair Execution card's description verbatim —
+      a paste that had nothing to do with community, and repeated the same
+      overclaim a second time. */}
+  <p>Traders, creators and builders shaping what launches next.</p>
 </div>
         </div>
        <div className="commCardCircle">

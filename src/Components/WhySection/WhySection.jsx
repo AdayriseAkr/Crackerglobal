@@ -151,11 +151,16 @@ export default function WhySection({ ready }) {
         <div ref={rightCardRef} className="rightCardWhy">
           <div className="topRightCardWhy"></div>
           <div className="bottomRightCardWhy">
+            {/* Was "Zero slippage. / Zero bots." over "CTS swaps block all
+                snipes and front-runs." Three absolutes, none of them true: an
+                AMM always moves price with size, and nothing on-chain can tell
+                a bot from a person — which is why the defence is a fee. The
+                claim that survives is the economic one. */}
             <p>
-              Zero slippage. <br /> Zero bots.
+              No price gap. <br /> Snipers pay more.
             </p>
             <img className="cardEgg" src={cardEgg} alt="" />
-            <p>CTS swaps block all snipes and front-runs.</p>
+            <p>Front-running costs more than it wins.</p>
           </div>
         </div>
       </div>
