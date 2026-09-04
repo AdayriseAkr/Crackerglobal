@@ -3,12 +3,20 @@ import FeatureGradient from "../../assets/FeatureGradient.webp";
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useRef, useState, useMemo } from "react";
 import useInView from "../CustomHook/useInView.jsx";
-// Placeholder art. Named for the feature, not the file, so the new
-// illustrations drop in here one line at a time.
+// Card face art, named for the feature rather than the file. Three are the real
+// illustrations now; liquidityLock is still on its 400x529 placeholder because
+// no artwork has been supplied for it yet.
+//
+// The three real ones were cropped to their subject before export, not just
+// resized. Each render arrived on a big soft vignette with a different amount
+// of dead space around it — one had 31% empty above and below, another 20% —
+// so resizing alone would have shown the same robot at three noticeably
+// different sizes across the four cards. They are framed to a common 83% fill
+// instead, which is what makes the set read as one family.
 import liquidityLockArt from "../../assets/topLeft.webp";
-import zeroPriceArt from "../../assets/bottomLeft.webp";
-import botsPayArt from "../../assets/topRight.webp";
-import creatorFeesArt from "../../assets/bottomRight.webp";
+import zeroPriceArt from "../../assets/zeroPriceGapCard.webp";
+import botsPayArt from "../../assets/snipersPayCard.webp";
+import creatorFeesArt from "../../assets/earnEveryTradeCard.webp";
 import useTextSplitAnim from "../CustomHook/useTextSplitAnim.jsx";
 import FeatureDialog from "./FeatureDialog.jsx";
 import featureDialogData from "./featureDialogData.js";
