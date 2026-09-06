@@ -551,10 +551,29 @@ border-bottom-right-radius: 0;
   /* Out of the way once the footer arrives, so its Terms and Privacy links
      are reachable. pointer-events goes with the fade — a transparent element
      still takes clicks, which is the whole problem being solved. */
+  /* The descendant selector is load-bearing, not belt-and-braces.
+     pointer-events:none on this element only stops THIS element being hit —
+     anything inside that sets `auto` is put straight back into hit-testing,
+     and the live-chains strip does exactly that when it is visible. So the
+     shell was still catching taps here while invisible.
+
+     It matters because translateY(120%) does not clear the viewport: the shell
+     is about 50px tall sitting 4% up, so 120% of its own height moves it 60px
+     down and leaves the last ~24px of it over the bottom of the screen. That
+     band is exactly where the footer puts Terms and Privacy, which is why they
+     could not be tapped on a phone.
+
+     The strip is also suppressed at the source (showMobileChains in
+     LiquidNav.jsx). This is the half that keeps the next descendant from
+     reopening the same hole. */
+  .mobileNavShell.is-hidden,
+  .mobileNavShell.is-hidden * {
+    pointer-events: none;
+  }
+
   .mobileNavShell.is-hidden {
     opacity: 0;
     transform: translateY(120%);
-    pointer-events: none;
   }
 
   .mobileNavShell {

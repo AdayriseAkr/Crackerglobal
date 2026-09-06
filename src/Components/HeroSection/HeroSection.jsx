@@ -152,7 +152,7 @@ export default function HeroSection({ loadProp }) {
             FOR GLOBAL IDEAS
           </p>
           <p ref={pRef}>
-            An American-built meme ecosystem. Launchpad, DEX and wallet in one place.
+            An American-built meme ecosystem. Launchpad, Dex and Wallet in one place.
           </p>
         </div>
         <div className="heroCtaRow">

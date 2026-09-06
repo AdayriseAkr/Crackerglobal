@@ -49,19 +49,6 @@ const chainsOnDuty = useLiveChainsCycle();
 // why the timer deliberately keeps running underneath.
 const showChains = chainsOnDuty && !hovered && !quickNavOpen && !contactOpen;
 
-// The phone runs the same cycle off the same hook — one timer for both, so the
-// two navs can never drift out of step — but it yields to a different set of
-// things, because the mobile tab has its own panels:
-//   menuOpen    — the hamburger sheet, which widens this very tab
-//   contactOpen — as on desktop
-// The products pop-up is not listed because it cannot outlive the menu:
-// productsPopOpen is (menuOpen && mobileProductsOpen), so !menuOpen already
-// covers it. It is also declared further down this component, and naming it
-// here would be a use-before-declaration.
-// footerInView is not listed either: it hides the whole shell, so there is
-// nothing left here to suppress.
-const showMobileChains = chainsOnDuty && !menuOpen && !contactOpen;
-
 // Every path that shuts the mobile menu goes through here. The products
 // pop-up is a SIBLING of the panel, not a child of it, so closing the panel
 // does not take it with them: clicking Contact while the products sheet was
@@ -107,6 +94,29 @@ React.useEffect(() => {
 React.useEffect(() => {
   if (footerInView) closeMobileMenu();
 }, [footerInView]);
+
+// The phone runs the same cycle off the same hook as the desktop dock — one
+// timer for both, so the two can never drift out of step — but it yields to a
+// different set of things, because the mobile tab has its own panels:
+//   menuOpen     — the hamburger sheet, which widens this very tab
+//   contactOpen  — as on desktop
+//   footerInView — see below
+// The products pop-up is not listed because it cannot outlive the menu:
+// productsPopOpen is (menuOpen && mobileProductsOpen), so !menuOpen covers it.
+//
+// footerInView IS listed, and I had this wrong. The reasoning was that hiding
+// the shell already covers everything inside it, so there was nothing left to
+// suppress here. But pointer-events is not a lock: an ancestor set to `none`
+// stops ITSELF being hit, and a descendant that sets `auto` puts itself
+// straight back into hit-testing. The strip does exactly that when visible, so
+// it stayed tappable inside a shell that was supposed to be inert — an
+// invisible band across the bottom of the screen, over the footer's Terms and
+// Privacy links.
+//
+// Declared here rather than up with showChains because footerInView is defined
+// just above; reading it any earlier is a use-before-declaration.
+const showMobileChains =
+  chainsOnDuty && !menuOpen && !contactOpen && !footerInView;
 
 // Dismiss an open menu when a press lands anywhere outside of it. pointerdown
 // rather than click so it covers mouse and touch with one listener and fires
