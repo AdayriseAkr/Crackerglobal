@@ -75,7 +75,7 @@ export const bentoCards = [
     label: "Tokenomics",
     title: "No Token",
     description:
-      "No platform token, no airdrop farm, no emissions diluting you later. It's a permanent policy, true whether we're at ten users or ten million.",
+      "No official Cracker token. No airdrop farm. No emissions eating your bag six months out. If we ever launch one, you’ll hear it from us first, and anything else claiming to be Cracker is fake.",
     modifiers: ["feature", "tint"],
     image: tokenomicsImage,
     enter: "fade",
