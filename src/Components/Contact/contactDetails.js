@@ -1,10 +1,11 @@
 // Contact details. The registered entity and its address come from the Terms
 // and the Privacy Policy, which are the version the company is bound by.
 //
-// The three mailboxes and the site now sit on the same domain,
-// crackerglobal.com. They did not always: the documents named a separate
-// cracker.global for the site, which was never registered, and that reference
-// has since been corrected in legalContent.js.
+// The three mailboxes are on crackerglobal.com, which is not the domain the
+// site itself is served from (cracker.global). That split is real and
+// deliberate, so a find-and-replace across one must not sweep up the other:
+// the company owns both names, serves the site from cracker.global and keeps
+// mail on crackerglobal.com.
 //
 // Whatever changes here has to change in legalContent.js too: the Terms and
 // the Privacy Policy each name a mailbox in their own body text, and those

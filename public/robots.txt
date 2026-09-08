@@ -4,10 +4,10 @@
 # The one line that earns its place is Sitemap: crawlers look for it here
 # before they look anywhere else.
 #
-# The Sitemap URL has to stay on the real domain, www included. A sitemap on a
-# host that does not match the canonical is ignored, silently.
+# The Sitemap URL has to stay on the same host as the canonical, www included.
+# A sitemap on a host that does not match is ignored, silently.
 
 User-agent: *
 Allow: /
 
-Sitemap: https://www.crackerglobal.com/sitemap.xml
+Sitemap: https://www.cracker.global/sitemap.xml

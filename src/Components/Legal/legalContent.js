@@ -1,22 +1,19 @@
 // Terms and Privacy, as supplied by LegalByte (both dated 12/11/2025).
 //
-// VERBATIM, with one recorded exception. Every sentence below is word for word
-// from the source PDFs, including the product naming. Nothing is paraphrased,
-// reordered or summarised, and nothing should be: this is the text the company
-// is bound by, and an edit that reads as tidying can change what it covers.
+// VERBATIM. Every sentence below is word for word from the source PDFs,
+// including the product naming. Nothing is paraphrased, reordered or
+// summarised, and nothing should be: this is the text the company is bound by,
+// and an edit that reads as tidying can change what it covers.
 //
-// THE ONE EXCEPTION: the source PDFs name the site domain as cracker.global in
-// both scope sentences. That domain was never registered and does not resolve.
-// The site ships on crackerglobal.com, which is also where the two mailboxes
-// these documents give for data rights already live. Both sentences now read
-// crackerglobal.com, so the documents name the site they actually govern.
-// This is a factual correction to a binding document rather than a copy edit,
-// and LegalByte should reissue the PDFs to match, instead of leaving the
-// signed source and this file disagreeing.
+// The scope sentences briefly read crackerglobal.com, during the window when
+// cracker.global was unregistered and the site shipped on the other domain.
+// cracker.global has since been bought and is the site's address, so the PDF
+// wording is correct again and has been restored. This file is verbatim once
+// more, and nothing needs reissuing.
 //
-// NOTE ON SCOPE: past that domain, both documents still describe themselves as
-// covering "the Cracker Wallet mobile applications, browser extensions and
-// related websites" at crackerglobal.com and crackerwallet.fun. They are
+// NOTE ON SCOPE: both documents describe themselves as covering "the Cracker
+// Wallet mobile applications, browser extensions and related websites" at
+// cracker.global and crackerwallet.fun. They are
 // linked from the footer of a site that also fronts the Launchpad, CrackerSwap
 // and Egg Bot, which those definitions do not name. Broadening them is a legal
 // change, so it is left to LegalByte to reissue the documents with an
@@ -39,7 +36,7 @@ export const termsDocument = {
       blocks: [
         {
           type: "p",
-          text: 'These Terms and Conditions ("Terms") govern your access to and use of the Cracker Wallet mobile applications, browser extensions and related websites, including but not limited to crackerglobal.com, crackerwallet.fun and associated sub-domains (together, the "Services"), provided by Cracker Limited Liability Co. ("Cracker", "we", "us" or "our").',
+          text: 'These Terms and Conditions ("Terms") govern your access to and use of the Cracker Wallet mobile applications, browser extensions and related websites, including but not limited to cracker.global, crackerwallet.fun and associated sub-domains (together, the "Services"), provided by Cracker Limited Liability Co. ("Cracker", "we", "us" or "our").',
         },
         {
           type: "p",
@@ -312,7 +309,7 @@ export const privacyDocument = {
       blocks: [
         {
           type: "p",
-          text: 'This Privacy Policy explains how Cracker Limited Liability Co. ("Cracker", "we", "us" or "our") collects, uses, shares and protects information in connection with the Cracker Wallet mobile applications, browser extensions and related websites, including but not limited to crackerglobal.com, crackerwallet.fun and associated sub-domains (together, the "Services").',
+          text: 'This Privacy Policy explains how Cracker Limited Liability Co. ("Cracker", "we", "us" or "our") collects, uses, shares and protects information in connection with the Cracker Wallet mobile applications, browser extensions and related websites, including but not limited to cracker.global, crackerwallet.fun and associated sub-domains (together, the "Services").',
         },
         {
           type: "p",
