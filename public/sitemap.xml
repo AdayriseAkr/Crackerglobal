@@ -4,13 +4,12 @@
   router rather than pages with content of their own, and listing a route that
   renders a loading state is worse than not listing it.
 
-  CONFIRM BEFORE LAUNCH: this URL must match the real domain and the canonical
-  in index.html.
+  This URL must keep matching the canonical in index.html, www included.
 -->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://cracker.global/</loc>
-    <lastmod>2026-09-03</lastmod>
+    <loc>https://www.crackerglobal.com/</loc>
+    <lastmod>2026-09-08</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>

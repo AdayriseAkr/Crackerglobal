@@ -4,11 +4,12 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <!-- CONFIRM BEFORE LAUNCH: every absolute URL below assumes this landing
-         page is served from https://cracker.global. If it is a different
-         domain, canonical, og:url and og:image all point at the wrong place,
-         and a wrong canonical is worse than none. -->
-    <link rel="canonical" href="https://cracker.global/" />
+    <!-- Every absolute URL below points at https://www.crackerglobal.com,
+         which is the production origin. The apex redirects to www, so www is
+         the canonical form and the one crawlers should be handed. Change these
+         together or not at all: a canonical on one host and an og:image on
+         another is worse than having neither. -->
+    <link rel="canonical" href="https://www.crackerglobal.com/" />
 
     <title>Cracker · An American-built meme ecosystem</title>
     <meta
@@ -33,7 +34,7 @@
     <!-- Open Graph: Facebook, LinkedIn, Telegram, Discord, iMessage. -->
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Cracker" />
-    <meta property="og:url" content="https://cracker.global/" />
+    <meta property="og:url" content="https://www.crackerglobal.com/" />
     <meta property="og:title" content="Cracker · An American-built meme ecosystem" />
     <meta
       property="og:description"
@@ -42,7 +43,7 @@
     <!-- Absolute URL, not a path: crawlers do not resolve relative og:image.
          The designed 1200x630 banner, which is the 1.91:1 ratio Facebook,
          LinkedIn, Discord and Telegram all render at. -->
-    <meta property="og:image" content="https://cracker.global/og-banner.jpg" />
+    <meta property="og:image" content="https://www.crackerglobal.com/og-banner.jpg" />
     <meta property="og:image:type" content="image/jpeg" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
@@ -54,7 +55,7 @@
     <!-- Square, for the messengers that crop to 1:1 rather than letterboxing a
          wide banner. Listed second: a crawler that only understands one image
          takes the first, and the wide one is right for most of them. -->
-    <meta property="og:image" content="https://cracker.global/og-banner-square.jpg" />
+    <meta property="og:image" content="https://www.crackerglobal.com/og-banner-square.jpg" />
     <meta property="og:image:type" content="image/jpeg" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="1200" />
@@ -71,7 +72,7 @@
     />
     <!-- X's own 16:9 crop, so the card is not letterboxed the way a 1.91:1
          image is inside a summary_large_image. -->
-    <meta name="twitter:image" content="https://cracker.global/og-banner-x.jpg" />
+    <meta name="twitter:image" content="https://www.crackerglobal.com/og-banner-x.jpg" />
     <meta
       name="twitter:image:alt"
       content="Cracker: an American-built meme ecosystem with a launchpad, DEX and wallet"
@@ -89,8 +90,8 @@
         "@type": "Organization",
         "name": "Cracker",
         "legalName": "Cracker Limited Liability Co.",
-        "url": "https://cracker.global/",
-        "logo": "https://cracker.global/favicon-512.png",
+        "url": "https://www.crackerglobal.com/",
+        "logo": "https://www.crackerglobal.com/favicon-512.png",
         "description": "An American-built meme ecosystem. Launchpad, DEX and wallet in one place.",
         "address": {
           "@type": "PostalAddress",
